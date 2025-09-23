@@ -18,7 +18,7 @@ async def test_power_usage_streaming(
         async with sensor_node.open_data_stream(
             StreamingConfiguration(first=True)
         ) as stream:
-            async for data, _ in stream:
+            async for _ in stream:
                 if not started_streaming.is_set():
                     started_streaming.set()
 
