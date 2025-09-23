@@ -79,3 +79,6 @@ ignore_missing_imports = true
 asyncio_mode = "auto"
 addopts = "--doctest-modules --ignore-glob='*._*.py' -v"
 minversion = "6.0"
+# To enable logging info messages, please uncomment the following lines
+# log_cli = true
+# log_cli_level = "INFO"

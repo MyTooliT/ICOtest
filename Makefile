@@ -1,2 +1,2 @@
 run:
-	poetry run python icotest/test.py
+	poetry run pytest icotest/test_power.py
