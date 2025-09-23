@@ -37,3 +37,14 @@ To run the test, please use the following command in the root of the repository:
 ```sh
 poetry run pytest
 ```
+
+### Debug
+
+To enable the output of log messages in the code, please add the following config settings:
+
+```toml
+log_cli = true
+log_cli_level = "INFO"
+```
+
+to the table `tool.pytest.ini_options` in `pyproject.toml`.
