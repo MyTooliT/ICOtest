@@ -14,7 +14,7 @@ from icotronic.can import Connection, SensorNode, STU
 
 
 @fixture(scope="session")
-def serial_number() -> str:
+def serial_number() -> int:
     """Returns the serial number of the programming board"""
 
     return 440069950
