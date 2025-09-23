@@ -1,2 +1,3 @@
-run:
-	poetry run pytest icotest/test_power.py
+.PHONY: test
+test:
+	poetry run pytest

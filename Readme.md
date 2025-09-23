@@ -29,3 +29,11 @@ pip install -e .[dev]
 ```sh
 pip uninstall icotest
 ```
+
+## Tests
+
+To run the test, please use the following command in the root of the repository:
+
+```sh
+poetry run pytest
+```
