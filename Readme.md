@@ -38,6 +38,10 @@ To run the test, please use the following command in the root of the repository:
 poetry run pytest
 ```
 
+### Configuration
+
+Currently you need to adapt the fixtures in `conftest.py` for your hardware.
+
 ### Debug
 
 To enable the output of log messages in the code, please add the following config settings:
