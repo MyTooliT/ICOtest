@@ -1,0 +1,81 @@
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+authors = [
+    {name = "René Schwaiger", email = "rene.schwaiger@ift.at"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Natural Language :: English",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Programming Language :: Python",
+]
+
+dependencies = [
+  "icotronic>=4.1.0,<=5",
+  "pytest>=8.4.2",
+]
+description = """Hardware tests for ICOtronic system"""
+keywords = [
+    "smart-tool",
+    "smh",
+    "stu",
+    "sth",
+    "tool-holder",
+]
+name = "icotest"
+readme = "Readme.md"
+requires-python = ">=3.12,<4"
+version = "0.1"
+
+[project.optional-dependencies]
+dev = [
+    "Flake8-pyproject>=1.2.3",
+    "mypy>=1.18.2",
+    "pydoclint[flake8]>=0.7.3",
+    "pylint>=3.3.8",
+    "pytest-asyncio",
+]
+
+[project.urls]
+Source = "https://github.com/mytoolit/ICOtest/"
+
+[tool.black]
+line-length = 79
+preview = true
+unstable = true
+enable-unstable-feature = ["string_processing"]
+
+[tool.flake8]
+
+ignore = [
+  # Whitespace before colon
+  "E203",
+  # Module level import not at top of file
+  "E402",
+  # Line break before binary operator
+  "W503",
+  # Line break after binary operator
+  "W504"
+]
+per-file-ignores = "__init__.py:F401"
+exclude = [
+  ".git",
+  "__pycache__",
+  "._*",
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+# - Use doctests
+# - Ignore macOS metadata files
+# - Verbose output
+asyncio_mode = "auto"
+addopts = "--doctest-modules --ignore-glob='*._*.py' -v"
+minversion = "6.0"
