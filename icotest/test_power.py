@@ -40,4 +40,13 @@ async def test_power_usage_streaming(
         getLogger().info("Streaming power usage: %s mW", power_usage)
         stream_data_task.cancel()
 
-    assert 40 <= power_usage <= 60
+    minimum_power = 40
+    maximum_power = 60
+    assert minimum_power <= power_usage, (
+        f"Power usage of {power_usage} mW smaller than expected minimum of "
+        f"{minimum_power} mW"
+    )
+    assert maximum_power >= power_usage, (
+        f"Power usage of {power_usage} mW larger than expected maximum of "
+        f"{maximum_power} mW"
+    )
