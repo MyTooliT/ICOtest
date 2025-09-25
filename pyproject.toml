@@ -16,7 +16,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "icotronic>=4.1.0,<=5",
+  "icotronic>=5,<=6",
   "pytest>=8.4.2",
 ]
 description = """Hardware tests for ICOtronic system"""

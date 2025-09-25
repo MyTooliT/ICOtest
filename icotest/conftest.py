@@ -14,20 +14,6 @@ from icotronic.can import Connection, SensorNode, STU
 
 
 @fixture(scope="session")
-def serial_number() -> int:
-    """Returns the serial number of the programming board"""
-
-    return 440069950
-
-
-@fixture(scope="session")
-def chip() -> str:
-    """Returns the chip of the sensor name"""
-
-    return "BGM123A256V2"
-
-
-@fixture(scope="session")
 def sensor_node_name() -> str:
     """Returns the name of the sensor node used for the test"""
 

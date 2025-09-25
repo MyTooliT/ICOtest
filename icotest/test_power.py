@@ -11,9 +11,7 @@ from icotronic.cmdline.commander import Commander
 # -- Functions ----------------------------------------------------------------
 
 
-async def test_power_usage_streaming(
-    sensor_node: SensorNode, serial_number: int, chip: str
-):
+async def test_power_usage_streaming(sensor_node: SensorNode):
     """Test power usage of sensor node while streaming"""
 
     async def stream_data(started_streaming: Event) -> None:
@@ -25,8 +23,7 @@ async def test_power_usage_streaming(
                     started_streaming.set()
 
     def read_power_usage() -> float:
-        commander = Commander(serial_number=serial_number, chip=chip)
-        return commander.read_power_usage()
+        return Commander().read_power_usage()
 
     started_streaming = Event()
 
