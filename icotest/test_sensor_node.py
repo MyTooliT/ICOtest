@@ -5,10 +5,44 @@
 from asyncio import Event, TaskGroup, to_thread
 from logging import getLogger
 
-from icotronic.can import SensorNode, StreamingConfiguration
+from icotronic.can import SensorNode, StreamingConfiguration, STU
 from icotronic.cmdline.commander import Commander
 
 # -- Functions ----------------------------------------------------------------
+
+
+async def test_connection(stu: STU, sensor_node_name: str):
+    """Test if connection to sensor node is possible"""
+
+    async with stu.connect_sensor_node(sensor_node_name) as sensor_node:
+        assert (
+            True
+        ), f"Unable to connect to sensor node with name “{sensor_node_name}”"
+
+
+async def test_battery_voltage(sensor_node: SensorNode):
+    """Test if battery voltage is within expected bounds"""
+
+    supply_voltage = await sensor_node.get_supply_voltage()
+    expected_voltage = 3.3
+    tolerance_voltage = 0.2
+    expected_minimum_voltage = expected_voltage - tolerance_voltage
+    expected_maximum_voltage = expected_voltage + tolerance_voltage
+
+    assert supply_voltage >= expected_minimum_voltage, (
+        (
+            f"Supply voltage of {supply_voltage:.3f} V is lower "
+            "than expected minimum voltage of "
+            f"{expected_minimum_voltage:.3f} V"
+        ),
+    )
+    assert supply_voltage <= expected_maximum_voltage, (
+        (
+            f"Supply voltage of {supply_voltage:.3f} V is "
+            "greater than expected maximum voltage of "
+            f"{expected_minimum_voltage:.3f} V"
+        ),
+    )
 
 
 async def test_power_usage_streaming(sensor_node: SensorNode):
@@ -43,7 +77,7 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
         f"Power usage of {power_usage} mW smaller than expected minimum of "
         f"{minimum_power} mW"
     )
-    assert maximum_power >= power_usage, (
+    assert power_usage <= maximum_power, (
         f"Power usage of {power_usage} mW larger than expected maximum of "
         f"{maximum_power} mW"
     )
