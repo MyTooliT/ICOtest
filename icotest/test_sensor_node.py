@@ -14,7 +14,7 @@ from icotronic.cmdline.commander import Commander
 async def test_connection(stu: STU, sensor_node_name: str):
     """Test if connection to sensor node is possible"""
 
-    async with stu.connect_sensor_node(sensor_node_name) as sensor_node:
+    async with stu.connect_sensor_node(sensor_node_name):
         assert (
             True
         ), f"Unable to connect to sensor node with name “{sensor_node_name}”"
