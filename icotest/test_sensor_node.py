@@ -8,6 +8,8 @@ from logging import getLogger
 from icotronic.can import SensorNode, StreamingConfiguration, STU
 from icotronic.cmdline.commander import Commander
 
+from icotest.config import settings
+
 # -- Functions ----------------------------------------------------------------
 
 
@@ -24,8 +26,9 @@ async def test_battery_voltage(sensor_node: SensorNode):
     """Test if battery voltage is within expected bounds"""
 
     supply_voltage = await sensor_node.get_supply_voltage()
-    expected_voltage = 3.3
-    tolerance_voltage = 0.2
+    expected_voltage = settings.sensor_node.battery_voltage.average
+    tolerance_voltage = settings.sensor_node.battery_voltage.tolerance
+
     expected_minimum_voltage = expected_voltage - tolerance_voltage
     expected_maximum_voltage = expected_voltage + tolerance_voltage
 

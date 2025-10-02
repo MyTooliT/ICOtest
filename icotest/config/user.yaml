@@ -1,0 +1,73 @@
+# This file contains configuration values for the ICOtronic package.
+# For a list of available settings you can change, please
+# take a look at the default configuration. The latest version
+# of the default configuration is available here:
+#
+# https://github.com/MyTooliT/ICOtronic/blob/main/icotronic/config/config.yaml
+#
+# Settings in this file will overwrite values from the default configuration.
+# In the case of maps and lists this might not be what you want. To change
+# this behavior you can set `dynaconf_merge` to true, either globally or for
+# specific maps or lists. For more information, please take a look at the
+# Dynaconf documentation about this topic: https://www.dynaconf.com/merging
+
+# Enable merging (of maps and lists) globally
+dynaconf_merge: true
+
+# -- <Production Parameters> ---------------------------------------------------
+
+# Production date of node (SMH, STH, STU)
+production date: &production_date 2023-09-11
+
+user name: &username Dummy User
+
+# Possible Sensors:
+#   - ADXL356: ± 40 g
+#   - ADXL1001: ± 100 g
+#   - ADXL1002: ± 50 g
+# sensor: &sensor ADXL356
+# sensor: &sensor ADXL1001
+# sensor: &sensor ADXL1002
+sensor: &sensor ADXL356
+
+# Holder type (Only relevant for test report)
+holder type: &holder_type D 10x130 HSK-A63
+
+# Holder name (Bluetooth advertisement name, used for initial connection)
+holder name: &holder_name BBBB1111
+
+# Holder serial number
+# (Bluetooth advertisement name after test, if status is `Epoxied`)
+# (format: 4 letters followed by 4 numbers)
+holder serial number: &holder_serial BBBB1111
+
+# PCB state (`Bare PCB` or `Epoxied`)
+# If you run `test-sth`:
+# Bare PCB → Sensor node name afterwards is Base64 encoded MAC address
+# Epoxied → Sensor node name afterwards is holder serial number
+state: &state Epoxied
+#state: &state Bare PCB
+
+# ------------------------------------------------------------------------------
+
+operator:
+  name: *username
+
+smh:
+  name: *holder_name
+  production date: *production_date
+
+sth:
+  acceleration sensor:
+    sensor: *sensor
+
+  holder type: *holder_type
+
+  name: *holder_name
+  production date: *production_date
+  serial number: *holder_serial
+
+  status: *state
+
+stu:
+  production date: *production_date
