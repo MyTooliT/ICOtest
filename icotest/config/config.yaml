@@ -2,3 +2,7 @@ sensor node:
   battery voltage:
     average: 3.6 # Expected value of power source voltage in Volt
     tolerance: 0.6 # Tolerance for expected power source voltage in Volt
+
+  # This value specifies the current name of the STH unit
+  name: Test-STH
+

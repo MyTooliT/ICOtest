@@ -4,9 +4,10 @@
 
 from pytest import fixture
 
+from icotronic.can import Connection, SensorNode, STU
 from netaddr import EUI
 
-from icotronic.can import Connection, SensorNode, STU
+from icotest.config import settings
 
 # pylint: disable=redefined-outer-name
 
@@ -17,7 +18,7 @@ from icotronic.can import Connection, SensorNode, STU
 def sensor_node_name() -> str:
     """Returns the name of the sensor node used for the test"""
 
-    return "Test-STH"
+    return settings.sensor_node.name
 
 
 @fixture(scope="session")
