@@ -58,3 +58,44 @@ log_cli_level = "INFO"
 ```
 
 to the table `tool.pytest.ini_options` in `pyproject.toml`.
+
+## Development
+
+### Release
+
+**Note:** In the text below we assume that you want to release version `<VERSION>` of the package. Please just replace this version number with the version that you want to release (e.g. `0.2`).
+
+1. Make sure that all the checks and tests work correctly locally
+
+   ```sh
+   make
+   ```
+
+2. Make sure all [workflows of the CI system work correctly](https://github.com/MyTooliT/ICOtest/actions)
+
+3. Release a new version on [PyPI](https://pypi.org/project/icotest/):
+   1. Increase version number
+   2. Add git tag containing version number
+   3. Push changes
+
+   ```sh
+   poetry version <VERSION>
+   export icotest_version="$(poetry version -s)"
+   git commit -a -m "Release: Release version $icotest_version"
+   git tag "$icotest_version"
+   git push && git push --tags
+   ```
+
+4. Open the [release notes](https://github.com/MyTooliT/ICOtest/tree/main/doc/release) for the latest version and [create a new release](https://github.com/MyTooliT/ICOtest/releases/new)
+   1. Paste them into the main text of the release web page
+   2. Insert the version number into the tag field
+   3. For the release title use “Version <VERSION>”, where `<VERSION>` specifies the version number (e.g. “Version 0.2”)
+   4. Click on “Publish Release”
+
+   **Note:** Alternatively you can also use the [`gh`](https://cli.github.com) command:
+
+   ```sh
+   gh release create
+   ```
+
+   to create the release notes.
