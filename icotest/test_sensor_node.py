@@ -6,8 +6,8 @@ from asyncio import Event, TaskGroup, to_thread
 from logging import getLogger
 
 from icotronic.can import SensorNode, StreamingConfiguration, STU
-from icotronic.cmdline.commander import Commander
 
+from icotest.cli.commander import Commander
 from icotest.config import settings
 
 # -- Functions ----------------------------------------------------------------
