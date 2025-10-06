@@ -40,7 +40,7 @@ poetry run pytest
 
 ### Configuration
 
-Currently you need to adapt the fixtures in `conftest.py` for your hardware.
+Currently you need to adapt the configuration in [`icotest/config.yaml`](icotest/config.yaml) for your hardware.
 
 ### Debug
 
