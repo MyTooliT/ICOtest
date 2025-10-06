@@ -69,8 +69,8 @@ class Settings(Dynaconf):
 
         sensor_node_validators = [
             must_exist(
-                "sensor_node.battery_voltage.average",
-                "sensor_node.battery_voltage.tolerance",
+                "sensor_node.supply.voltage.average",
+                "sensor_node.supply.voltage.tolerance",
                 is_type_of=Real,
             ),
             must_exist(

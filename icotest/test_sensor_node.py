@@ -27,12 +27,12 @@ async def test_connection(stu: STU, sensor_node_name: str):
         assert False, message
 
 
-async def test_battery_voltage(sensor_node: SensorNode):
+async def test_supply_voltage(sensor_node: SensorNode):
     """Test if battery voltage is within expected bounds"""
 
     supply_voltage = await sensor_node.get_supply_voltage()
-    expected_voltage = settings.sensor_node.battery_voltage.average
-    tolerance_voltage = settings.sensor_node.battery_voltage.tolerance
+    expected_voltage = settings.sensor_node.supply.voltage.average
+    tolerance_voltage = settings.sensor_node.supply.voltage.tolerance
 
     expected_minimum_voltage = expected_voltage - tolerance_voltage
     expected_maximum_voltage = expected_voltage + tolerance_voltage
