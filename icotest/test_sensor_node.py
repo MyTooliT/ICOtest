@@ -16,10 +16,15 @@ from icotest.config import settings
 async def test_connection(stu: STU, sensor_node_name: str):
     """Test if connection to sensor node is possible"""
 
-    async with stu.connect_sensor_node(sensor_node_name):
-        assert (
-            True
-        ), f"Unable to connect to sensor node with name “{sensor_node_name}”"
+    message = (
+        f"Unable to connect to sensor node with name “{sensor_node_name}”"
+    )
+
+    try:
+        async with stu.connect_sensor_node(sensor_node_name):
+            assert True, message
+    except TimeoutError:
+        assert False, message
 
 
 async def test_battery_voltage(sensor_node: SensorNode):
