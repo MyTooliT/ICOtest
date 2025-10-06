@@ -4,13 +4,78 @@
 
 from importlib.resources import as_file, files
 from numbers import Real
+from pathlib import Path
 from sys import exit as sys_exit, stderr
 
 from dynaconf import Dynaconf, ValidationError, Validator
 from dynaconf.vendor.ruamel.yaml.parser import ParserError
 from dynaconf.vendor.ruamel.yaml.scanner import ScannerError
 
+# Replace with `universal-startfile` if/after:
+#  https://github.com/jacebrowning/universal-startfile/pull/9
+# is merged.
+from icotronic.utility.open import open_file, UnableToOpenError
+from platformdirs import site_config_dir, user_config_dir
+
 # -- Classes ------------------------------------------------------------------
+
+
+class ConfigurationUtility:
+    """Access configuration data"""
+
+    app_name = "ICOtest"
+    app_author = "MyTooliT"
+    config_filename = "config.yaml"
+    site_config_filepath = (
+        Path(site_config_dir(app_name, appauthor=app_author)) / config_filename
+    )
+    user_config_filepath = (
+        Path(user_config_dir(app_name, appauthor=app_author)) / config_filename
+    )
+
+    @staticmethod
+    def open_config_file(filepath: Path):
+        """Open configuration file
+
+        Args:
+
+            filepath:
+                Path to configuration file
+
+        """
+
+        # Create file, if it does not exist already
+        if not filepath.exists():
+            filepath.parent.mkdir(
+                exist_ok=True,
+                parents=True,
+            )
+
+            default_user_config = (
+                files("icotest.config")
+                .joinpath("user.yaml")
+                .read_text(encoding="utf-8")
+            )
+
+            with filepath.open("w", encoding="utf8") as config_file:
+                config_file.write(default_user_config)
+
+        open_file(filepath)
+
+    @classmethod
+    def open_user_config(cls):
+        """Open the current users configuration file"""
+
+        try:
+            cls.open_config_file(cls.user_config_filepath)
+        except UnableToOpenError as error:
+            print(
+                f"Unable to open user configuration: {error}"
+                "\nTo work around this problem please open "
+                f"“{cls.user_config_filepath}” in your favorite text "
+                "editor",
+                file=stderr,
+            )
 
 
 class SettingsIncorrectError(Exception):
@@ -50,6 +115,8 @@ class Settings(Dynaconf):
 
         settings_files = [
             default_settings_filepath,
+            ConfigurationUtility.site_config_filepath,
+            ConfigurationUtility.user_config_filepath,
         ] + settings_files
 
         super().__init__(

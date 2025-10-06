@@ -35,12 +35,18 @@ pip uninstall icotest
 To run the test, please use the following command in the root of the repository:
 
 ```sh
-poetry run pytest
+pytest # or `poetry run pytest`
 ```
 
 ### Configuration
 
-Currently you need to adapt the configuration in [`icotest/config.yaml`](icotest/config.yaml) for your hardware.
+1. Open the configuration file in your default text editor:
+
+   ```sh
+   icotest config # or `poetry run icotest config`
+   ```
+
+2. Adapt the configuration
 
 ### Debug
 

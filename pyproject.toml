@@ -17,6 +17,7 @@ classifiers = [
 
 dependencies = [
   "icotronic>=5,<=6",
+  "platformdirs>=3.5.0,<5",
   "pytest>=8.4.2",
 ]
 description = """Hardware tests for ICOtronic system"""
@@ -40,6 +41,9 @@ dev = [
     "pylint>=3.3.8",
     "pytest-asyncio",
 ]
+
+[project.scripts]
+icotest = "icotest.cli.tool:main"
 
 [project.urls]
 Source = "https://github.com/mytoolit/ICOtest/"
