@@ -53,11 +53,13 @@ pytest # or `poetry run pytest`
 To enable the output of log messages in the code, please add the following config settings:
 
 ```toml
+[tool.pytest.ini_options]
+# Add the values below:
 log_cli = true
 log_cli_level = "INFO"
 ```
 
-to the table `tool.pytest.ini_options` in `pyproject.toml`.
+to `pyproject.toml`. The value besides `log_cli_level` is the minimum level of log messages, that will be displayed by the test code. For the value `INFO`, all log messages with level `INFO` or higher (e.g. `logger.info`, `logger.warning`, `logger.error`) will be included in the output.
 
 ## Development
 
