@@ -1,3 +1,7 @@
+[documentation]: https://icotest.readthedocs.io
+
+[![API Documentation](https://img.shields.io/readthedocs/icotest?label=Documentation)][documentation]
+
 # ICOtest
 
-For more information, please take a look at the online documentation.
+Please take a look at the [online documentation][documentation].
