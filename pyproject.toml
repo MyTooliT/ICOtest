@@ -37,9 +37,12 @@ version = "0.1.0-alpha.2"
 dev = [
     "Flake8-pyproject>=1.2.3",
     "mypy>=1.18.2",
+    "myst-parser>=4.0.1",
     "pydoclint[flake8]>=0.7.3",
     "pylint>=3.3.8",
     "pytest-asyncio",
+    "sphinx-pyproject>=0.3",
+    "sphinx_rtd_theme",
 ]
 
 [project.scripts]
