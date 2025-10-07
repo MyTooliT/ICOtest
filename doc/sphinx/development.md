@@ -1,6 +1,8 @@
-# Install
+# Development
 
-## Poetry
+## Install
+
+### Poetry
 
 We recommend you use [Poetry](https://python-poetry.org) to install the package. To do that please use the following commands in the root of the repository:
 
@@ -9,7 +11,9 @@ poetry lock
 poetry install --all-extras
 ```
 
-## Pip
+**Note:** If you use the install option above, then you need to prefix all commands with `poetry run`. For example instead of `pytest` use the command `poetry run pytest`.
+
+### Pip
 
 To install the package
 
@@ -22,29 +26,11 @@ please use the following command in the root of the repository:
 pip install -e .[dev]
 ```
 
-### Uninstall
+#### Uninstall
 
 ```sh
 pip uninstall icotest
 ```
-
-# Tests
-
-To run the test, please use the following command in the root of the repository:
-
-```sh
-pytest # or `poetry run pytest`
-```
-
-## Configuration
-
-1. Open the configuration file in your default text editor:
-
-   ```sh
-   icotest config # or `poetry run icotest config`
-   ```
-
-2. Adapt the configuration
 
 ## Debug
 
@@ -58,8 +44,6 @@ log_cli_level = "INFO"
 ```
 
 to `pyproject.toml`. The value besides `log_cli_level` is the minimum level of log messages, that will be displayed by the test code. For the value `INFO`, all log messages with level `INFO` or higher (e.g. `logger.info`, `logger.warning`, `logger.error`) will be included in the output.
-
-# Development
 
 ## Release
 
