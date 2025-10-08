@@ -24,10 +24,6 @@ project = name  # noqa: F821 # type: ignore[name-defined]
 
 # -- General configuration ----------------------------------------------------
 
-extensions = [
-    "myst_parser",
-]
-
 # Run doctest from doctest directive, but not nested tests from autodoc code
 doctest_test_doctest_blocks = ""
 
