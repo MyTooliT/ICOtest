@@ -39,7 +39,7 @@ To execute only a single test just add an ``and`` followed by the test name to t
 
 .. code-block:: shell
 
-  pytest --pyargs icotest.test -k "pytest --pyargs icotest.test and test_supply_voltage"
+  pytest --pyargs icotest.test -k "test_sensor_node.py and test_supply_voltage"
 
 Another option to execute the same test would be the command:
 
