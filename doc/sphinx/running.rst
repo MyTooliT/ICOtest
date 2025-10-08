@@ -8,13 +8,19 @@ The test for the ICOtronic hardware are based on `pytest`_. To execute all the t
 
 .. code-block:: shell
 
-  pytest --pyargs icotest.test
+   pytest --pyargs icotest.test
 
-after you :ref:`installed <install>` the package. To list all available test use the option ``--co`` or ``--collect-only``:
+after you :ref:`installed <install>` the package. We also provide a CLI tool that more or less acts as a alias for the command above:
 
 .. code-block:: shell
 
-  pytest --pyargs icotest.test --collect-only
+   icotest run
+
+To list all available test use the option ``--co`` or ``--collect-only``:
+
+.. code-block:: shell
+
+   icotest run --collect-only
 
 To execute a specific text you can use the option ``-k``, which expects `an expression as argument <https://docs.pytest.org/en/stable/example/markers.html#using-k-expr-to-select-tests-based-on-their-name>`__. For example, let us assume that the collection command command above produced the following output:
 
@@ -33,18 +39,18 @@ In this case we can execute all of the tests of the module ``test_sensor_node.py
 
 .. code-block:: shell
 
-  pytest --pyargs icotest.test -k test_sensor_node
+   icotest run -k test_sensor_node
 
 To execute only a single test just add an ``and`` followed by the test name to the command. For example, to only execute the test ``test_supply_voltage`` of the module ``test_sensor_node.py`` use the command:
 
 .. code-block:: shell
 
-  pytest --pyargs icotest.test -k "test_sensor_node.py and test_supply_voltage"
+   icotest run -k "test_sensor_node.py and test_supply_voltage"
 
 Another option to execute the same test would be the command:
 
 .. code-block:: shell
 
-  pytest --pyargs icotest.test icotest.test.test_sensor_node::test_supply_voltage
+   icotest run icotest.test.test_sensor_node::test_supply_voltage
 
 For more information on how to execute specific tests, please take a look at the `pytest documentation <https://docs.pytest.org/en/stable/usage.html#specifying-tests-selecting-tests>`__.

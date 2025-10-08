@@ -4,6 +4,7 @@
 
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger
+from subprocess import run
 
 from icotest.config import ConfigurationUtility
 
@@ -41,7 +42,30 @@ def create_icotest_parser() -> ArgumentParser:
         "config", help="Open configuration file in default application"
     )
 
+    # =======
+    # = Run =
+    # =======
+
+    subparsers.add_parser("run", help="Run tests")
+
     return parser
+
+
+def run_pytest(pytest_args: list[str]) -> None:
+    """Run pytest for the package using the given arguments
+
+    Args:
+
+        pytest_args:
+
+            Additional arguments for pytest call
+
+    """
+
+    logger = getLogger()
+    command = ["pytest", "--pyargs", "icotest.test"] + pytest_args
+    print(f"\nTest Command:\n\n  {' '.join(command)}\n")
+    run(command)
 
 
 # -- Main ---------------------------------------------------------------------
@@ -51,7 +75,10 @@ def main() -> None:
     """ICOtest command line tool"""
 
     parser = create_icotest_parser()
-    arguments = parser.parse_args()
+    # Parse known args to get subcommand
+    arguments, additional_args = parser.parse_known_args()
+    if vars(arguments).get("subcommand", "undefined") != "run":
+        arguments = parser.parse_args()
 
     basicConfig(
         level=arguments.log.upper(),
@@ -61,9 +88,15 @@ def main() -> None:
 
     logger = getLogger()
     logger.info("CLI arguments: %s", arguments)
+    logger.info("Additional unrecognized arguments: %s", additional_args)
 
-    if arguments.subcommand == "config":
-        ConfigurationUtility.open_user_config()
+    subcommand = arguments.subcommand
+
+    match subcommand:
+        case "config":
+            ConfigurationUtility.open_user_config()
+        case "run":
+            run_pytest(additional_args)
 
 
 if __name__ == "__main__":
