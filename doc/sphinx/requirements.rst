@@ -2,7 +2,7 @@
 Requirements
 ************
 
-Since this package is based on the `ICOtronic package`_, the requirement for using the ICOtest package are `pretty much the same as for ICOtronic package <https://mytoolit.github.io/ICOtronic/#requirements>`__.
+Since this package is based on the `ICOtronic package`_, the requirements for using the ICOtest package are `pretty much the same as the requirements for the ICOtronic package <https://mytoolit.github.io/ICOtronic/#requirements>`__.
 
 .. _ICOtronic package: https://icotronic.readthedocs.io
 
