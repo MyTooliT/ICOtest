@@ -57,7 +57,9 @@ to `pyproject.toml`. The value besides `log_cli_level` is the minimum level of l
 
 2. Make sure all [workflows of the CI system work correctly](https://github.com/MyTooliT/ICOtest/actions)
 
-3. Release a new version on [PyPI](https://pypi.org/project/icotest/):
+3. Check that the most recent [“Read the Docs” build of the documentation ran successfully](https://app.readthedocs.org/projects/icotest/)
+
+4. Release a new version on [PyPI](https://pypi.org/project/icotest/):
    1. Increase version number
    2. Add git tag containing version number
    3. Push changes
@@ -70,7 +72,7 @@ to `pyproject.toml`. The value besides `log_cli_level` is the minimum level of l
    git push && git push --tags
    ```
 
-4. Open the [release notes](https://github.com/MyTooliT/ICOtest/tree/main/doc/release) for the latest version and [create a new release](https://github.com/MyTooliT/ICOtest/releases/new)
+5. Open the [release notes](https://github.com/MyTooliT/ICOtest/tree/main/doc/release) for the latest version and [create a new release](https://github.com/MyTooliT/ICOtest/releases/new)
    1. Paste them into the main text of the release web page
    2. Insert the version number into the tag field
    3. For the release title use “Version <VERSION>”, where `<VERSION>` specifies the version number (e.g. “Version 0.2”)
