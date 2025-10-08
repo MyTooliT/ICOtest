@@ -96,7 +96,7 @@ def main() -> None:
         format="{asctime} {levelname:7} {message}",
     )
 
-    logger = getLogger()
+    logger = getLogger(__name__)
     logger.info("CLI arguments: %s", arguments)
     logger.info("Additional unrecognized arguments: %s", additional_args)
 

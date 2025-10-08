@@ -76,7 +76,7 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
         await started_streaming.wait()
         read_power_task = task_group.create_task(to_thread(read_power_usage))
         power_usage = await read_power_task
-        getLogger().info("Streaming power usage: %s mW", power_usage)
+        getLogger(__name__).info("Streaming power usage: %s mW", power_usage)
         stream_data_task.cancel()
 
     minimum_power = 40
