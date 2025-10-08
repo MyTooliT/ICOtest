@@ -51,10 +51,14 @@ def create_icotest_parser() -> ArgumentParser:
     return parser
 
 
-def run_pytest(pytest_args: list[str]) -> None:
+def run_pytest(log_level: str, pytest_args: list[str]) -> None:
     """Run pytest for the package using the given arguments
 
     Args:
+
+        log_level:
+
+            Log level for invocation of pytest
 
         pytest_args:
 
@@ -62,8 +66,13 @@ def run_pytest(pytest_args: list[str]) -> None:
 
     """
 
-    logger = getLogger()
-    command = ["pytest", "--pyargs", "icotest.test"] + pytest_args
+    command = [
+        "pytest",
+        "--log-cli-level",
+        log_level,
+        "--pyargs",
+        "icotest.test",
+    ] + pytest_args
     print(f"\nTest Command:\n\n  {' '.join(command)}\n")
     run(command)
 
@@ -80,8 +89,9 @@ def main() -> None:
     if vars(arguments).get("subcommand", "undefined") != "run":
         arguments = parser.parse_args()
 
+    log_level = arguments.log.upper()
     basicConfig(
-        level=arguments.log.upper(),
+        level=log_level,
         style="{",
         format="{asctime} {levelname:7} {message}",
     )
@@ -96,7 +106,7 @@ def main() -> None:
         case "config":
             ConfigurationUtility.open_user_config()
         case "run":
-            run_pytest(additional_args)
+            run_pytest(log_level, additional_args)
 
 
 if __name__ == "__main__":

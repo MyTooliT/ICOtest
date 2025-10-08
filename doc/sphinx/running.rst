@@ -54,3 +54,21 @@ Another option to execute the same test would be the command:
    icotest run icotest.test.test_sensor_node::test_supply_voltage
 
 For more information on how to execute specific tests, please take a look at the `pytest documentation <https://docs.pytest.org/en/stable/usage.html#specifying-tests-selecting-tests>`__.
+
+***************
+Debugging Tests
+***************
+
+Sometimes you want to get additional information about test execution. For that purpose you can increase the logging level. For example, to output info logging messages (in addition to the warning and error logging messages enabled by default) you can use the ``icotest`` option ``--log`` with the argument ``info``:
+
+.. code-block:: shell
+
+   icotest --log info run
+
+The ``--log`` option supports the `standard log levels <https://docs.python.org/3/library/logging.html#logging-levels>`__:
+
+- ``debug``
+- ``info``
+- ``warning``
+- ``error``
+- ``critical``
