@@ -4,7 +4,8 @@
 
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger
-from subprocess import run
+from subprocess import run, CalledProcessError
+from sys import exit as sys_exit
 
 from icotest.config import ConfigurationUtility
 
@@ -74,7 +75,10 @@ def run_pytest(log_level: str, pytest_args: list[str]) -> None:
         "icotest.test",
     ] + pytest_args
     print(f"\nTest Command:\n\n  {' '.join(command)}\n")
-    run(command)
+    try:
+        run(command, check=True)
+    except CalledProcessError as error:
+        sys_exit(error.returncode)
 
 
 # -- Main ---------------------------------------------------------------------
