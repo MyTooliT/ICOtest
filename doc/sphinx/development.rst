@@ -5,21 +5,20 @@ Development
 Install
 =======
 
-Poetry
-------
+uv
+--
 
-We recommend you use `Poetry <https://python-poetry.org>`__ to install
+We recommend you use `uv <https://docs.astral.sh/uv>`__ to install
 the package. To do that please use the following commands in the root of
 the repository:
 
 .. code-block:: shell
 
-   poetry lock
-   poetry install --all-extras
+   uv pip install -r pyproject.toml --extra dev
 
 **Note:** If you use the install option above, then you need to prefix
-all commands with ``poetry run``. For example instead of ``pytest`` use
-the command ``poetry run pytest``.
+all commands with ``uv run``. For example instead of ``pytest`` use
+the command ``uv run pytest``.
 
 Pip
 ---
@@ -71,8 +70,8 @@ with the version that you want to release (e.g. ``0.2``).
 
    .. code-block:: shell
 
-      poetry version <VERSION>
-      export icotest_version="$(poetry version -s)"
+      uv version <VERSION>
+      export icotest_version="$(uv version --short)"
       git commit -a -m "Release: Release version $icotest_version"
       git tag "$icotest_version"
       git push && git push --tags
