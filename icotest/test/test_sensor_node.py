@@ -1,4 +1,4 @@
-"""Test power usage of ICOtronic hardware"""
+"""Test sensor node hardware (SHA, STH, SMH…)"""
 
 # -- Imports ------------------------------------------------------------------
 
