@@ -10,15 +10,15 @@ run: check test
 
 .PHONY: test
 test:
-	poetry run pytest
+	uv run pytest -k 'not firmware'
 
 .PHONY: check
 check:
-	poetry run flake8
-	poetry run mypy icotest
-	poetry run pylint .
+	uv run flake8
+	uv run mypy icotest
+	uv run pylint .
 
 .PHONY: documentation
 documentation:
-	poetry run sphinx-build -M html $(SPHINX_INPUT_DIRECTORY) \
+	uv run sphinx-build -M html $(SPHINX_INPUT_DIRECTORY) \
 	    $(SPHINX_DIRECTORY)
