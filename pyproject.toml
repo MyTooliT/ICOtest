@@ -79,6 +79,9 @@ exclude = [
 [tool.mypy]
 ignore_missing_imports = true
 
+[tool.pylint]
+ignore-paths = [ "^.venv.*$" ]
+
 [tool.pytest.ini_options]
 # - Use doctests
 # - Ignore macOS metadata files
