@@ -2,6 +2,7 @@
 
 # -- Import -------------------------------------------------------------------
 
+from functools import partial
 from importlib.resources import as_file, files
 from numbers import Real
 from pathlib import Path
@@ -134,6 +135,49 @@ class Settings(Dynaconf):
 
             return Validator(*arguments, must_exist=True, **keyword_arguments)
 
+        def element_is_type(
+            nodes,
+            name: str,
+            element_type: type,
+        ):
+            """Check that all elements of a list have a certain type"""
+            if nodes is None:
+                return True  # Let parent validator handle wrong type
+
+            for node in nodes:
+                if not isinstance(node, element_type):
+                    raise ValidationError(
+                        f"Element “{node}” of {name} has wrong type "
+                        f"“{type(node)}” instead of “{element_type}”"
+                    )
+            return True
+
+        def element_is_string(nodes, name: str):
+            """Check that all elements of a list are strings"""
+            return element_is_type(nodes, name, element_type=str)
+
+        commands_validators = [
+            must_exist(
+                "commands.path.linux",
+                is_type_of=list,
+                condition=partial(
+                    element_is_string, name="commands.path.linux"
+                ),
+            ),
+            must_exist(
+                "commands.path.mac",
+                is_type_of=list,
+                condition=partial(element_is_string, name="commands.path.mac"),
+            ),
+            must_exist(
+                "commands.path.windows",
+                is_type_of=list,
+                condition=partial(
+                    element_is_string, name="commands.path.windows"
+                ),
+            ),
+        ]
+
         sensor_node_validators = [
             must_exist(
                 "sensor_node.supply.voltage.average",
@@ -154,7 +198,9 @@ class Settings(Dynaconf):
             )
         ]
 
-        self.validators.register(*sensor_node_validators, *stu_validators)
+        self.validators.register(
+            *commands_validators, *sensor_node_validators, *stu_validators
+        )
 
         try:
             self.validators.validate()
