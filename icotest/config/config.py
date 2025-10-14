@@ -146,7 +146,15 @@ class Settings(Dynaconf):
             ),
         ]
 
-        self.validators.register(*sensor_node_validators)
+        stu_validators = [
+            must_exist(
+                "stu.firmware.location",
+                "stu.firmware.chip",
+                is_type_of=str,
+            )
+        ]
+
+        self.validators.register(*sensor_node_validators, *stu_validators)
 
         try:
             self.validators.validate()
