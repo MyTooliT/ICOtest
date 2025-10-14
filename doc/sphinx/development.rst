@@ -14,7 +14,7 @@ the repository:
 
 .. code-block:: shell
 
-   uv pip install -r pyproject.toml --extra dev
+   uv pip install .[dev]
 
 **Note:** If you use the install option above, then you need to prefix
 all commands with ``uv run``. For example instead of ``pytest`` use
