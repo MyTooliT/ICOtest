@@ -14,7 +14,8 @@ the repository:
 
 .. code-block:: shell
 
-   uv pip install .[dev]
+   uv venv --allow-existing
+   uv sync --all-extras
 
 **Note:** If you use the install option above, then you need to prefix
 all commands with ``uv run``. For example instead of ``pytest`` use
