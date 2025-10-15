@@ -145,9 +145,6 @@ def sensor_node_validators() -> list[Validator]:
         must_exist(
             "sensor_node.supply.voltage.average",
             "sensor_node.supply.voltage.tolerance",
-            is_type_of=Real,
-        ),
-        must_exist(
             "sensor_node.streaming.power.average",
             "sensor_node.streaming.power.tolerance",
             is_type_of=Real,
