@@ -54,4 +54,4 @@ stu:
   gtin: 0
 
   # The current version of the PCB design
-  hardware version: "2.5.0"
+  hardware version: "2.5"

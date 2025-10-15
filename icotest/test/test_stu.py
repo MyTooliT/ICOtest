@@ -51,7 +51,7 @@ async def test_eeprom_gtin(stu: STU):
 async def test_eeprom_hardware_version(stu: STU):
     """Test if reading and writing the hardware version works"""
 
-    hardware_version_written = Version(settings.stu.hardware_version)
+    hardware_version_written = Version.coerce(settings.stu.hardware_version)
     await stu.eeprom.write_hardware_version(hardware_version_written)
     hardware_version_read = await stu.eeprom.read_hardware_version()
     assert hardware_version_written == hardware_version_read, (
