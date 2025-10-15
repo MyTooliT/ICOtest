@@ -32,6 +32,11 @@ sensor node:
       average: 3.6 # Expected value of power source voltage in Volt
       tolerance: 0.6 # Tolerance for expected power source voltage in Volt
 
+  streaming:
+    power:
+      average: 50 # Expected average power usage while streaming in mW
+      tolerance: 10 # Tolerance for expected power usage while streaming in mW
+
   # This value specifies the current name of the STH unit
   name: Test-STH
 
