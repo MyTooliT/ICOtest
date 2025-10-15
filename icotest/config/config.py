@@ -8,7 +8,13 @@ from numbers import Real
 from pathlib import Path
 from sys import exit as sys_exit, stderr
 
-from dynaconf import Dynaconf, ValidationError, Validator
+
+from dynaconf import (  # type: ignore[attr-defined]
+    Dynaconf,
+    ValidationError,
+    Validator,
+)
+
 from dynaconf.vendor.ruamel.yaml.parser import ParserError
 from dynaconf.vendor.ruamel.yaml.scanner import ScannerError
 
