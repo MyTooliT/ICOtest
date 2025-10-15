@@ -8,6 +8,11 @@ SPHINX_INPUT_DIRECTORY := doc/sphinx
 .PHONY: run
 run: check test
 
+.PHONY: setup
+setup:
+	uv venv --allow-existing
+	uv sync --all-extras
+
 .PHONY: test
 test:
 	uv run pytest -k 'not firmware'
