@@ -52,3 +52,6 @@ stu:
 
   # Global Trade Item Number
   gtin: 0
+
+  # The current version of the PCB design
+  hardware version: "2.5.0"

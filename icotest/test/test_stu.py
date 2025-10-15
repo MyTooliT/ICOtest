@@ -6,7 +6,7 @@ from logging import getLogger
 
 from icotronic.can import Connection, STU
 from icotronic.can.error import CANInitError
-
+from semantic_version import Version
 
 from icotest.config import settings
 from icotest.firmware import upload_flash
@@ -47,3 +47,14 @@ async def test_eeprom_gtin(stu: STU):
         gtin_written == gtin_read
     ), f"Written GTIN “{gtin_written}” does not match read GTIN “{gtin_read}”"
 
+
+async def test_eeprom_hardware_version(stu: STU):
+    """Test if reading and writing the hardware version works"""
+
+    hardware_version_written = Version(settings.stu.hardware_version)
+    await stu.eeprom.write_hardware_version(hardware_version_written)
+    hardware_version_read = await stu.eeprom.read_hardware_version()
+    assert hardware_version_written == hardware_version_read, (
+        f"Written hardware version “{hardware_version_written}” does not"
+        f"match read hardware version “{hardware_version_read}”"
+    )
