@@ -21,10 +21,5 @@ sensor_node_name: &sensor_node_name Test-STH
 # ------------------------------------------------------------------------------
 
 sensor node:
-  supply:
-    voltage:
-      average: 3.6 # Expected value of power source voltage in Volt
-      tolerance: 0.6 # Tolerance for expected power source voltage in Volt
-
   # This value specifies the current name of the sensor node
   name: *sensor_node_name
