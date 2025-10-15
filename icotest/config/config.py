@@ -112,6 +112,28 @@ def element_is_string(nodes, name: str):
     return element_is_type(nodes, name, element_type=str)
 
 
+def commands_validators() -> list[Validator]:
+    """Return list of validators for config data below key `commands`"""
+
+    return [
+        must_exist(
+            "commands.path.linux",
+            is_type_of=list,
+            condition=partial(element_is_string, name="commands.path.linux"),
+        ),
+        must_exist(
+            "commands.path.mac",
+            is_type_of=list,
+            condition=partial(element_is_string, name="commands.path.mac"),
+        ),
+        must_exist(
+            "commands.path.windows",
+            is_type_of=list,
+            condition=partial(element_is_string, name="commands.path.windows"),
+        ),
+    ]
+
+
 # -- Classes ------------------------------------------------------------------
 
 
@@ -224,28 +246,6 @@ class Settings(Dynaconf):
     def validate_settings(self) -> None:
         """Check settings for errors"""
 
-        commands_validators = [
-            must_exist(
-                "commands.path.linux",
-                is_type_of=list,
-                condition=partial(
-                    element_is_string, name="commands.path.linux"
-                ),
-            ),
-            must_exist(
-                "commands.path.mac",
-                is_type_of=list,
-                condition=partial(element_is_string, name="commands.path.mac"),
-            ),
-            must_exist(
-                "commands.path.windows",
-                is_type_of=list,
-                condition=partial(
-                    element_is_string, name="commands.path.windows"
-                ),
-            ),
-        ]
-
         sensor_node_validators = [
             must_exist(
                 "sensor_node.supply.voltage.average",
@@ -267,7 +267,7 @@ class Settings(Dynaconf):
         ]
 
         self.validators.register(
-            *commands_validators, *sensor_node_validators, *stu_validators
+            *commands_validators(), *sensor_node_validators, *stu_validators
         )
 
         try:
