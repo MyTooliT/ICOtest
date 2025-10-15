@@ -163,7 +163,8 @@ def stu_validators() -> list[Validator]:
             "stu.firmware.location",
             "stu.firmware.chip",
             is_type_of=str,
-        )
+        ),
+        must_exist("stu.gtin", is_type_of=int),
     ]
 
 

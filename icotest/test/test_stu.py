@@ -4,7 +4,7 @@
 
 from logging import getLogger
 
-from icotronic.can import Connection
+from icotronic.can import Connection, STU
 from icotronic.can.error import CANInitError
 
 
@@ -35,3 +35,14 @@ async def test_connection():
             assert True, message
     except CANInitError:
         assert False, message
+
+
+async def test_eeprom_gtin(stu: STU):
+    """Test if reading and writing the GTIN works"""
+
+    gtin = settings.stu.gtin
+    await stu.eeprom.write_gtin(gtin)
+    read_gtin = await stu.eeprom.read_gtin()
+    assert (
+        gtin == read_gtin
+    ), f"Written GTIN “{gtin}” does not match read GTIN “{read_gtin}”"

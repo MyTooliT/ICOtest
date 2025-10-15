@@ -50,3 +50,5 @@ stu:
       # directory.
       ~/Documents/Firmware/manufacturingImageStuv2.1.10.hex
 
+  # Global Trade Item Number
+  gtin: 0
