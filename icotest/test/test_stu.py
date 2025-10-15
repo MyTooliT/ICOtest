@@ -40,9 +40,10 @@ async def test_connection():
 async def test_eeprom_gtin(stu: STU):
     """Test if reading and writing the GTIN works"""
 
-    gtin = settings.stu.gtin
-    await stu.eeprom.write_gtin(gtin)
-    read_gtin = await stu.eeprom.read_gtin()
+    gtin_written = settings.stu.gtin
+    await stu.eeprom.write_gtin(gtin_written)
+    gtin_read = await stu.eeprom.read_gtin()
     assert (
-        gtin == read_gtin
-    ), f"Written GTIN “{gtin}” does not match read GTIN “{read_gtin}”"
+        gtin_written == gtin_read
+    ), f"Written GTIN “{gtin_written}” does not match read GTIN “{gtin_read}”"
+
