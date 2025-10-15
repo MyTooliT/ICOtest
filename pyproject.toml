@@ -20,6 +20,7 @@ dependencies = [
   "icotronic>=5,<=6",
   "platformdirs>=3.5.0,<5",
   "pytest>=8.4.2",
+  "pytest-asyncio",
 ]
 description = """Hardware tests for ICOtronic system"""
 keywords = [
@@ -40,7 +41,6 @@ dev = [
     "mypy>=1.18.2",
     "pydoclint[flake8]>=0.7.3",
     "pylint>=3.3.8",
-    "pytest-asyncio",
     "sphinx-pyproject>=0.3",
     "sphinx_rtd_theme",
 ]
