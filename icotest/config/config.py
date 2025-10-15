@@ -150,6 +150,18 @@ def sensor_node_validators() -> list[Validator]:
     ]
 
 
+def stu_validators() -> list[Validator]:
+    """Return list of validators for config data below key `stu`"""
+
+    return [
+        must_exist(
+            "stu.firmware.location",
+            "stu.firmware.chip",
+            is_type_of=str,
+        )
+    ]
+
+
 # -- Classes ------------------------------------------------------------------
 
 
@@ -262,16 +274,10 @@ class Settings(Dynaconf):
     def validate_settings(self) -> None:
         """Check settings for errors"""
 
-        stu_validators = [
-            must_exist(
-                "stu.firmware.location",
-                "stu.firmware.chip",
-                is_type_of=str,
-            )
-        ]
-
         self.validators.register(
-            *commands_validators(), *sensor_node_validators(), *stu_validators
+            *commands_validators(),
+            *sensor_node_validators(),
+            *stu_validators(),
         )
 
         try:
