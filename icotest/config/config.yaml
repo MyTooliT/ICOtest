@@ -27,6 +27,9 @@ commands:
       - C:\Program Files\Simplicity Commander
 
 sensor node:
+  firmware:
+    release name: Minion # Code name of the current firmware release
+
   gtin: 0 # Global Trade Item Number
   hardware version: "2.1" # The current version of the PCB design
   name: Test-STH # This value specifies the current name of the STH unit
@@ -50,6 +53,7 @@ stu:
       # current working directory. You can use `~` to refer to the user’s home
       # directory.
       ~/Documents/Firmware/manufacturingImageStuv2.1.10.hex
+    release name: Valerie # Code name of the current firmware release
 
   gtin: 0 # Global Trade Item Number
   hardware version: "2.5" # The current version of the PCB design

@@ -70,3 +70,9 @@ async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
     await check_write_read(
         node, "firmware version", await node.get_firmware_version()
     )
+    # Originally we assumed that this value would be set by the
+    # firmware itself. However, according to tests with an empty EEPROM
+    # this is not the case.
+    await check_write_read(
+        node, "release name", settings.firmware.release_name
+    )
