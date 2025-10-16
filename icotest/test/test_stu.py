@@ -14,7 +14,7 @@ from icotest.firmware import upload_flash
 # -- Functions ----------------------------------------------------------------
 
 
-async def test_firmware():
+async def test_firmware_upload():
     """Upload firmware"""
 
     logger = getLogger(__name__)

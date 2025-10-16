@@ -15,7 +15,7 @@ setup:
 
 .PHONY: test
 test:
-	uv run pytest -k 'not firmware'
+	uv run pytest -k 'not firmware_upload'
 
 .PHONY: check
 check:
