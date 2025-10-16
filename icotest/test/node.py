@@ -16,32 +16,6 @@ EEPROMValue = TypeVar("EEPROMValue", Version, str)
 # -- Functions ----------------------------------------------------------------
 
 
-def assert_equal_read_write(
-    written: EEPROMValue, read: EEPROMValue, name: str
-) -> None:
-    """Assert that two EEPROM values match
-
-    Args:
-
-        written:
-
-            Value that was written into EEPROM
-
-        read:
-
-            Values that was read from EEPROM
-
-        name:
-
-            A meaningful name for the written/read value
-
-    """
-
-    assert (
-        written == read
-    ), f"Written {name} “{written}” does not match read {name} “{read}”"
-
-
 async def check_write_read(
     node: SensorNode | STU, name: str, written: EEPROMValue
 ) -> None:
@@ -67,7 +41,9 @@ async def check_write_read(
     read_coroutine = getattr(node.eeprom, f"read_{function_name}")
     await write_coroutine(written)
     read = await read_coroutine()
-    assert_equal_read_write(written, read, name)
+    assert (
+        written == read
+    ), f"Written {name} “{written}” does not match read {name} “{read}”"
 
 
 async def check_eeprom_gtin(node: SensorNode | STU, settings: DynaBox):
