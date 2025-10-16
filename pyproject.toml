@@ -59,7 +59,6 @@ unstable = true
 enable-unstable-feature = ["string_processing"]
 
 [tool.flake8]
-
 ignore = [
   # Whitespace before colon
   "E203",
