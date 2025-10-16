@@ -16,7 +16,7 @@ EEPROMValue = TypeVar("EEPROMValue", Version, str)
 # -- Functions ----------------------------------------------------------------
 
 
-async def check_write_read(
+async def check_write_read_eeprom(
     node: SensorNode | STU, name: str, written: EEPROMValue
 ) -> None:
     """Check that a written and read EEPROM value match
@@ -60,19 +60,19 @@ async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
 
     """
 
-    await check_write_read(node, "GTIN", settings.gtin)
-    await check_write_read(
+    await check_write_read_eeprom(node, "GTIN", settings.gtin)
+    await check_write_read_eeprom(
         node, "hardware version", Version.coerce(settings.hardware_version)
     )
     # I am not sure, if the firmware already inits the EEPROM with the firmware
     # version. Writing back the same firmware version into the EEPROM should
     # not be a problem though.
-    await check_write_read(
+    await check_write_read_eeprom(
         node, "firmware version", await node.get_firmware_version()
     )
     # Originally we assumed that this value would be set by the
     # firmware itself. However, according to tests with an empty EEPROM
     # this is not the case.
-    await check_write_read(
+    await check_write_read_eeprom(
         node, "release name", settings.firmware.release_name
     )
