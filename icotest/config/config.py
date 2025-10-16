@@ -117,20 +117,11 @@ def commands_validators() -> list[Validator]:
 
     return [
         must_exist(
-            "commands.path.linux",
+            f"commands.path.{os}",
             is_type_of=list,
-            condition=partial(element_is_string, name="commands.path.linux"),
-        ),
-        must_exist(
-            "commands.path.mac",
-            is_type_of=list,
-            condition=partial(element_is_string, name="commands.path.mac"),
-        ),
-        must_exist(
-            "commands.path.windows",
-            is_type_of=list,
-            condition=partial(element_is_string, name="commands.path.windows"),
-        ),
+            condition=partial(element_is_string, name=f"commands.path.{os}"),
+        )
+        for os in ("linux", "mac", "windows")
     ]
 
 
