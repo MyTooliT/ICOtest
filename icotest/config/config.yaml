@@ -28,6 +28,7 @@ commands:
 
 sensor node:
   gtin: 0 # Global Trade Item Number
+  hardware version: "2.1" # The current version of the PCB design
   name: Test-STH # This value specifies the current name of the STH unit
 
   supply:

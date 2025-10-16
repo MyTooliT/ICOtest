@@ -149,7 +149,10 @@ def node_validators(name: str) -> list[Validator]:
 
     """
 
-    return [must_exist(f"{name}.gtin", is_type_of=int)]
+    return [
+        must_exist(f"{name}.gtin", is_type_of=int),
+        must_exist(f"{name}.hardware_version", is_type_of=str),
+    ]
 
 
 def sensor_node_validators() -> list[Validator]:
@@ -177,7 +180,6 @@ def stu_validators() -> list[Validator]:
         must_exist(
             "stu.firmware.location",
             "stu.firmware.chip",
-            "stu.hardware_version",
             is_type_of=str,
         )
     ]
