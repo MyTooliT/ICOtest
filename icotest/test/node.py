@@ -96,3 +96,4 @@ async def check_eeprom_statistics(node: SensorNode):
     """
 
     await check_write_read_eeprom(node, "power on cycles", 0)
+    await check_write_read_eeprom(node, "power off cycles", 0)
