@@ -125,12 +125,12 @@ def commands_validators() -> list[Validator]:
     ]
 
 
-def node_validators(name: str) -> list[Validator]:
+def node_validators(node: str) -> list[Validator]:
     """Get validators for node (STU & sensor node) configuration
 
     Args:
 
-        name:
+        node:
 
             The namespace of the node configuration
 
@@ -141,8 +141,8 @@ def node_validators(name: str) -> list[Validator]:
     """
 
     return [
-        must_exist(f"{name}.gtin", is_type_of=int),
-        must_exist(f"{name}.hardware_version", is_type_of=str),
+        must_exist(f"{node}.gtin", is_type_of=int),
+        must_exist(f"{node}.hardware_version", is_type_of=str),
     ]
 
 
