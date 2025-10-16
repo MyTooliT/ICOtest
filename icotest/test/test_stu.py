@@ -9,7 +9,11 @@ from icotronic.can.error import CANInitError
 
 from icotest.config import settings
 from icotest.firmware import upload_flash
-from icotest.test.node import check_eeprom_gtin, check_eeprom_hardware_version
+from icotest.test.node import (
+    check_eeprom_firmware_version,
+    check_eeprom_gtin,
+    check_eeprom_hardware_version,
+)
 
 # -- Functions ----------------------------------------------------------------
 
@@ -52,15 +56,4 @@ async def test_eeprom_hardware_version(stu: STU):
 async def test_eeprom_firmware_version(stu: STU):
     """Test if reading and writing the firmware version works"""
 
-    # I am not sure, if the firmware already inits the EEPROM with the firmware
-    # version. Writing back the same firmware version into the EEPROM should
-    # not be a problem though.
-    firmware_version_written = await stu.get_firmware_version()
-    await stu.eeprom.write_firmware_version(firmware_version_written)
-    firmware_version_read = await stu.eeprom.read_firmware_version()
-    assert firmware_version_written == firmware_version_read, (
-        (
-            f"Written firmware version “{firmware_version_written}” does not "
-            f"match read firmware version “{firmware_version_read}”"
-        ),
-    )
+    await check_eeprom_firmware_version(stu)
