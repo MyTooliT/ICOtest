@@ -28,6 +28,7 @@ commands:
 
 sensor node:
   gtin: 0 # Global Trade Item Number
+  name: Test-STH # This value specifies the current name of the STH unit
 
   supply:
     voltage:
@@ -39,9 +40,6 @@ sensor node:
       average: 50 # Expected average power usage while streaming in mW
       tolerance: 10 # Tolerance for expected power usage while streaming in mW
 
-  # This value specifies the current name of the STH unit
-  name: Test-STH
-
 stu:
   firmware:
     chip: BGM111A256V2
@@ -52,8 +50,5 @@ stu:
       # directory.
       ~/Documents/Firmware/manufacturingImageStuv2.1.10.hex
 
-  # Global Trade Item Number
-  gtin: 0
-
-  # The current version of the PCB design
-  hardware version: "2.5"
+  gtin: 0 # Global Trade Item Number
+  hardware version: "2.5" # The current version of the PCB design
