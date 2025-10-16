@@ -76,3 +76,6 @@ async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
     await check_write_read_eeprom(
         node, "release name", settings.firmware.release_name
     )
+    await check_write_read_eeprom(
+        node, "serial number", settings.serial_number
+    )
