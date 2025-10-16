@@ -52,11 +52,12 @@ async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
     Args:
 
         node:
-                The node that should be checked
+
+            The node that should be checked
 
         settings:
 
-                The settings object that contains the node setting
+            The settings object that contains the node setting
 
     """
 
