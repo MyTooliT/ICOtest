@@ -93,3 +93,14 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
         f"Power usage of {power_usage} mW larger than expected maximum of "
         f"{maximum_power} mW"
     )
+
+
+async def test_eeprom_gtin(sensor_node: SensorNode):
+    """Test if reading and writing the GTIN works"""
+
+    gtin_written = settings.sensor_node.gtin
+    await sensor_node.eeprom.write_gtin(gtin_written)
+    gtin_read = await sensor_node.eeprom.read_gtin()
+    assert (
+        gtin_written == gtin_read
+    ), f"Written GTIN “{gtin_written}” does not match read GTIN “{gtin_read}”"

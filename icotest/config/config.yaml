@@ -27,6 +27,8 @@ commands:
       - C:\Program Files\Simplicity Commander
 
 sensor node:
+  gtin: 0 # Global Trade Item Number
+
   supply:
     voltage:
       average: 3.6 # Expected value of power source voltage in Volt

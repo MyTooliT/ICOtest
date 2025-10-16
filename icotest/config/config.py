@@ -134,10 +134,28 @@ def commands_validators() -> list[Validator]:
     ]
 
 
+def node_validators(name: str) -> list[Validator]:
+    """Get validators for node (STU & sensor node) configuration
+
+    Args:
+
+        name:
+
+            The namespace of the node configuration
+
+    Returns:
+
+        A list of validators for the given node
+
+    """
+
+    return [must_exist(f"{name}.gtin", is_type_of=int)]
+
+
 def sensor_node_validators() -> list[Validator]:
     """Return list of validators for config data below key `sensor_node`"""
 
-    return [
+    return node_validators("sensor_node") + [
         must_exist(
             "sensor_node.name",
             is_type_of=str,
@@ -155,14 +173,13 @@ def sensor_node_validators() -> list[Validator]:
 def stu_validators() -> list[Validator]:
     """Return list of validators for config data below key `stu`"""
 
-    return [
+    return node_validators("stu") + [
         must_exist(
             "stu.firmware.location",
             "stu.firmware.chip",
             "stu.hardware_version",
             is_type_of=str,
-        ),
-        must_exist("stu.gtin", is_type_of=int),
+        )
     ]
 
 
