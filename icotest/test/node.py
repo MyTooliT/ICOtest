@@ -46,62 +46,6 @@ async def check_write_read(
     ), f"Written {name} “{written}” does not match read {name} “{read}”"
 
 
-async def check_eeprom_gtin(node: SensorNode | STU, settings: DynaBox):
-    """Test if reading and writing the GTIN works
-
-    Args:
-
-        node:
-                The node that should be checked
-
-        settings:
-
-                The settings object that contains the GTIN setting
-
-    """
-
-    await check_write_read(node, "GTIN", settings.gtin)
-
-
-async def check_eeprom_hardware_version(
-    node: SensorNode | STU, settings: DynaBox
-):
-    """Test if reading and writing the hardware version works
-
-    Args:
-
-        node:
-                The node that should be checked
-
-        settings:
-
-                The settings object that contains the hardware version setting
-
-    """
-
-    await check_write_read(
-        node, "hardware version", Version.coerce(settings.hardware_version)
-    )
-
-
-async def check_eeprom_firmware_version(node: SensorNode):
-    """Test if reading and writing the firmware version works
-
-    Args:
-
-        node:
-                The node that should be checked
-
-    """
-
-    # I am not sure, if the firmware already inits the EEPROM with the firmware
-    # version. Writing back the same firmware version into the EEPROM should
-    # not be a problem though.
-    await check_write_read(
-        node, "firmware version", await node.get_firmware_version()
-    )
-
-
 async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
     """Test if reading and writing EEPROM product data works
 
@@ -116,9 +60,13 @@ async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
 
     """
 
-    for check in (
-        check_eeprom_gtin,
-        check_eeprom_hardware_version,
-    ):
-        await check(node, settings)
-    await check_eeprom_firmware_version(node)
+    await check_write_read(node, "GTIN", settings.gtin)
+    await check_write_read(
+        node, "hardware version", Version.coerce(settings.hardware_version)
+    )
+    # I am not sure, if the firmware already inits the EEPROM with the firmware
+    # version. Writing back the same firmware version into the EEPROM should
+    # not be a problem though.
+    await check_write_read(
+        node, "firmware version", await node.get_firmware_version()
+    )
