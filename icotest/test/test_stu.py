@@ -9,7 +9,10 @@ from icotronic.can.error import CANInitError
 
 from icotest.config import settings
 from icotest.firmware import upload_flash
-from icotest.test.node import check_eeprom_product_data
+from icotest.test.node import (
+    check_eeprom_product_data,
+    check_eeprom_statistics,
+)
 
 # -- Functions ----------------------------------------------------------------
 
@@ -37,7 +40,8 @@ async def test_connection():
         assert False, message
 
 
-async def test_eeprom_product_data(stu: STU):
-    "Test if reading and writing EEPROM product data works"
+async def test_eeprom(stu: STU):
+    "Test if reading and writing of EEPROM values works"
 
     await check_eeprom_product_data(stu, settings.stu)
+    await check_eeprom_statistics(stu)

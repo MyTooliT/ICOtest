@@ -9,7 +9,10 @@ from icotronic.can import SensorNode, StreamingConfiguration, STU
 
 from icotest.cli.commander import Commander
 from icotest.config import settings
-from icotest.test.node import check_eeprom_product_data
+from icotest.test.node import (
+    check_eeprom_product_data,
+    check_eeprom_statistics,
+)
 
 # -- Functions ----------------------------------------------------------------
 
@@ -96,7 +99,8 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
     )
 
 
-async def test_eeprom_product_data(sensor_node: SensorNode):
-    "Test if reading and writing EEPROM product data works"
+async def test_eeprom(sensor_node: SensorNode):
+    "Test if reading and writing of EEPROM values works"
 
     await check_eeprom_product_data(sensor_node, settings.sensor_node)
+    await check_eeprom_statistics(sensor_node)

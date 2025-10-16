@@ -82,3 +82,17 @@ async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
     )
     await check_write_read_eeprom(node, "product name", settings.product_name)
     await check_write_read_eeprom(node, "OEM data", settings.oem_data)
+
+
+async def check_eeprom_statistics(node: SensorNode):
+    """Test if reading and writing EEPROM statistic data works
+
+    Args:
+
+        node:
+
+            The node that should be checked
+
+    """
+
+    await check_write_read_eeprom(node, "power on cycles", 0)
