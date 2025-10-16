@@ -78,3 +78,25 @@ async def check_eeprom_firmware_version(node: SensorNode):
             f"match read firmware version “{firmware_version_read}”"
         ),
     )
+
+
+async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
+    """Test if reading and writing EEPROM product data works
+
+    Args:
+
+        node:
+                The node that should be checked
+
+        settings:
+
+                The settings object that contains the node setting
+
+    """
+
+    for check in (
+        check_eeprom_gtin,
+        check_eeprom_hardware_version,
+    ):
+        await check(node, settings)
+    await check_eeprom_firmware_version(node)

@@ -9,11 +9,7 @@ from icotronic.can import SensorNode, StreamingConfiguration, STU
 
 from icotest.cli.commander import Commander
 from icotest.config import settings
-from icotest.test.node import (
-    check_eeprom_firmware_version,
-    check_eeprom_gtin,
-    check_eeprom_hardware_version,
-)
+from icotest.test.node import check_eeprom_product_data
 
 # -- Functions ----------------------------------------------------------------
 
@@ -100,19 +96,7 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
     )
 
 
-async def test_eeprom_gtin(sensor_node: SensorNode):
-    """Test if reading and writing the GTIN works"""
+async def test_eeprom_product_data(sensor_node: SensorNode):
+    "Test if reading and writing EEPROM product data works"
 
-    await check_eeprom_gtin(sensor_node, settings.sensor_node)
-
-
-async def test_eeprom_hardware_version(sensor_node: SensorNode):
-    """Test if reading and writing the hardware version works"""
-
-    await check_eeprom_hardware_version(sensor_node, settings.sensor_node)
-
-
-async def test_eeprom_firmware_version(sensor_node: SensorNode):
-    """Test if reading and writing the firmware version works"""
-
-    await check_eeprom_firmware_version(sensor_node)
+    await check_eeprom_product_data(sensor_node, settings.sensor_node)
