@@ -1,3 +1,20 @@
+# -- Shared Values -------------------------------------------------------------
+
+# OEM specific data
+# prettier-ignore
+oem data: &oem_data [
+   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+   ]
+
+# -- Configuration -------------------------------------------------------------
+
 commands:
   path:
     # The keys below this key should contain the path to Simplicity Commander
@@ -33,6 +50,7 @@ sensor node:
   gtin: 0 # Global Trade Item Number
   hardware version: "2.1" # The current version of the PCB design
   name: Test-STH # This value specifies the current name of the STH unit
+  oem data: *oem_data # OEM specific data
   # Product name for the  manufacturer (maximum of 128 byte UTF-8 encoded text)
   product name: "0"
   # Serial number for the manufacturer (maximum of 32 byte UTF-8 encoded text)
@@ -61,6 +79,7 @@ stu:
 
   gtin: 0 # Global Trade Item Number
   hardware version: "2.5" # The current version of the PCB design
+  oem data: *oem_data # OEM specific data
   # Product name for the  manufacturer (maximum of 128 byte UTF-8 encoded text)
   product name: "0"
   # Serial number for the manufacturer (maximum of 32 byte UTF-8 encoded text)

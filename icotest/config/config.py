@@ -85,6 +85,33 @@ def element_is_type(nodes, name: str, element_type: type):
     return True
 
 
+def element_is_int(nodes, name: str):
+    """Check that all elements of a list are numbers
+
+    Args:
+
+        nodes:
+
+            The parent node of the list that should be checked
+
+        name:
+
+            The name of the parent node
+
+    Returns:
+
+        ``True``, if every element has the type ``int``
+
+    Raises:
+
+        ``ValidationError``, if any element of the given list has a type other
+        than ``int``
+
+    """
+
+    return element_is_type(nodes, name, element_type=int)
+
+
 def element_is_string(nodes, name: str):
     """Check that all elements of a list are strings
 
@@ -148,6 +175,11 @@ def node_validators(node: str) -> list[Validator]:
             f"{node}.product_name",
             f"{node}.serial_number",
             is_type_of=str,
+        ),
+        must_exist(
+            f"{node}.oem_data",
+            is_type_of=list,
+            condition=partial(element_is_int, name="{node}.oem_data"),
         ),
     ]
 
