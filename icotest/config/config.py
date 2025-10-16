@@ -169,7 +169,7 @@ def node_validators(node: str) -> list[Validator]:
     """
 
     return [
-        must_exist(f"{node}.gtin", is_type_of=int),
+        must_exist(f"{node}.gtin", f"{node}.batch_number", is_type_of=int),
         must_exist(
             f"{node}.hardware_version",
             f"{node}.firmware.release_name",

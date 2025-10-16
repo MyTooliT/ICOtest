@@ -44,6 +44,7 @@ commands:
       - C:\Program Files\Simplicity Commander
 
 sensor node:
+  batch number: 200 # (32 bit unsigned) number that describes the current batch
   firmware:
     release name: Minion # Code name of the current firmware release
 
@@ -69,6 +70,7 @@ sensor node:
       tolerance: 10 # Tolerance for expected power usage while streaming in mW
 
 stu:
+  batch number: 200 # (32 bit unsigned) number that describes the current batch
   firmware:
     chip: BGM111A256V2
     location:

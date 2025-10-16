@@ -111,3 +111,4 @@ async def check_eeprom_statistics(node: SensorNode | STU, settings: DynaBox):
     await check_write_read_eeprom(
         node, "production date", settings.production_date
     )
+    await check_write_read_eeprom(node, "batch number", settings.batch_number)
