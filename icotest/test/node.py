@@ -2,11 +2,44 @@
 
 # -- Imports ------------------------------------------------------------------
 
+from typing import TypeVar
+
 from dynaconf.utils.boxing import DynaBox
 from icotronic.can import SensorNode, STU
 from semantic_version import Version
 
+# -- Types --------------------------------------------------------------------
+
+EEPROMValue = TypeVar("EEPROMValue", Version, str)
+"""Type of an object that can be written into EEPROM"""
+
 # -- Functions ----------------------------------------------------------------
+
+
+def assert_equal_read_write(
+    written: EEPROMValue, read: EEPROMValue, name: str
+) -> None:
+    """Assert that two EEPROM values match
+
+    Args:
+
+        written:
+
+            Value that was written into EEPROM
+
+        read:
+
+            Values that was read from EEPROM
+
+        name:
+
+            A meaningful name for the written/read value
+
+    """
+
+    assert (
+        written == read
+    ), f"Written {name} “{written}” does not match read {name} “{read}”"
 
 
 async def check_eeprom_gtin(node: SensorNode | STU, settings: DynaBox):
@@ -26,9 +59,7 @@ async def check_eeprom_gtin(node: SensorNode | STU, settings: DynaBox):
     gtin_written = settings.gtin
     await node.eeprom.write_gtin(gtin_written)
     gtin_read = await node.eeprom.read_gtin()
-    assert (
-        gtin_written == gtin_read
-    ), f"Written GTIN “{gtin_written}” does not match read GTIN “{gtin_read}”"
+    assert_equal_read_write(gtin_written, gtin_read, "GTIN")
 
 
 async def check_eeprom_hardware_version(
@@ -50,9 +81,8 @@ async def check_eeprom_hardware_version(
     hardware_version_written = Version.coerce(settings.hardware_version)
     await node.eeprom.write_hardware_version(hardware_version_written)
     hardware_version_read = await node.eeprom.read_hardware_version()
-    assert hardware_version_written == hardware_version_read, (
-        f"Written hardware version “{hardware_version_written}” does not"
-        f"match read hardware version “{hardware_version_read}”"
+    assert_equal_read_write(
+        hardware_version_written, hardware_version_read, "hardware version"
     )
 
 
@@ -72,11 +102,8 @@ async def check_eeprom_firmware_version(node: SensorNode):
     firmware_version_written = await node.get_firmware_version()
     await node.eeprom.write_firmware_version(firmware_version_written)
     firmware_version_read = await node.eeprom.read_firmware_version()
-    assert firmware_version_written == firmware_version_read, (
-        (
-            f"Written firmware version “{firmware_version_written}” does not "
-            f"match read firmware version “{firmware_version_read}”"
-        ),
+    assert_equal_read_write(
+        firmware_version_written, firmware_version_read, "firmware version"
     )
 
 
