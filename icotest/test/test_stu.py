@@ -10,6 +10,7 @@ from semantic_version import Version
 
 from icotest.config import settings
 from icotest.firmware import upload_flash
+from icotest.test.node import check_eeprom_gtin
 
 # -- Functions ----------------------------------------------------------------
 
@@ -40,12 +41,7 @@ async def test_connection():
 async def test_eeprom_gtin(stu: STU):
     """Test if reading and writing the GTIN works"""
 
-    gtin_written = settings.stu.gtin
-    await stu.eeprom.write_gtin(gtin_written)
-    gtin_read = await stu.eeprom.read_gtin()
-    assert (
-        gtin_written == gtin_read
-    ), f"Written GTIN “{gtin_written}” does not match read GTIN “{gtin_read}”"
+    await check_eeprom_gtin(stu, settings.stu)
 
 
 async def test_eeprom_hardware_version(stu: STU):
