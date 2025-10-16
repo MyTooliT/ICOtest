@@ -2,6 +2,7 @@
 
 # -- Import -------------------------------------------------------------------
 
+from datetime import date
 from functools import partial
 from importlib.resources import as_file, files
 from numbers import Real
@@ -180,6 +181,10 @@ def node_validators(node: str) -> list[Validator]:
             f"{node}.oem_data",
             is_type_of=list,
             condition=partial(element_is_int, name="{node}.oem_data"),
+        ),
+        must_exist(
+            f"{node}.production_date",
+            is_type_of=date,
         ),
     ]
 

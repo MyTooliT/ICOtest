@@ -53,6 +53,8 @@ sensor node:
   oem data: *oem_data # OEM specific data
   # Product name for the  manufacturer (maximum of 128 byte UTF-8 encoded text)
   product name: "0"
+  # The production date of the STH PCB in the format YYYY-MM-DD
+  production date: 2025-01-01
   # Serial number for the manufacturer (maximum of 32 byte UTF-8 encoded text)
   serial number: "0"
 
@@ -82,6 +84,8 @@ stu:
   oem data: *oem_data # OEM specific data
   # Product name for the  manufacturer (maximum of 128 byte UTF-8 encoded text)
   product name: "0"
+  # The production date of the STH PCB in the format YYYY-MM-DD
+  production date: 2025-01-01
   # Serial number for the manufacturer (maximum of 32 byte UTF-8 encoded text)
   serial number: "0"
 

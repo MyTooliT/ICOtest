@@ -103,4 +103,4 @@ async def test_eeprom(sensor_node: SensorNode):
     "Test if reading and writing of EEPROM values works"
 
     await check_eeprom_product_data(sensor_node, settings.sensor_node)
-    await check_eeprom_statistics(sensor_node)
+    await check_eeprom_statistics(sensor_node, settings.sensor_node)

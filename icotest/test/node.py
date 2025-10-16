@@ -84,7 +84,7 @@ async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
     await check_write_read_eeprom(node, "OEM data", settings.oem_data)
 
 
-async def check_eeprom_statistics(node: SensorNode):
+async def check_eeprom_statistics(node: SensorNode | STU, settings: DynaBox):
     """Test if reading and writing EEPROM statistic data works
 
     Args:
@@ -92,6 +92,10 @@ async def check_eeprom_statistics(node: SensorNode):
         node:
 
             The node that should be checked
+
+        settings:
+
+            The settings object that contains the node setting
 
     """
 
@@ -103,3 +107,7 @@ async def check_eeprom_statistics(node: SensorNode):
         "watchdog reset counter",
     ):
         await check_write_read_eeprom(node, attribute, 0)
+
+    await check_write_read_eeprom(
+        node, "production date", settings.production_date
+    )

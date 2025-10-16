@@ -44,4 +44,4 @@ async def test_eeprom(stu: STU):
     "Test if reading and writing of EEPROM values works"
 
     await check_eeprom_product_data(stu, settings.stu)
-    await check_eeprom_statistics(stu)
+    await check_eeprom_statistics(stu, settings.stu)
