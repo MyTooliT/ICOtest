@@ -172,6 +172,8 @@ def node_validators(node: str) -> list[Validator]:
         must_exist(f"{node}.gtin", f"{node}.batch_number", is_type_of=int),
         must_exist(
             f"{node}.hardware_version",
+            f"{node}.firmware.chip",
+            f"{node}.firmware.location",
             f"{node}.firmware.release_name",
             f"{node}.product_name",
             f"{node}.serial_number",
@@ -210,13 +212,7 @@ def sensor_node_validators() -> list[Validator]:
 def stu_validators() -> list[Validator]:
     """Return list of validators for config data below key `stu`"""
 
-    return node_validators("stu") + [
-        must_exist(
-            "stu.firmware.location",
-            "stu.firmware.chip",
-            is_type_of=str,
-        )
-    ]
+    return node_validators("stu")
 
 
 def handle_incorrect_settings(error_message: str) -> None:

@@ -3,6 +3,7 @@
 # -- Imports ------------------------------------------------------------------
 
 from asyncio import sleep
+from logging import getLogger
 
 from typing import TypeVar
 
@@ -12,12 +13,25 @@ from icotronic.can.node.eeprom.status import EEPROMStatus
 from icotronic.can.status import State
 from semantic_version import Version
 
+from icotest.firmware import upload_flash
+
 # -- Types --------------------------------------------------------------------
 
 EEPROMValue = TypeVar("EEPROMValue", Version, str)
 """Type of an object that can be written into EEPROM"""
 
 # -- Functions ----------------------------------------------------------------
+
+
+async def check_firmware_upload(node_settings: DynaBox):
+    """Upload firmware"""
+
+    logger = getLogger(__name__)
+    firmware_location = node_settings.firmware.location
+    logger.info("Firmware Location: %s", firmware_location)
+
+    chip = node_settings.firmware.chip
+    upload_flash(chip, firmware_location)
 
 
 async def check_connection(node: SensorNode | STU) -> None:

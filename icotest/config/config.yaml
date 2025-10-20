@@ -46,6 +46,15 @@ commands:
 sensor node:
   batch number: 200 # (32 bit unsigned) number that describes the current batch
   firmware:
+    # Microcontroller identifier used for firmware upload
+    # Use “BGM113A256V2” for hardware version 1 and “BGM123A256V2” for version 2
+    chip: "BGM113A256V2"
+    location:
+      # This value should contain the path to a complete image (bootloader and
+      # application). Relative paths will be interpreted in relation to the
+      # current working directory. You can use `~` to refer to the user’s home
+      # directory.
+      ~/Documents/Firmware/manufacturingImageSthv2.1.10.hex
     release name: Minion # Code name of the current firmware release
 
   gtin: 0 # Global Trade Item Number
@@ -72,7 +81,7 @@ sensor node:
 stu:
   batch number: 200 # (32 bit unsigned) number that describes the current batch
   firmware:
-    chip: BGM111A256V2
+    chip: BGM111A256V2 # Microcontroller identifier used for firmware upload
     location:
       # This value should contain the path to a complete image (bootloader and
       # application). Relative paths will be interpreted in relation to the

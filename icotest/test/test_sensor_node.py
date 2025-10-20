@@ -11,12 +11,19 @@ from icotest.cli.commander import Commander
 from icotest.config import settings
 from icotest.test.node import (
     check_connection,
+    check_firmware_upload,
     check_eeprom_product_data,
     check_eeprom_statistics,
     check_eeprom_status,
 )
 
 # -- Functions ----------------------------------------------------------------
+
+
+async def test_firmware_upload():
+    """Upload firmware"""
+
+    await check_firmware_upload(settings.sensor_node)
 
 
 async def test_connection(sensor_node: SensorNode):
