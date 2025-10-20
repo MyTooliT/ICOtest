@@ -219,6 +219,30 @@ def stu_validators() -> list[Validator]:
     ]
 
 
+def handle_incorrect_settings(error_message: str) -> None:
+    """Handle incorrect configuration
+
+    Args:
+
+        error_message:
+
+            A text that describes the configuration error
+
+    """
+
+    print(error_message, file=stderr)
+    print(
+        "\n"
+        "• Most likely this problem is caused by an incorrect user "
+        "configuration.\n"
+        "• Please fix the problem and try again afterwards.\n\n"
+        "Opening your user config file in your text editor now",
+        file=stderr,
+    )
+    ConfigurationUtility.open_user_config()
+    sys_exit(1)
+
+
 # -- Classes ------------------------------------------------------------------
 
 
@@ -354,8 +378,8 @@ with as_file(
     try:
         settings = Settings(default_settings_filepath=repo_settings_filepath)
     except SettingsIncorrectError as settings_incorrect_error:
-        print(f"{settings_incorrect_error}", file=stderr)
-        sys_exit(1)
+        handle_incorrect_settings(f"{settings_incorrect_error}")
     except (ParserError, ScannerError) as parsing_error:
-        print(f"Unable to parse configuration: {parsing_error}", file=stderr)
-        sys_exit(1)
+        handle_incorrect_settings(
+            f"Unable to parse configuration: {parsing_error}"
+        )
