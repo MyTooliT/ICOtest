@@ -6,6 +6,7 @@ from typing import TypeVar
 
 from dynaconf.utils.boxing import DynaBox
 from icotronic.can import SensorNode, STU
+from icotronic.can.node.eeprom.status import EEPROMStatus
 from semantic_version import Version
 
 # -- Types --------------------------------------------------------------------
@@ -112,3 +113,17 @@ async def check_eeprom_statistics(node: SensorNode | STU, settings: DynaBox):
         node, "production date", settings.production_date
     )
     await check_write_read_eeprom(node, "batch number", settings.batch_number)
+
+
+async def check_eeprom_status(node: SensorNode | STU):
+    """Test if reading and writing the EEPROM status byte works
+
+    Args:
+
+        node:
+
+            The node that should be checked
+
+    """
+
+    await check_write_read_eeprom(node, "status", EEPROMStatus("Initialized"))

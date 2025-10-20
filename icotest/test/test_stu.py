@@ -12,6 +12,7 @@ from icotest.firmware import upload_flash
 from icotest.test.node import (
     check_eeprom_product_data,
     check_eeprom_statistics,
+    check_eeprom_status,
 )
 
 # -- Functions ----------------------------------------------------------------
@@ -45,3 +46,4 @@ async def test_eeprom(stu: STU):
 
     await check_eeprom_product_data(stu, settings.stu)
     await check_eeprom_statistics(stu, settings.stu)
+    await check_eeprom_status(stu)

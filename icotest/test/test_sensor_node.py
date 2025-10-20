@@ -12,6 +12,7 @@ from icotest.config import settings
 from icotest.test.node import (
     check_eeprom_product_data,
     check_eeprom_statistics,
+    check_eeprom_status
 )
 
 # -- Functions ----------------------------------------------------------------
@@ -104,3 +105,4 @@ async def test_eeprom(sensor_node: SensorNode):
 
     await check_eeprom_product_data(sensor_node, settings.sensor_node)
     await check_eeprom_statistics(sensor_node, settings.sensor_node)
+    await check_eeprom_status(sensor_node)
