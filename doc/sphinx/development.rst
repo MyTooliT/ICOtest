@@ -47,7 +47,7 @@ Release
 
 **Note:** In the text below we assume that you want to release version
 ``<VERSION>`` of the package. Please just replace this version number
-with the version that you want to release (e.g. ``0.2``).
+with the version that you want to release (e.g. ``0.2.0``).
 
 1. Make sure that all the checks and tests work correctly locally
 
