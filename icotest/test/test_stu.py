@@ -4,8 +4,8 @@
 
 from logging import getLogger
 
+from icotronic.can.status import State
 from icotronic.can import Connection, STU
-from icotronic.can.error import CANInitError
 
 from icotest.config import settings
 from icotest.firmware import upload_flash
@@ -32,13 +32,21 @@ async def test_firmware_upload():
 async def test_connection():
     """Test if connection to STU is possible"""
 
-    message = "Unable to connect to STU"
+    async with Connection() as stu:
+        # Just send a request for the state and check, if the result
+        # matches our expectations.
+        state = await stu.get_state()
 
-    try:
-        async with Connection():
-            assert True, message
-    except CANInitError:
-        assert False, message
+        expected_state = State(
+            mode="Get", location="Application", state="Operating"
+        )
+
+        assert state == expected_state, (
+            (
+                f"Expected state “{expected_state}” does not match "
+                f"received state “{state}”"
+            ),
+        )
 
 
 async def test_eeprom(stu: STU):
