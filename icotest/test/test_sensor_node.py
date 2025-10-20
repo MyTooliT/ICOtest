@@ -5,31 +5,24 @@
 from asyncio import Event, TaskGroup, to_thread
 from logging import getLogger
 
-from icotronic.can import SensorNode, StreamingConfiguration, STU
+from icotronic.can import SensorNode, StreamingConfiguration
 
 from icotest.cli.commander import Commander
 from icotest.config import settings
 from icotest.test.node import (
+    check_connection,
     check_eeprom_product_data,
     check_eeprom_statistics,
-    check_eeprom_status
+    check_eeprom_status,
 )
 
 # -- Functions ----------------------------------------------------------------
 
 
-async def test_connection(stu: STU, sensor_node_name: str):
+async def test_connection(sensor_node: SensorNode):
     """Test if connection to sensor node is possible"""
 
-    message = (
-        f"Unable to connect to sensor node with name “{sensor_node_name}”"
-    )
-
-    try:
-        async with stu.connect_sensor_node(sensor_node_name):
-            assert True, message
-    except TimeoutError:
-        assert False, message
+    await check_connection(sensor_node)
 
 
 async def test_supply_voltage(sensor_node: SensorNode):

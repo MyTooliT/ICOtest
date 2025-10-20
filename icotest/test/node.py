@@ -2,11 +2,14 @@
 
 # -- Imports ------------------------------------------------------------------
 
+from asyncio import sleep
+
 from typing import TypeVar
 
 from dynaconf.utils.boxing import DynaBox
 from icotronic.can import SensorNode, STU
 from icotronic.can.node.eeprom.status import EEPROMStatus
+from icotronic.can.status import State
 from semantic_version import Version
 
 # -- Types --------------------------------------------------------------------
@@ -15,6 +18,35 @@ EEPROMValue = TypeVar("EEPROMValue", Version, str)
 """Type of an object that can be written into EEPROM"""
 
 # -- Functions ----------------------------------------------------------------
+
+
+async def check_connection(node: SensorNode | STU) -> None:
+    """Check connection to node
+
+    Args:
+
+        node:
+
+            The node for that should be checked
+
+    """
+
+    await sleep(1)  # Wait for startup of sensor node
+
+    # Just send a request for the state and check, if the result
+    # matches our expectations.
+    state = await node.get_state()
+
+    expected_state = State(
+        mode="Get", location="Application", state="Operating"
+    )
+
+    assert state == expected_state, (
+        (
+            f"Expected state “{expected_state}” does not match "
+            f"received state “{state}”"
+        ),
+    )
 
 
 async def check_write_read_eeprom(
