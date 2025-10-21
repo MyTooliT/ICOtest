@@ -93,25 +93,6 @@ async def check_write_read_eeprom(
     ), f"Written {name} “{written}” does not match read {name} “{read}”"
 
 
-async def check_eeprom_name(node: SensorNode, settings: DynaBox):
-    """Test if reading and writing the name into the EEPROM works
-
-    Args:
-
-        node:
-
-            The sensor node that should be checked
-
-        settings:
-
-            The settings object that contains the sensor node setting
-
-
-    """
-
-    await check_write_read_eeprom(node, "name", settings.name)
-
-
 async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):
     """Test if reading and writing EEPROM product data works
 

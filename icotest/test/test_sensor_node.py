@@ -12,11 +12,11 @@ from icotest.config import settings
 from icotest.test.node import (
     check_connection,
     check_firmware_upload,
-    check_eeprom_name,
     check_eeprom_product_data,
     check_eeprom_statistics,
     check_eeprom_status,
 )
+from icotest.test.sensor_node import check_eeprom_name
 
 # -- Functions ----------------------------------------------------------------
 
