@@ -4,7 +4,7 @@
 
 from pytest import fixture
 
-from icotronic.can import Connection, SensorNode, STU
+from icotronic.can import Connection, SensorNode, STH, STU
 from netaddr import EUI
 
 from icotest.config import settings
@@ -44,3 +44,11 @@ async def sensor_node(stu, sensor_node_name) -> SensorNode:
 
     async with stu.connect_sensor_node(sensor_node_name) as sensor_node:
         yield sensor_node
+
+
+@fixture
+async def sth(stu, sensor_node_name) -> STH:
+    """Connect to and disconnect from an STH"""
+
+    async with stu.connect_sensor_node(sensor_node_name, STH) as sth:
+        yield sth

@@ -153,6 +153,26 @@ def commands_validators() -> list[Validator]:
     ]
 
 
+def acceleration_sensor_validators(name: str):
+    """Return the list of validators for a specific acceleration sensor
+
+    Args:
+
+        name:
+
+            The name of the acceleration sensor
+
+    """
+
+    prefix = "sth.acceleration_sensor"
+    return [
+        must_exist(
+            f"{prefix}.{name}.acceleration.maximum",
+            is_type_of=Real,
+        )
+    ]
+
+
 def node_validators(node: str) -> list[Validator]:
     """Get validators for node (STU & sensor node) configuration
 
@@ -220,6 +240,16 @@ def stu_validators() -> list[Validator]:
     """Return list of validators for config data below key `stu`"""
 
     return node_validators("stu")
+
+
+def sth_validators() -> list[Validator]:
+    """Return list of validators for config data below key `sth`"""
+
+    validators = []
+    for sensor in ("ADXL1001", "ADXL1002", "ADXL356"):
+        validators.extend(acceleration_sensor_validators(sensor))
+
+    return validators
 
 
 def handle_incorrect_settings(error_message: str) -> None:
@@ -361,6 +391,7 @@ class Settings(Dynaconf):
         self.validators.register(
             *commands_validators(),
             *sensor_node_validators(),
+            *sth_validators(),
             *stu_validators(),
         )
 
@@ -370,6 +401,19 @@ class Settings(Dynaconf):
             raise SettingsIncorrectError(
                 f"Incorrect configuration: {error}"
             ) from error
+
+    def acceleration_sensor(self):
+        """Get the settings for the current acceleration sensor
+
+        Returns:
+
+            A configuration object for the currently selected accelerometer
+            sensor
+
+        """
+
+        sensor_settings = self.sth.acceleration_sensor
+        return sensor_settings[sensor_settings.sensor]
 
 
 # -- Attributes ---------------------------------------------------------------

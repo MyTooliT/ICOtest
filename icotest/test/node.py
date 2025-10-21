@@ -4,11 +4,12 @@
 
 from asyncio import sleep
 from logging import getLogger
-
-from typing import TypeVar
+from math import isclose
+from operator import __eq__
+from typing import Callable, TypeVar
 
 from dynaconf.utils.boxing import DynaBox
-from icotronic.can import SensorNode, STU
+from icotronic.can import SensorNode, STH, STU
 from icotronic.can.node.eeprom.status import EEPROMStatus
 from icotronic.can.status import State
 from semantic_version import Version
@@ -63,8 +64,56 @@ async def check_connection(node: SensorNode | STU) -> None:
     )
 
 
+async def check_write_read_eeprom_function(
+    node: SensorNode | STH | STU,
+    name: str,
+    written: EEPROMValue,
+    comparator: Callable[[EEPROMValue, EEPROMValue], bool],
+    description: str,
+):
+    """Check a written and read EEPROM value for relation to each other
+
+    Args:
+
+        node:
+                The node that should be checked
+
+        name:
+
+                The name of the EEPROM value
+
+        written:
+
+                The value that should be written and then read afterwards
+
+        comparator:
+
+                The function that will be applied to check if the values are
+                related or not
+
+        description:
+
+                A text that describes the **inverse** of the comparator
+                function; e.g. for something like the function ``__eq__`` this
+                could be something like ``"is not equal to"``.
+
+    """
+
+    function_name = name.lower().replace(" ", "_")
+    write_coroutine = getattr(node.eeprom, f"write_{function_name}")
+    read_coroutine = getattr(node.eeprom, f"read_{function_name}")
+    await write_coroutine(written)
+    read = await read_coroutine()
+    logger = getLogger(__name__)
+    logger.debug("Type of written value: %s", type(written))
+    logger.debug("Type of read value: %s", type(read))
+    assert comparator(
+        written, read
+    ), f"Written {name} “{written}” {description} read {name} “{read}”"
+
+
 async def check_write_read_eeprom(
-    node: SensorNode | STU, name: str, written: EEPROMValue
+    node: SensorNode | STH | STU, name: str, written: EEPROMValue
 ) -> None:
     """Check that a written and read EEPROM value match
 
@@ -83,14 +132,34 @@ async def check_write_read_eeprom(
 
     """
 
-    function_name = name.lower().replace(" ", "_")
-    write_coroutine = getattr(node.eeprom, f"write_{function_name}")
-    read_coroutine = getattr(node.eeprom, f"read_{function_name}")
-    await write_coroutine(written)
-    read = await read_coroutine()
-    assert (
-        written == read
-    ), f"Written {name} “{written}” does not match read {name} “{read}”"
+    return await check_write_read_eeprom_function(
+        node, name, written, __eq__, "does not match"
+    )
+
+
+async def check_write_read_eeprom_close(
+    node: SensorNode | STH | STU, name: str, written: float
+) -> None:
+    """Check that a written and read EEPROM value are approximately the same
+
+    Args:
+
+        node:
+                The node that should be checked
+
+        name:
+
+                The name of the EEPROM value
+
+        written:
+
+                The value that should be written and then read afterwards
+
+    """
+
+    return await check_write_read_eeprom_function(
+        node, name, written, isclose, "is not close to"
+    )
 
 
 async def check_eeprom_product_data(node: SensorNode | STU, settings: DynaBox):

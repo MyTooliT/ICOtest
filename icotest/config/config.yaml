@@ -87,6 +87,36 @@ sensor node:
       average: 50 # Expected average power usage while streaming in mW
       tolerance: 10 # Tolerance for expected power usage while streaming in mW
 
+sth:
+  acceleration sensor:
+    # Values for the Analog Devices ± 100g analog accelerometer sensor ADXL1001.
+    adxl1001:
+      acceleration:
+        # Maximum Acceleration of sensor in multiples of g₀ (= 9.807 m/s²)
+        maximum: 200
+    # Values for the Analog Devices ± 50g digital accelerometer sensor ADXL1002.
+    # Please check the comments for sensor `ADXL1001` for a more detailed
+    # description of the config values.
+    adxl1002:
+      acceleration:
+        maximum: 100
+    # Values for the Analog Devices ± 40g digital accelerometer sensor ADXL356.
+    # Please check the comments for sensor `ADXL1001` for a more detailed
+    # description of the config values.
+    adxl356:
+      acceleration:
+        maximum: 80
+    # The identifier of the accelerometer sensor (either `ADXL1001` or
+    # `ADXL1002` or `ADXL356`). The values below the key will be used for the
+    # STH test.
+    #
+    # For example, if you specify the value `ADXL1001`, then the value
+    #
+    #  `STH` → `Acceleration Sensor` → `ADXL1001` → `Acceleration` → `Maximum`
+    #
+    # will be used as maximum acceleration value for the current STH.
+    sensor: ADXL356
+
 stu:
   batch number: 200 # (32 bit unsigned) number that describes the current batch
   firmware:
