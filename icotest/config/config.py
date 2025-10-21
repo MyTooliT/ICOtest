@@ -206,6 +206,13 @@ def sensor_node_validators() -> list[Validator]:
             "sensor_node.streaming.power.tolerance",
             is_type_of=Real,
         ),
+        must_exist(
+            "sensor_node.bluetooth.advertisement_time_1",
+            "sensor_node.bluetooth.advertisement_time_2",
+            "sensor_node.bluetooth.sleep_time_1",
+            "sensor_node.bluetooth.sleep_time_2",
+            is_type_of=int,
+        ),
     ]
 
 

@@ -16,7 +16,10 @@ from icotest.test.node import (
     check_eeprom_statistics,
     check_eeprom_status,
 )
-from icotest.test.sensor_node import check_eeprom_name
+from icotest.test.sensor_node import (
+    check_eeprom_name,
+    check_eeprom_bluetooth_times,
+)
 
 # -- Functions ----------------------------------------------------------------
 
@@ -108,3 +111,4 @@ async def test_eeprom(sensor_node: SensorNode):
     await check_eeprom_product_data(sensor_node, settings.sensor_node)
     await check_eeprom_statistics(sensor_node, settings.sensor_node)
     await check_eeprom_status(sensor_node)
+    await check_eeprom_bluetooth_times(sensor_node, settings.sensor_node)
