@@ -12,6 +12,7 @@ from icotest.config import settings
 from icotest.test.node import (
     check_connection,
     check_firmware_upload,
+    check_eeprom_name,
     check_eeprom_product_data,
     check_eeprom_statistics,
     check_eeprom_status,
@@ -103,6 +104,7 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
 async def test_eeprom(sensor_node: SensorNode):
     "Test if reading and writing of EEPROM values works"
 
+    await check_eeprom_name(sensor_node, settings.sensor_node)
     await check_eeprom_product_data(sensor_node, settings.sensor_node)
     await check_eeprom_statistics(sensor_node, settings.sensor_node)
     await check_eeprom_status(sensor_node)
