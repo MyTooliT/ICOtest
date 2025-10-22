@@ -5,7 +5,7 @@
 from asyncio import Event, TaskGroup, to_thread
 from logging import getLogger
 
-from icotronic.can import SensorNode, StreamingConfiguration
+from icotronic.can import SensorNode, StreamingConfiguration, STU
 
 from icotest.cli.commander import Commander
 from icotest.config import settings
@@ -60,6 +60,21 @@ async def test_supply_voltage(sensor_node: SensorNode):
             "greater than expected maximum voltage of "
             f"{expected_minimum_voltage:.3f} V"
         ),
+    )
+
+
+async def test_power_usage_disconnected(
+    stu: STU,  # pylint: disable=unused-argument
+) -> None:
+    """Check power usage in disconnected state"""
+
+    commander = Commander()
+    commander.enable_debug_mode()
+    power_usage_mw = commander.read_power_usage()
+    getLogger(__name__).info("Disconnected power usage: %s mW", power_usage_mw)
+
+    await check_power_usage(
+        power_usage_mw, settings.sensor_node.power.disconnected
     )
 
 

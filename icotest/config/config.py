@@ -230,6 +230,8 @@ def sensor_node_validators() -> list[Validator]:
             "sensor_node.supply.voltage.tolerance",
             "sensor_node.power.connected.average",
             "sensor_node.power.connected.tolerance",
+            "sensor_node.power.disconnected.average",
+            "sensor_node.power.disconnected.tolerance",
             "sensor_node.power.streaming.average",
             "sensor_node.power.streaming.tolerance",
             is_type_of=Real,

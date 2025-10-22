@@ -89,6 +89,12 @@ sensor node:
       # Tolerance for expected power usage while connected but not streaming
       tolerance: 10
 
+    disconnected:
+      # Expected average power usage without Bluetooth connection in mW
+      average: 2
+      # Tolerance for expected power usage without Bluetooth connection in mW
+      tolerance: 1
+
     streaming:
       average: 50 # Expected average power usage while streaming in mW
       tolerance: 10 # Tolerance for expected power usage while streaming in mW
