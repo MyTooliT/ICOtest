@@ -9,6 +9,7 @@ from icotronic.can import SensorNode, StreamingConfiguration
 
 from icotest.cli.commander import Commander
 from icotest.config import settings
+from icotest.test.support.common import check_power_usage
 from icotest.test.support.node import (
     check_connection,
     check_firmware_upload,
@@ -62,6 +63,21 @@ async def test_supply_voltage(sensor_node: SensorNode):
     )
 
 
+async def test_power_usage_connected(
+    sensor_node: SensorNode,  # pylint: disable=unused-argument
+) -> None:
+    """Check power usage in connected state"""
+
+    commander = Commander()
+    commander.enable_debug_mode()
+    power_usage_mw = commander.read_power_usage()
+    getLogger(__name__).info("Connected power usage: %s mW", power_usage_mw)
+
+    await check_power_usage(
+        power_usage_mw, settings.sensor_node.power.connected
+    )
+
+
 async def test_power_usage_streaming(sensor_node: SensorNode):
     """Test power usage of sensor node while streaming"""
 
@@ -84,23 +100,14 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
         )
         await started_streaming.wait()
         read_power_task = task_group.create_task(to_thread(read_power_usage))
-        power_usage = await read_power_task
-        getLogger(__name__).info("Streaming power usage: %s mW", power_usage)
+        power_usage_mw = await read_power_task
+        getLogger(__name__).info(
+            "Streaming power usage: %s mW", power_usage_mw
+        )
         stream_data_task.cancel()
 
-    config_power = settings.sensor_node.streaming.power
-    average_power = config_power.average
-    tolerance = config_power.tolerance
-
-    minimum_power = average_power - tolerance
-    maximum_power = average_power + tolerance
-    assert minimum_power <= power_usage, (
-        f"Power usage of {power_usage} mW smaller than expected minimum of "
-        f"{minimum_power} mW"
-    )
-    assert power_usage <= maximum_power, (
-        f"Power usage of {power_usage} mW larger than expected maximum of "
-        f"{maximum_power} mW"
+    await check_power_usage(
+        power_usage_mw, settings.sensor_node.power.streaming
     )
 
 

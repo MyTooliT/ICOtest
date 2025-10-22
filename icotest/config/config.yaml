@@ -82,8 +82,14 @@ sensor node:
       average: 3.6 # Expected value of power source voltage in Volt
       tolerance: 0.6 # Tolerance for expected power source voltage in Volt
 
-  streaming:
-    power:
+  power:
+    connected:
+      # Expected average power usage while connected (but not streaming) in mW
+      average: 30
+      # Tolerance for expected power usage while connected but not streaming
+      tolerance: 10
+
+    streaming:
       average: 50 # Expected average power usage while streaming in mW
       tolerance: 10 # Tolerance for expected power usage while streaming in mW
 
