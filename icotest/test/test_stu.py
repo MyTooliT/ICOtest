@@ -5,7 +5,7 @@
 from icotronic.can import STU
 
 from icotest.config import settings
-from icotest.test.node import (
+from icotest.test.support.node import (
     check_firmware_upload,
     check_connection,
     check_eeprom_product_data,

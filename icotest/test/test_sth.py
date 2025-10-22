@@ -15,8 +15,8 @@ from icotronic.measurement.constants import ADC_MAX_VALUE
 from icotronic.measurement.acceleration import convert_raw_to_g
 
 from icotest.config import settings
-from icotest.test.node import check_write_read_eeprom_close
-from icotest.test.sth import read_self_test_voltages
+from icotest.test.support.node import check_write_read_eeprom_close
+from icotest.test.support.sth import read_self_test_voltages
 
 # -- Functions ----------------------------------------------------------------
 

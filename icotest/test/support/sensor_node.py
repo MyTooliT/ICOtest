@@ -5,7 +5,7 @@
 from dynaconf.utils.boxing import DynaBox
 from icotronic.can import SensorNode
 
-from icotest.test.node import check_write_read_eeprom
+from icotest.test.support.node import check_write_read_eeprom
 
 # -- Functions ----------------------------------------------------------------
 
