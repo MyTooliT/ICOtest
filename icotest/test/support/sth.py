@@ -3,7 +3,6 @@
 # -- Imports ------------------------------------------------------------------
 
 from logging import getLogger
-
 from icotronic.can import STH
 
 from icotest.config import settings

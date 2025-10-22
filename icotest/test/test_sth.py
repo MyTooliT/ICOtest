@@ -10,12 +10,13 @@ Use this test code in addition to the one for the sensor node:
 
 from logging import getLogger
 
-from icotronic.can import STH
+from icotronic.can import STH, StreamingConfiguration
 from icotronic.measurement.constants import ADC_MAX_VALUE
-from icotronic.measurement.acceleration import convert_raw_to_g
+from icotronic.measurement import convert_raw_to_g, ratio_noise_max
 
 from icotest.config import settings
 from icotest.test.support.node import check_write_read_eeprom_close
+from icotest.test.support.sensor_node import read_streaming_data
 from icotest.test.support.sth import read_self_test_voltages
 
 # -- Functions ----------------------------------------------------------------
@@ -105,6 +106,24 @@ async def test_acceleration_single_value(sth: STH):
         f"Measured acceleration {acceleration:.3f} g is greater "
         "than expected maximum acceleration "
         f"{expected_maximum_acceleration:.3f} g"
+    )
+
+
+async def test_acceleration_noise(sth: STH):
+    """Test ratio of noise to maximal possible measurement value"""
+
+    acceleration = await read_streaming_data(
+        sth, StreamingConfiguration(first=True), length=10000
+    )
+
+    ratio_noise_maximum = ratio_noise_max(acceleration)
+    sensor = settings.acceleration_sensor()
+    maximum_ratio_allowed = sensor.acceleration.ratio_noise_to_max_value
+
+    assert ratio_noise_maximum <= maximum_ratio_allowed, (
+        "The ratio noise to possible maximum measured value of "
+        f"{ratio_noise_maximum} dB is higher than the maximum allowed level "
+        f"of {maximum_ratio_allowed} dB"
     )
 
 

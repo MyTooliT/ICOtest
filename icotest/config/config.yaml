@@ -94,6 +94,10 @@ sth:
       acceleration:
         # Maximum Acceleration of sensor in multiples of g₀ (= 9.807 m/s²)
         maximum: 200
+        # This value stores the maximum allowed ratio of noise to maximum
+        # measurement value in dB. If the measured ratio is above this level,
+        # then the tested STH will be considered faulty.
+        ratio noise to max value: -55
         # Tolerance to expected (stationary) acceleration value (of 0 m/s²) in
         # multiples of g₀
         tolerance: 5
@@ -123,6 +127,7 @@ sth:
     adxl1002:
       acceleration:
         maximum: 100
+        ratio noise to max value: -55
         tolerance: 4
       reference voltage: 3.3
       self test:
@@ -136,6 +141,7 @@ sth:
     adxl356:
       acceleration:
         maximum: 80
+        ratio noise to max value: -55
         tolerance: 20
       reference voltage: 1.8
       self test:
