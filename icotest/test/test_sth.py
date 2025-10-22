@@ -23,15 +23,7 @@ from icotest.test.support.sth import read_self_test_voltages
 
 
 async def test_acceleration_sensor_self_test(sth: STH):
-    """Use the self test of a acceleration sensor to check for problems
-
-    Args:
-
-        sth:
-
-            The STH that contains the acceleration sensor
-
-    """
+    """Use the self test of a acceleration sensor to check for problems"""
 
     voltage_diff_abs, voltage_diff_before_after = (
         await read_self_test_voltages(sth)
@@ -68,15 +60,7 @@ async def test_acceleration_sensor_self_test(sth: STH):
 
 
 async def test_acceleration_single_value(sth: STH):
-    """Test stationary acceleration value
-
-    Args:
-
-        sth:
-
-            The STH that should be checked
-
-    """
+    """Test stationary acceleration value"""
 
     stream_data = await sth.get_streaming_data_single()
     sensor = settings.acceleration_sensor()
@@ -128,15 +112,7 @@ async def test_acceleration_noise(sth: STH):
 
 
 async def test_eeprom(sth: STH):
-    """Test if reading and writing STH EEPROM data works
-
-    Args:
-
-        sth:
-
-            The STH that should be checked
-
-    """
+    """Test if reading and writing STH EEPROM data works"""
 
     sensor = settings.acceleration_sensor()
     acceleration_max = sensor.acceleration.maximum
