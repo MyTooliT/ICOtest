@@ -22,6 +22,7 @@ dependencies = [
   "pytest>=8.4.2",
   "pytest-asyncio",
   "semantic-version>=2,<3",
+  "universal-startfile>=0.4",
 ]
 description = """Hardware tests for ICOtronic system"""
 keywords = [

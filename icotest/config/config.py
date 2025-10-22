@@ -19,10 +19,7 @@ from dynaconf import (  # type: ignore[attr-defined]
 from dynaconf.vendor.ruamel.yaml.parser import ParserError
 from dynaconf.vendor.ruamel.yaml.scanner import ScannerError
 
-# Replace with `universal-startfile` if/after:
-#  https://github.com/jacebrowning/universal-startfile/pull/9
-# is merged.
-from icotronic.utility.open import open_file, UnableToOpenError
+from startfile import startfile
 from platformdirs import site_config_dir, user_config_dir
 
 # -- Functions ----------------------------------------------------------------
@@ -319,7 +316,7 @@ class ConfigurationUtility:
             with filepath.open("w", encoding="utf8") as config_file:
                 config_file.write(default_user_config)
 
-        open_file(filepath)
+        startfile(filepath)
 
     @classmethod
     def open_user_config(cls):
@@ -327,7 +324,7 @@ class ConfigurationUtility:
 
         try:
             cls.open_config_file(cls.user_config_filepath)
-        except UnableToOpenError as error:
+        except FileNotFoundError as error:
             print(
                 f"Unable to open user configuration: {error}"
                 "\nTo work around this problem please open "
