@@ -165,6 +165,7 @@ def acceleration_sensor_validators(name: str):
     return [
         must_exist(
             f"{prefix}.{name}.acceleration.maximum",
+            f"{prefix}.{name}.acceleration.tolerance",
             f"{prefix}.{name}.reference_voltage",
             f"{prefix}.{name}.self_test.voltage.difference",
             f"{prefix}.{name}.self_test.voltage.tolerance",

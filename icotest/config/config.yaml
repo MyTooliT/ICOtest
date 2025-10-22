@@ -94,6 +94,9 @@ sth:
       acceleration:
         # Maximum Acceleration of sensor in multiples of g₀ (= 9.807 m/s²)
         maximum: 200
+        # Tolerance to expected (stationary) acceleration value (of 0 m/s²) in
+        # multiples of g₀
+        tolerance: 5
       # The ADC reference voltage used for the measurement
       reference voltage: 3.3
       self test:
@@ -120,6 +123,7 @@ sth:
     adxl1002:
       acceleration:
         maximum: 100
+        tolerance: 4
       reference voltage: 3.3
       self test:
         dimension: x
@@ -132,6 +136,7 @@ sth:
     adxl356:
       acceleration:
         maximum: 80
+        tolerance: 20
       reference voltage: 1.8
       self test:
         dimension: z

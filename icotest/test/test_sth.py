@@ -8,8 +8,11 @@ Use this test code in addition to the one for the sensor node:
 
 # -- Imports ------------------------------------------------------------------
 
+from logging import getLogger
+
 from icotronic.can import STH
 from icotronic.measurement.constants import ADC_MAX_VALUE
+from icotronic.measurement.acceleration import convert_raw_to_g
 
 from icotest.config import settings
 from icotest.test.node import check_write_read_eeprom_close
@@ -60,6 +63,48 @@ async def test_acceleration_sensor_self_test(sth: STH):
         f"Measured voltage difference of {voltage_diff_abs:.2f} mV is "
         "greater than expected minimum voltage difference of "
         f"{voltage_diff_maximum:.2f} mV{possible_failure_reason}"
+    )
+
+
+async def test_acceleration_single_value(sth: STH):
+    """Test stationary acceleration value
+
+    Args:
+
+        sth:
+
+            The STH that should be checked
+
+    """
+
+    stream_data = await sth.get_streaming_data_single()
+    sensor = settings.acceleration_sensor()
+    acceleration = convert_raw_to_g(
+        stream_data.values[0], sensor.acceleration.maximum
+    )
+
+    logger = getLogger(__file__)
+    logger.info("Measured acceleration value: %.2f g", acceleration)
+
+    # We expect a stationary acceleration between -g₀ and g₀ (g₀ = 9.807 m/s²)
+    expected_acceleration = 0
+    tolerance_acceleration = sensor.acceleration.tolerance
+    expected_minimum_acceleration = (
+        expected_acceleration - tolerance_acceleration
+    )
+    expected_maximum_acceleration = (
+        expected_acceleration + tolerance_acceleration
+    )
+
+    assert expected_minimum_acceleration <= acceleration, (
+        f"Measured acceleration {acceleration:.3f} g is lower "
+        "than expected minimum acceleration "
+        f"{expected_minimum_acceleration:.3f} g"
+    )
+    assert acceleration <= expected_maximum_acceleration, (
+        f"Measured acceleration {acceleration:.3f} g is greater "
+        "than expected maximum acceleration "
+        f"{expected_maximum_acceleration:.3f} g"
     )
 
 
