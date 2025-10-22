@@ -94,18 +94,65 @@ sth:
       acceleration:
         # Maximum Acceleration of sensor in multiples of g₀ (= 9.807 m/s²)
         maximum: 200
+      # The ADC reference voltage used for the measurement
+      reference voltage: 3.3
+      self test:
+        # The dimension (x, y, z) on which the self test takes place
+        dimension: x
+        voltage:
+          # Expected voltage difference between
+          #
+          # - the measured (stationary) acceleration voltage, and
+          # - acceleration voltage when the self test is active
+          #
+          # in mV. For more information, please check the data sheet of the
+          # accelerometer.
+          difference: 90
+          # Tolerance to
+          # - the expected voltage difference and
+          # - tolerance for the measured difference between voltage before and
+          #   after the self test
+          # in mV.
+          tolerance: 20
     # Values for the Analog Devices ± 50g digital accelerometer sensor ADXL1002.
     # Please check the comments for sensor `ADXL1001` for a more detailed
     # description of the config values.
     adxl1002:
       acceleration:
         maximum: 100
+      reference voltage: 3.3
+      self test:
+        dimension: x
+        voltage:
+          difference: 160
+          tolerance: 30
     # Values for the Analog Devices ± 40g digital accelerometer sensor ADXL356.
     # Please check the comments for sensor `ADXL1001` for a more detailed
     # description of the config values.
     adxl356:
       acceleration:
         maximum: 80
+      reference voltage: 1.8
+      self test:
+        dimension: z
+        voltage:
+          # 1.25 g difference at ± 10 g ⇒ 1.25/4 at ± 40 g
+          # 1.8 V reference voltage ⇒ 1.25/(2*40*4)*1.8*1000 ≅ 7 mV
+          #
+          # In reality the difference voltage seems to
+          #
+          # - be significantly smaller and
+          # - change with the position of the PCB.
+          #
+          # We therefore set the tolerance to a very high level.
+          #
+          # More information is available here:
+          #
+          # - https://mytoolit.bitrix24.de/company/personal/user/74/tasks
+          #   /task/view/6207/
+          #
+          difference: 7
+          tolerance: 4
     # The identifier of the accelerometer sensor (either `ADXL1001` or
     # `ADXL1002` or `ADXL356`). The values below the key will be used for the
     # STH test.
@@ -115,7 +162,7 @@ sth:
     #  `STH` → `Acceleration Sensor` → `ADXL1001` → `Acceleration` → `Maximum`
     #
     # will be used as maximum acceleration value for the current STH.
-    sensor: ADXL356
+    sensor: ADXL1001
 
 stu:
   batch number: 200 # (32 bit unsigned) number that describes the current batch
