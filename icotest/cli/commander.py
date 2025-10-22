@@ -299,13 +299,14 @@ class Commander:
             description="upload firmware",
         )
 
-    def read_power_usage(self, milliseconds: float = 1000) -> float:
+    def read_power_usage(self, seconds: float = 1) -> float:
         """Read the power usage of the connected hardware
 
         Args:
 
-            milliseconds:
-                The amount of time the power usage should be measured for
+            seconds:
+
+                The amount of seconds the power usage should be measured for
 
         Returns:
 
@@ -329,7 +330,7 @@ class Commander:
             "aem",
             "measure",
             "--windowlength",
-            str(milliseconds),
+            str(round(seconds * 1000)),
         ]
 
         regex = r"Power\s*\[mW\]\s*:\s*(?P<milliwatts>\d+\.\d+)"
