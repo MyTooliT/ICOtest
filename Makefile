@@ -3,6 +3,8 @@
 SPHINX_DIRECTORY := sphinx
 SPHINX_INPUT_DIRECTORY := doc/sphinx
 
+TEST_COMMAND := uv run pytest -k 'not firmware_upload'
+
 # -- Rules ---------------------------------------------------------------------
 
 .PHONY: run
@@ -15,7 +17,8 @@ setup:
 
 .PHONY: test
 test:
-	uv run pytest -k 'not firmware_upload'
+	$(TEST_COMMAND) || ( uv run icon stu reset && \
+	                     $(TEST_COMMAND) --last-failed )
 
 .PHONY: check
 check:
