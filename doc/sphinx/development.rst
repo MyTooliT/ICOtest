@@ -53,7 +53,7 @@ with the version that you want to release (e.g. ``0.2.0``).
 
    .. code-block:: shell
 
-      make
+      just
 
 2. Make sure all `workflows of the CI system work
    correctly <https://github.com/MyTooliT/ICOtest/actions>`__
