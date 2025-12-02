@@ -63,14 +63,22 @@ with the version that you want to release (e.g. ``0.2.0``).
 
       just
 
-2. Make sure all `workflows of the CI system work
+2. Make sure that installing the package with ``pip`` works:
+
+   .. code-block:: shell
+
+      pip install -e .
+      icotest run -k 'stu and test_connection'
+      pip uninstall icotest
+
+3. Make sure all `workflows of the CI system work
    correctly <https://github.com/MyTooliT/ICOtest/actions>`__
 
-3. Check that the most recent `“Read the Docs” build of the
+4. Check that the most recent `“Read the Docs” build of the
    documentation ran
    successfully <https://app.readthedocs.org/projects/icotest/>`__
 
-4. Release a new version on
+5. Release a new version on
    `PyPI <https://pypi.org/project/icotest/>`__:
 
    1. Increase version number
@@ -107,10 +115,3 @@ with the version that you want to release (e.g. ``0.2.0``).
 
 .. |gh| replace:: ``gh``
 .. _gh: https://cli.github.com
-
-6. Make sure that the released package works:
-
-   .. code-block:: shell
-
-      pip install "icotest==$icotest_version"
-      icotest run -k 'stu and test_connection'
