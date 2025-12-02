@@ -10,8 +10,6 @@ package := "icotest"
 sphinx_directory := "sphinx"
 sphinx_input_directory := "doc/sphinx"
 
-test_command := "uv run pytest -k 'not firmware_upload'"
-
 # -- Recipes -------------------------------------------------------------------
 
 # Setup Python environment
@@ -31,8 +29,7 @@ check: setup
 [group('test')]
 [default]
 test: check
-	{{test_command}} || ( uv run icon stu reset && \
-	                      {{test_command}} --last-failed )
+	uv run pytest -k 'not firmware_upload' --reruns 5 --reruns-delay 1
 
 # Build documentation
 [group('documentation')]
