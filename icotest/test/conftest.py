@@ -15,6 +15,13 @@ from icotest.config import settings
 
 
 @fixture(scope="session")
+def anyio_backend():
+    """Set default async backend"""
+
+    return "asyncio"
+
+
+@fixture(scope="session")
 def sensor_node_name() -> str:
     """Returns the name of the sensor node used for the test"""
 

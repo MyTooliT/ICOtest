@@ -84,10 +84,6 @@ ignore_missing_imports = true
 [tool.pylint]
 ignore-paths = [ "^.venv.*$" ]
 
-[tool.pytest.ini_options]
+[tool.pytest]
 addopts = ["--doctest-modules"]
 minversion = "9.0"
-anyio_mode = "auto"
-# To enable logging info messages, please uncomment the following lines
-# log_cli = true
-# log_cli_level = "INFO"
