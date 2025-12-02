@@ -99,3 +99,10 @@ with the version that you want to release (e.g. ``0.2.0``).
 
 .. |gh| replace:: ``gh``
 .. _gh: https://cli.github.com
+
+6. Make sure that the released package works:
+
+   .. code-block:: shell
+
+      pip install --no-cache-dir icotest
+      icotest run -k 'stu and test_connection'
