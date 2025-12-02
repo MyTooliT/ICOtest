@@ -36,8 +36,8 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Setup ICOtest
-      run: make setup
+    - name: Install just
+      uses: taiki-e/install-action@just
 
-    - name: Check ICOtest code base
-      run: make check
+    - name: Setup ICOtest
+      run: just check
