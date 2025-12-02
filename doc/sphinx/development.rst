@@ -2,6 +2,14 @@
 Development
 ***********
 
+Requirements
+============
+
+While not strictly required we assume that you installed |just|_ in the description below.
+
+.. |just| replace:: ``just``
+.. _just: https://github.com/casey/just
+
 Install
 =======
 
