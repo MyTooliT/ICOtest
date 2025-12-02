@@ -16,11 +16,11 @@ classifiers = [
 ]
 
 dependencies = [
+  "anyio>=4.11",
   "dynaconf>=3.1.12,<4",
   "icotronic>=5.1,<=6",
   "platformdirs>=3.5.0,<5",
-  "pytest>=8.4.2",
-  "pytest-asyncio",
+  "pytest>=9.0.1",
   "semantic-version>=2,<3",
   "universal-startfile>=0.4",
 ]
@@ -85,12 +85,9 @@ ignore_missing_imports = true
 ignore-paths = [ "^.venv.*$" ]
 
 [tool.pytest.ini_options]
-asyncio_mode = "auto"
-# - Use doctests
-# - Ignore macOS metadata files
-# - Verbose output
-addopts = "--doctest-modules --ignore-glob='*._*.py' -v"
-minversion = "6.0"
+addopts = ["--doctest-modules"]
+minversion = "9.0"
+anyio_mode = "auto"
 # To enable logging info messages, please uncomment the following lines
 # log_cli = true
 # log_cli_level = "INFO"
