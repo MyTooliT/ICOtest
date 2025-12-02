@@ -104,5 +104,5 @@ with the version that you want to release (e.g. ``0.2.0``).
 
    .. code-block:: shell
 
-      pip install --no-cache-dir icotest
+      pip install "icotest==$icotest_version"
       icotest run -k 'stu and test_connection'
