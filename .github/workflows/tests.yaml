@@ -51,9 +51,9 @@ jobs:
       if: runner.os == 'Linux'
       run: sudo apt install libhdf5-dev libblosc-dev libbz2-dev liblzo2-dev
 
-    - name: Install HDF5 on macOS
-      if: runner.os == 'macOS'
-      run: brew install hdf5
+    - name: Install PyTables dependencies on macOS
+      if: ${{ runner.os == 'macOS' && matrix.python-version == '3.14' }}
+      run: brew install c-blosc2 lzo bzip2 hdf5
 
     - name: Check ICOtest code
       run: just check
