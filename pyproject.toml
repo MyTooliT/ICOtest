@@ -18,7 +18,7 @@ classifiers = [
 dependencies = [
   "anyio>=4.11",
   "dynaconf>=3.1.12,<4",
-  "icotronic>=5.1,<=6",
+  "icotronic>=6.0.1,<=7",
   "platformdirs>=3.5.0,<5",
   "pytest>=9.0.1",
   "semantic-version>=2,<3",
