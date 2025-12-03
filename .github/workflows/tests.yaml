@@ -24,6 +24,17 @@ jobs:
               name: windows
             python-version: '3.14'
 
+          # - Current source version of PyTables does not work:
+          #   https://github.com/PyTables/PyTables/issues/1262
+          # - While I do know how to install a development version
+          #   of PyTables into the virtual environment that uv uses,
+          #   I do not know how to tell `uv sync` that it should use this
+          #   version and not try to use the current source version (and fail)
+          #   instead.
+          - os:
+              name: ubuntu
+            python-version: '3.14'
+
     runs-on: ${{ matrix.os.name }}-latest
     name: ${{ matrix.os.icon }} Python ${{ matrix.python-version }}
 
@@ -47,13 +58,6 @@ jobs:
 
     # We install PyTables dependencies, if we use Python 3.14 for testing, since
     # there is no binary package (wheel) available for the package yet.
-
-    - name: Install PyTables dependencies on Linux
-      if: ${{ runner.os == 'Linux' && matrix.python-version == '3.14' }}
-      run: | # See also: https://github.com/PyTables/PyTables/issues/1262
-        sudo apt install libhdf5-dev libblosc2-dev libbz2-dev liblzo2-dev
-        uv venv
-        uv pip install git+https://github.com/PyTables/PyTables.git@6c7b53a
 
     - name: Install PyTables dependencies on macOS
       if: ${{ runner.os == 'macOS' && matrix.python-version == '3.14' }}
