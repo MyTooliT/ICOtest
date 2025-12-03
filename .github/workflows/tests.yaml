@@ -18,7 +18,8 @@ jobs:
           - '3.12'
           - '3.13'
           - '3.14'
-        exclude: # No easy option to install HDF5 on Windows that I know of
+        exclude:
+          # No easy option to install PyTables deps on Windows that I know of
           - os:
               name: windows
             python-version: '3.14'
@@ -44,12 +45,15 @@ jobs:
     - name: Install just
       uses: taiki-e/install-action@just
 
-    # We install HDF5 in case an official binary build of PyTables is not
-    # available for the current Python version yet
+    # We install PyTables dependencies, if we use Python 3.14 for testing, since
+    # there is no binary package (wheel) available for the package yet.
 
-    - name: Install HDF5 on Linux
-      if: runner.os == 'Linux'
-      run: sudo apt install libhdf5-dev libblosc-dev libbz2-dev liblzo2-dev
+    - name: Install PyTables dependencies on Linux
+      if: ${{ runner.os == 'Linux' && matrix.python-version == '3.14' }}
+      run: | # See also: https://github.com/PyTables/PyTables/issues/1262
+        sudo apt install libhdf5-dev libblosc2-dev libbz2-dev liblzo2-dev
+        uv venv
+        uv pip install git+https://github.com/PyTables/PyTables.git@6c7b53a
 
     - name: Install PyTables dependencies on macOS
       if: ${{ runner.os == 'macOS' && matrix.python-version == '3.14' }}
