@@ -36,6 +36,7 @@ test: check
 documentation:
 	uv run sphinx-build -M html {{sphinx_input_directory}} {{sphinx_directory}}
 
+# Release new package version
 [group('release')]
 [unix]
 release version:
@@ -47,6 +48,7 @@ release version:
 	git push
 	git push --tags
 
+# Release new package version
 [group('release')]
 [windows]
 release version:
