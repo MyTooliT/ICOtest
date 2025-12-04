@@ -69,14 +69,14 @@ ignore = [
   # Line break before binary operator
   "W503",
   # Line break after binary operator
-  "W504"
+  "W504",
 ]
 per-file-ignores = "__init__.py:F401"
 exclude = [
   ".git",
   "__pycache__",
   "._*",
-  ".venv"
+  ".venv",
 ]
 
 [tool.mypy]
