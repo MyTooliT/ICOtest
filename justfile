@@ -46,3 +46,14 @@ release version:
 	git tag "${version}"
 	git push
 	git push --tags
+
+[group('release')]
+[windows]
+release version:
+	#!pwsh
+	uv version {{version}}
+	set version "$(uv version --short)"
+	git commit -a -m "Release: Release version ${version}"
+	git tag "${version}"
+	git push
+	git push --tags
