@@ -60,7 +60,7 @@ jobs:
 
     - name: Install PyTables dependencies on macOS
       if: ${{ runner.os == 'macOS' && matrix.python-version == '3.14' }}
-      run: brew install c-blosc2 lzo bzip2 hdf5
+      run: brew install c-blosc2 bzip2 hdf5
 
     - name: Check ICOtest code
       run: just check
