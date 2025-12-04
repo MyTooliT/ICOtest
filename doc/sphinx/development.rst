@@ -87,11 +87,7 @@ with the version that you want to release (e.g. ``0.2.0``).
 
    .. code-block:: shell
 
-      uv version <VERSION>
-      export icotest_version="$(uv version --short)"
-      git commit -a -m "Release: Release version $icotest_version"
-      git tag "$icotest_version"
-      git push && git push --tags
+      just release <VERSION>
 
 5. Open the `release
    notes <https://github.com/MyTooliT/ICOtest/tree/main/doc/release>`__

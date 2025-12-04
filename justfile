@@ -35,3 +35,14 @@ test: check
 [group('documentation')]
 documentation:
 	uv run sphinx-build -M html {{sphinx_input_directory}} {{sphinx_directory}}
+
+[group('release')]
+[unix]
+release version:
+	#!/usr/bin/env sh -e
+	uv version {{version}}
+	version="$(uv version --short)"
+	git commit -a -m "Release: Release version ${version}"
+	git tag "${version}"
+	git push
+	git push --tags
