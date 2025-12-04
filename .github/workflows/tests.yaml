@@ -54,6 +54,9 @@ jobs:
         sudo apt install libhdf5-dev libblosc2-dev libbz2-dev liblzo2-dev
         uv venv
         uv pip install git+https://github.com/PyTables/PyTables.git@6c7b53a
+        uv pip install -e .[dev]
+        sed -r --in-place 's/check: setup/check:/' justfile
+        sed -r --in-place 's/(uv run)/\1 --no-sync/' justfile
 
     - name: Install PyTables dependencies on macOS
       if: ${{ runner.os == 'macOS' && matrix.python-version == '3.14' }}
