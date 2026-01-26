@@ -8,7 +8,7 @@ Configuration values are stored in `YAML <https://yaml.org>`__ files handled by 
 
 .. code-block:: shell
 
-   icon config
+   icotest config
 
 which will open the the user configuration in your default text editor. You can then edit this file and save your changes to update the configuration. For a list of available options, please take a look at the `default configuration <default values_>`__. Please make sure to not make any mistakes when you edit this file. Otherwise (some of the tests) will not work, printing an error message about the (first) incorrect configuration value.
 
