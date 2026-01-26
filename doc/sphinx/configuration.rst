@@ -10,7 +10,25 @@ Configuration values are stored in `YAML <https://yaml.org>`__ files handled by 
 
    icotest config
 
-which will open the the user configuration in your default text editor. You can then edit this file and save your changes to update the configuration. For a list of available options, please take a look at the `default configuration <default values_>`__. Please make sure to not make any mistakes when you edit this file. Otherwise (some of the tests) will not work, printing an error message about the (first) incorrect configuration value.
+which will open the the user configuration in your default text editor. You can then edit this file and save your changes to update the configuration.
+
+.. figure:: editor_output.webp
+   :scale: 40 %
+   :alt: Editor output in Terminal after using icotest config
+   :align: center
+
+   The command ``icontest config`` opens your the user configuration in the default text editor.
+
+.. hint::
+
+   You might be confused by the (debug) output that your editor writes to the Terminal, after
+   you opened the configuration file with the command ``icotest config``. Please just ignore
+   this text. You can use the Terminal, just like before, even if the editor is still
+   open. We recommend you just press :kbd:`Enter` or :kbd:`Return` before you input a new
+   command to insert a new prompt. Another option, to move the editor output out of the way,
+   is to clear the screen (usually bound to :kbd:`Ctrl` + :kbd:`L`).
+
+For a list of available options, please take a look at the `default configuration <default values_>`__. Please make sure to not make any mistakes when you edit this file. Otherwise (some of the tests) will not work, printing an error message about the (first) incorrect configuration value.
 
 .. _Dynaconf: https://www.dynaconf.com
 .. _default values: https://github.com/MyTooliT/ICOtest/blob/main/icotest/config/config.yaml
