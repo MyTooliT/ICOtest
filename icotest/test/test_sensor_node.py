@@ -10,6 +10,7 @@ from icotronic.can import SensorNode, StreamingConfiguration, STU
 from icotest.cli.commander import Commander
 from icotest.config import settings
 from icotest.test.support.common import check_power_usage
+from icotest.test.support.mac import convert_mac_base64
 from icotest.test.support.node import (
     check_connection,
     check_firmware_upload,
@@ -35,6 +36,18 @@ async def test_connection(sensor_node: SensorNode):
     """Test if connection to sensor node is possible"""
 
     await check_connection(sensor_node)
+
+
+async def test_get_base64name(sensor_node: SensorNode, capsys):
+    """Get Base64 encoded MAC address of sensor node"""
+
+    mac_address = await sensor_node.get_mac_address()
+    getLogger().info("MAC address: %s", mac_address)
+    with capsys.disabled():
+        print(
+            "Base64 encoded MAC address (Bluetooth name): "
+            f"{convert_mac_base64(mac_address)}"
+        )
 
 
 async def test_supply_voltage(sensor_node: SensorNode):
