@@ -7,6 +7,7 @@ for more information
 
 # -- Imports ------------------------------------------------------------------
 
+from logging import getLogger
 from os import environ, pathsep
 from pathlib import Path
 from platform import system
@@ -128,6 +129,9 @@ class Commander:
                     )
 
         try:
+            getLogger().info(
+                "Running command: “commander %s”", " ".join(command)
+            )
             result = run(
                 ["commander"] + command,
                 capture_output=True,
