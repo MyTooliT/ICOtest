@@ -108,12 +108,19 @@ class Commander:
 
         Raises:
 
-            CommanderException
+            ValueError:
 
-                - if the command returned unsuccessfully or
+                If ``possible_error_reasons`` is not contained in the
+                list of possible error reasons
 
-                - if the standard output did not match the optional regular
-                  expression specified in ``regex_output``
+            CommanderReturnCodeException:
+
+                If the command returned unsuccessfully
+
+            CommanderOutputMatchException:
+
+                If the standard output did not match the optional regular
+                expression specified in ``regex_output``
 
         Returns:
 
@@ -245,10 +252,19 @@ class Commander:
         Args:
 
             chip:
+
                 The identifier of the chip on the PCB e.g. “BGM121A256V2”
 
             filepath:
+
                 The filepath of the flash image
+
+        Raises:
+
+            CommanderException:
+
+                If ``filepath`` does not exist or does not point to a valid
+                file
 
         Examples:
 
@@ -315,6 +331,13 @@ class Commander:
         Returns:
 
             The measured power usage in milliwatts
+
+        Raises:
+
+            CommanderOutputMatchException:
+
+                If the function was not able to extract the power usage from
+                the output of Simplicity Commander
 
         Examples:
 
