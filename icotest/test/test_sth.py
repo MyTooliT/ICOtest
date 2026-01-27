@@ -13,7 +13,6 @@ from logging import getLogger
 from icotronic.can import STH, StreamingConfiguration
 from icotronic.measurement.constants import ADC_MAX_VALUE
 from icotronic.measurement import convert_raw_to_g, ratio_noise_max
-from pytest import mark
 
 from icotest.config import settings
 from icotest.test.support.node import check_write_read_eeprom_close
@@ -23,7 +22,6 @@ from icotest.test.support.sth import read_self_test_voltages
 # -- Functions ----------------------------------------------------------------
 
 
-@mark.anyio
 async def test_acceleration_sensor_self_test(sth: STH):
     """Use the self test of a acceleration sensor to check for problems"""
 
@@ -61,7 +59,6 @@ async def test_acceleration_sensor_self_test(sth: STH):
     )
 
 
-@mark.anyio
 async def test_acceleration_single_value(sth: STH):
     """Test stationary acceleration value"""
 
@@ -96,7 +93,6 @@ async def test_acceleration_single_value(sth: STH):
     )
 
 
-@mark.anyio
 async def test_acceleration_noise(sth: STH):
     """Test ratio of noise to maximal possible measurement value"""
 
@@ -115,7 +111,6 @@ async def test_acceleration_noise(sth: STH):
     )
 
 
-@mark.anyio
 async def test_eeprom(sth: STH):
     """Test if reading and writing STH EEPROM data works"""
 
