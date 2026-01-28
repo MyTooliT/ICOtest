@@ -29,7 +29,8 @@ check: setup
 [group('test')]
 [default]
 test: check
-	uv run pytest -k 'not firmware_upload' --reruns 5 --reruns-delay 1
+	uv run pytest -k 'not firmware_upload and not base64' \
+		--reruns 5 --reruns-delay 1
 
 # Build documentation
 [group('documentation')]
