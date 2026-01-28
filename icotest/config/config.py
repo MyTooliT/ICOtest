@@ -8,6 +8,7 @@ from importlib.resources import as_file, files
 from numbers import Real
 from pathlib import Path
 from sys import exit as sys_exit, stderr
+from typing import Any
 
 
 from dynaconf import (  # type: ignore[attr-defined]
@@ -16,6 +17,7 @@ from dynaconf import (  # type: ignore[attr-defined]
     Validator,
 )
 
+from dynaconf.utils.boxing import DynaBox
 from dynaconf.vendor.ruamel.yaml.parser import ParserError
 from dynaconf.vendor.ruamel.yaml.scanner import ScannerError
 
@@ -25,25 +27,29 @@ from platformdirs import site_config_dir, user_config_dir
 # -- Functions ----------------------------------------------------------------
 
 
-def must_exist(*arguments, **keyword_arguments) -> Validator:
+def must_exist(*arguments: Any, **keyword_arguments: Any) -> Validator:
     """Return Validator which requires setting to exist
 
     Args:
 
-        arguments:
+        *arguments:
 
             All positional arguments for the Validator
 
-        keyword_arguments:
+        **keyword_arguments:
 
             All keyword arguments for the Validator
+
+    Returns:
+
+        A validator that specifies that the given setting must exist
 
     """
 
     return Validator(*arguments, must_exist=True, **keyword_arguments)
 
 
-def element_is_type(nodes, name: str, element_type: type):
+def element_is_type(nodes: DynaBox, name: str, element_type: type) -> bool:
     """Check that all elements of a list have a certain type
 
     Args:
@@ -66,8 +72,9 @@ def element_is_type(nodes, name: str, element_type: type):
 
     Raises:
 
-        ``ValidationError``, if any element of the given list has the wrong
-        type
+        ValidationError:
+
+            If any element of the given list has the wrong type
 
     """
 
@@ -83,7 +90,7 @@ def element_is_type(nodes, name: str, element_type: type):
     return True
 
 
-def element_is_int(nodes, name: str):
+def element_is_int(nodes: DynaBox, name: str) -> bool:  # noqa: DOC502
     """Check that all elements of a list are numbers
 
     Args:
@@ -102,15 +109,16 @@ def element_is_int(nodes, name: str):
 
     Raises:
 
-        ``ValidationError``, if any element of the given list has a type other
-        than ``int``
+        ValidationError:
+
+            If any element of the given list has a type other than ``int``
 
     """
 
     return element_is_type(nodes, name, element_type=int)
 
 
-def element_is_string(nodes, name: str):
+def element_is_string(nodes: DynaBox, name: str) -> bool:  # noqa: DOC502
     """Check that all elements of a list are strings
 
     Args:
@@ -129,8 +137,9 @@ def element_is_string(nodes, name: str):
 
     Raises:
 
-        ``ValidationError``, if any element of the given list has a type other
-        than ``str``
+        ValidationError:
+
+            If any element of the given list has a type other than ``str``
 
     """
 
@@ -150,7 +159,7 @@ def commands_validators() -> list[Validator]:
     ]
 
 
-def acceleration_sensor_validators(name: str):
+def acceleration_sensor_validators(name: str) -> list[Validator]:
     """Return the list of validators for a specific acceleration sensor
 
     Args:
@@ -158,6 +167,10 @@ def acceleration_sensor_validators(name: str):
         name:
 
             The name of the acceleration sensor
+
+    Returns:
+
+        Validators for the specific acceleration node
 
     """
 
@@ -357,26 +370,30 @@ class Settings(Dynaconf):
     Args:
 
         default_settings_filepath:
+
             Filepath to default settings file
 
-        setting_files:
+        *arguments:
+
+            All positional arguments
+
+        settings_files:
+
             A list containing setting files in ascending order according to
             importance (most important last).
 
-        arguments:
-            All positional arguments
+        **keyword_arguments:
 
-        keyword_arguments:
             All keyword arguments
 
     """
 
     def __init__(
         self,
-        default_settings_filepath,
-        *arguments,
-        settings_files: list[str] | None = None,
-        **keyword_arguments,
+        default_settings_filepath: Path,
+        *arguments: Any,
+        settings_files: list | None = None,
+        **keyword_arguments: Any,
     ) -> None:
 
         if settings_files is None:

@@ -20,6 +20,12 @@ def upload_flash(chip: str, flash_location: str | Path):
         flash_location:
             The location of the flash image
 
+    Raises:
+
+        FileNotFoundError:
+
+            If ``flash_location`` does not exist or does not point to a file
+
     """
 
     image_filepath = Path(flash_location).expanduser().resolve()
