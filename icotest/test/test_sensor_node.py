@@ -38,19 +38,6 @@ async def test_connection(sensor_node: SensorNode):
     await check_connection(sensor_node)
 
 
-async def test_set_base64name(sensor_node: SensorNode, capsys, json_metadata):
-    """Set name to Base64 encoded MAC address of sensor node"""
-
-    mac_address = await sensor_node.get_mac_address()
-    getLogger().info("MAC address: %s", mac_address)
-    name = convert_mac_base64(mac_address)
-    with capsys.disabled():
-        print(f"Base64 encoded MAC address (Bluetooth name): {name}")
-    json_metadata["Sensor Node Name"] = name
-
-    await sensor_node.set_name(name)
-
-
 async def test_supply_voltage(sensor_node: SensorNode):
     """Test if battery voltage is within expected bounds"""
 
@@ -148,3 +135,16 @@ async def test_eeprom(sensor_node: SensorNode):
     await check_eeprom_statistics(sensor_node, settings.sensor_node)
     await check_eeprom_status(sensor_node)
     await check_eeprom_bluetooth_times(sensor_node, settings.sensor_node)
+
+
+async def test_set_base64name(sensor_node: SensorNode, capsys, json_metadata):
+    """Set name to Base64 encoded MAC address of sensor node"""
+
+    mac_address = await sensor_node.get_mac_address()
+    getLogger().info("MAC address: %s", mac_address)
+    name = convert_mac_base64(mac_address)
+    with capsys.disabled():
+        print(f"Base64 encoded MAC address (Bluetooth name): {name}")
+    json_metadata["Sensor Node Name"] = name
+
+    await sensor_node.set_name(name)
