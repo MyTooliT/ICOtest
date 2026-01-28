@@ -38,16 +38,15 @@ async def test_connection(sensor_node: SensorNode):
     await check_connection(sensor_node)
 
 
-async def test_get_base64name(sensor_node: SensorNode, capsys):
+async def test_get_base64name(sensor_node: SensorNode, capsys, json_metadata):
     """Get Base64 encoded MAC address of sensor node"""
 
     mac_address = await sensor_node.get_mac_address()
     getLogger().info("MAC address: %s", mac_address)
+    name = convert_mac_base64(mac_address)
     with capsys.disabled():
-        print(
-            "Base64 encoded MAC address (Bluetooth name): "
-            f"{convert_mac_base64(mac_address)}"
-        )
+        print(f"Base64 encoded MAC address (Bluetooth name): {name}")
+    json_metadata["Sensor Node Name"] = name
 
 
 async def test_supply_voltage(sensor_node: SensorNode):
