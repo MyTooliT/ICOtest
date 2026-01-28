@@ -38,7 +38,7 @@ async def test_connection(sensor_node: SensorNode):
     await check_connection(sensor_node)
 
 
-async def test_get_base64name(sensor_node: SensorNode, capsys, json_metadata):
+async def test_set_base64name(sensor_node: SensorNode, capsys, json_metadata):
     """Set name to Base64 encoded MAC address of sensor node"""
 
     mac_address = await sensor_node.get_mac_address()
