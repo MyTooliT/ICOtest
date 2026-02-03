@@ -9,6 +9,7 @@ Use this test code in addition to the one for the sensor node:
 # -- Imports ------------------------------------------------------------------
 
 from logging import getLogger
+from math import ceil
 
 from icotronic.can import STH, StreamingConfiguration
 from icotronic.measurement.constants import ADC_MAX_VALUE
@@ -96,9 +97,20 @@ async def test_acceleration_single_value(sth: STH):
 async def test_acceleration_noise(sth: STH):
     """Test ratio of noise to maximal possible measurement value"""
 
-    acceleration = await read_streaming_data(
-        sth, StreamingConfiguration(first=True), length=10000
+    number_values = 10_000
+    # We want `number_values` values which means we need to collect data from
+    # `number_values/3` messages, if we use a single channel
+    number_streaming_messages = ceil(number_values / 3)
+    measurement_data = await read_streaming_data(
+        sth,
+        StreamingConfiguration(first=True),
+        length=number_streaming_messages,
     )
+
+    values = [datapoint.value for datapoint in measurement_data.first()]
+    assert number_values <= len(values) <= number_values + 2
+    acceleration = values[:number_values]
+    assert len(acceleration) == number_values
 
     ratio_noise_maximum = ratio_noise_max(acceleration)
     sensor = settings.acceleration_sensor()

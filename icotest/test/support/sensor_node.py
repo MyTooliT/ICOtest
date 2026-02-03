@@ -4,6 +4,7 @@
 
 from dynaconf.utils.boxing import DynaBox
 from icotronic.can import SensorNode, StreamingConfiguration
+from icotronic.measurement import MeasurementData
 
 from icotest.test.support.node import check_write_read_eeprom
 
@@ -57,8 +58,8 @@ async def check_eeprom_bluetooth_times(node: SensorNode, settings: DynaBox):
 
 async def read_streaming_data(
     node: SensorNode, config: StreamingConfiguration, length: int
-) -> list[float]:
-    """Collect a certain amount of streaming data
+) -> MeasurementData:
+    """Collect a certain number of streaming data (messages)
 
     Args:
 
@@ -72,24 +73,20 @@ async def read_streaming_data(
 
         length:
 
-            The amount of streaming values that should be collected
+            The amount of streaming data stored in the returned measurement
 
     Returns:
 
-        A list of containing raw 16 bit streaming values
+        A measurement storing ``length`` streaming messages
 
     """
 
+    measurement_data = MeasurementData(config)
     async with node.open_data_stream(config) as stream:
-        stream_data = []
+
         async for data, _ in stream:
-            stream_data.extend(data.values)
-            if len(stream_data) >= length:
+            measurement_data.append(data)
+            if len(measurement_data) >= length:
                 break
 
-    # Due to the chosen streaming format the code above might have
-    # collected one or two additional values. We remove these values
-    # here.
-    assert len(stream_data) >= length
-    additional_values = len(stream_data) - length
-    return stream_data[:-additional_values]
+    return measurement_data
