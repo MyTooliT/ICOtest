@@ -6,6 +6,7 @@ from asyncio import sleep
 from logging import getLogger
 from math import isclose
 from operator import __eq__
+from pathlib import Path
 from typing import Callable, TypeVar
 
 from dynaconf.utils.boxing import DynaBox
@@ -14,7 +15,7 @@ from icotronic.can.node.eeprom.status import EEPROMStatus
 from icotronic.can.status import State
 from semantic_version import Version
 
-from icotest.firmware import upload_flash
+from icotest.cli.commander import Commander
 
 # -- Types --------------------------------------------------------------------
 
@@ -27,12 +28,25 @@ EEPROMValue = TypeVar("EEPROMValue", Version, str)
 async def check_firmware_upload(node_settings: DynaBox):
     """Upload firmware"""
 
+    firmware_locations = node_settings.firmware.locations
+
     logger = getLogger(__name__)
-    firmware_location = node_settings.firmware.location
-    logger.info("Firmware Location: %s", firmware_location)
+    logger.debug("Firmware locations: %s", firmware_locations)
+    image_filepaths: list[Path] = []
+    for firmware_location in firmware_locations:
+        image_filepath = Path(firmware_location).expanduser().resolve()
+        if not image_filepath.exists():
+            raise FileNotFoundError(
+                "Firmware file {image_filepath} does not exist"
+            )
+        if not image_filepath.is_file():
+            raise FileNotFoundError(
+                f"Firmware file {image_filepath} is not a file"
+            )
+        image_filepaths.append(image_filepath)
 
     chip = node_settings.firmware.chip
-    upload_flash(chip, firmware_location)
+    Commander().upload_flash(chip=chip, filepaths=image_filepaths)
 
 
 async def check_connection(node: SensorNode | STU) -> None:

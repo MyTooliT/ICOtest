@@ -14,6 +14,7 @@ from platform import system
 from re import compile as re_compile
 from subprocess import CalledProcessError, run
 from sys import byteorder
+from typing import Sequence
 
 from icotest.config import settings
 
@@ -246,7 +247,7 @@ class Commander:
             regex_output="Chip successfully unlocked",
         )
 
-    def upload_flash(self, chip: str, filepath: str | Path) -> None:
+    def upload_flash(self, chip: str, filepaths: Sequence[str | Path]) -> None:
         """Upload code into the flash memory of the device
 
         Args:
@@ -255,9 +256,10 @@ class Commander:
 
                 The identifier of the chip on the PCB e.g. “BGM121A256V2”
 
-            filepath:
+            filepaths:
 
-                The filepath of the flash image
+                A sequence of filepaths that contains images that should be
+                uploaded to the device in the given order
 
         Raises:
 
@@ -274,7 +276,7 @@ class Commander:
             >>> # We assume the following file does not exist on your machine
             >>> filepath = "nothing here"
             >>> commander.upload_flash("BGM121A256V2",
-            ...     filepath)  # doctest: +IGNORE_EXCEPTION_DETAIL
+            ...     [filepath])  # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
                ...
             CommanderException: Firmware file “nothing here” does not exist
@@ -282,22 +284,23 @@ class Commander:
             Trying to upload a directory instead of a file results in an error
 
             >>> commander.upload_flash("BGM121A256V2",
-            ...     Path.home()) # doctest: +IGNORE_EXCEPTION_DETAIL
+            ...     [Path.home()]) # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
                ...
             CommanderException: “...” is not a file
 
         """
 
-        firmware_filepath = Path(filepath)
+        for filepath in filepaths:
+            firmware_filepath = Path(filepath)
 
-        if not firmware_filepath.exists():
-            raise CommanderException(
-                f"Firmware file “{filepath}” does not exist"
-            )
+            if not firmware_filepath.exists():
+                raise CommanderException(
+                    f"Firmware file “{filepath}” does not exist"
+                )
 
-        if not firmware_filepath.is_file():
-            raise CommanderException(f"“{filepath}” is not a file")
+            if not firmware_filepath.is_file():
+                raise CommanderException(f"“{filepath}” is not a file")
 
         # Set debug mode to out, to make sure we flash the STH (connected via
         # debug cable) and not another microcontroller connected to the
@@ -307,15 +310,18 @@ class Commander:
         # Unlock device (triggers flash erase)
         self.unlock_device(chip)
 
-        self._run_command(
-            command=[
-                "flash",
-                f"{firmware_filepath}",
-                "-d",
-                f"{chip}",
-            ],
-            description="upload firmware",
-        )
+        logger = getLogger(__name__)
+        for filepath in filepaths:
+            self._run_command(
+                command=[
+                    "flash",
+                    f"{firmware_filepath}",
+                    "-d",
+                    f"{chip}",
+                ],
+                description="upload firmware",
+            )
+            logger.info("Uploaded firmware: %s", filepath)
 
     def read_power_usage(self, seconds: float = 1) -> float:
         """Read the power usage of the connected hardware

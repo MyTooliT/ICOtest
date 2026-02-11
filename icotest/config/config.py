@@ -212,11 +212,17 @@ def node_validators(node: str) -> list[Validator]:
         must_exist(
             f"{node}.hardware_version",
             f"{node}.firmware.chip",
-            f"{node}.firmware.location",
             f"{node}.firmware.release_name",
             f"{node}.product_name",
             f"{node}.serial_number",
             is_type_of=str,
+        ),
+        must_exist(
+            f"{node}.firmware.locations",
+            is_type_of=list,
+            condition=partial(
+                element_is_string, name="{node}.firmware.locations"
+            ),
         ),
         must_exist(
             f"{node}.oem_data",
