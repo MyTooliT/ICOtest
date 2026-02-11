@@ -313,8 +313,6 @@ class Commander:
                 f"{firmware_filepath}",
                 "-d",
                 f"{chip}",
-                "--address",
-                "0x0",
             ],
             description="upload firmware",
         )
