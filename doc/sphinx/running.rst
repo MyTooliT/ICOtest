@@ -22,7 +22,7 @@ To list all available test use the option ``--co`` or ``--collect-only``:
 
    icotest run --collect-only
 
-To execute a specific text you can use the option ``-k``, which expects `an expression as argument <https://docs.pytest.org/en/stable/example/markers.html#using-k-expr-to-select-tests-based-on-their-name>`__. For example, let us assume that the collection command command above produced the following output:
+To execute a specific text you can use the option ``-k``, which expects `an expression as argument <https://docs.pytest.org/en/stable/example/markers.html#using-k-expr-to-select-tests-based-on-their-name>`__. For example, let us assume that the collection command above produced the following output:
 
 .. code-block:: text
 
