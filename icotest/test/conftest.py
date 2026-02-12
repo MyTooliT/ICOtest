@@ -2,8 +2,9 @@
 
 # -- Imports ------------------------------------------------------------------
 
-from pytest import fixture
+from logging import getLogger
 
+from pytest import fixture
 from icotronic.can import Connection, SensorNode, STH, STU
 from netaddr import EUI
 
@@ -24,6 +25,8 @@ def anyio_backend():
 @fixture(scope="session")
 def sensor_node_name() -> str:
     """Returns the name of the sensor node used for the test"""
+
+    getLogger().info("Using sensor node name: %s", settings.sensor_node.name)
 
     return settings.sensor_node.name
 

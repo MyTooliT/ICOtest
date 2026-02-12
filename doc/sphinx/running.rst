@@ -55,6 +55,16 @@ Another option to execute the same test would be the command:
 
 For more information on how to execute specific tests, please take a look at the `pytest documentation <https://docs.pytest.org/en/stable/usage.html#specifying-tests-selecting-tests>`__.
 
+=========================
+Changing Sensor Node Name
+=========================
+
+While most values used by the tests can only be changed by updating the :ref:`configuration`, we make an exception for the sensor node name. To overwrite this value use the option ``-n`` or ``--name``:
+
+.. code-block:: shell
+
+   icotest run --name <sensor_node_name> …
+
 ===============
 Debugging Tests
 ===============

@@ -4,10 +4,13 @@
 
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger
+from os import environ
 from subprocess import run, CalledProcessError
 from sys import exit as sys_exit
 
-from icotest.config import ConfigurationUtility
+from icotronic.cmdline.types import node_name
+
+from icotest.config import settings, ConfigurationUtility
 
 # -- Functions ----------------------------------------------------------------
 
@@ -47,12 +50,20 @@ def create_icotest_parser() -> ArgumentParser:
     # = Run =
     # =======
 
-    subparsers.add_parser("run", help="Run tests")
+    run_parser = subparsers.add_parser("run", help="Run tests")
+    run_parser.add_argument(
+        "-n",
+        "--name",
+        help="Name of sensor node",
+        type=node_name,
+    )
 
     return parser
 
 
-def run_pytest(log_level: str, pytest_args: list[str]) -> None:
+def run_pytest(
+    log_level: str, pytest_args: list[str], environment: dict[str, str]
+) -> None:
     """Run pytest for the package using the given arguments
 
     Args:
@@ -65,6 +76,10 @@ def run_pytest(log_level: str, pytest_args: list[str]) -> None:
 
             Additional arguments for pytest call
 
+        environment:
+
+            Environment for pytest call
+
     """
 
     command = [
@@ -76,7 +91,7 @@ def run_pytest(log_level: str, pytest_args: list[str]) -> None:
     ] + pytest_args
     print(f"\nTest Command:\n\n  {' '.join(command)}\n")
     try:
-        run(command, check=True)
+        run(command, check=True, env=environment)
     except CalledProcessError as error:
         sys_exit(error.returncode)
 
@@ -110,7 +125,16 @@ def main() -> None:
         case "config":
             ConfigurationUtility.open_user_config()
         case "run":
-            run_pytest(log_level, additional_args)
+            if arguments.name is not None:
+                logger.info(
+                    "Using sensor node name: %s", settings.sensor_node.name
+                )
+                environment_pytest = dict(environ)
+                environment_pytest["DYNACONF_SENSOR_NODE__NAME"] = (
+                    arguments.name
+                )
+
+            run_pytest(log_level, additional_args, environment_pytest)
 
 
 if __name__ == "__main__":
