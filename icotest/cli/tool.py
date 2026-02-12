@@ -125,11 +125,11 @@ def main() -> None:
         case "config":
             ConfigurationUtility.open_user_config()
         case "run":
+            environment_pytest = dict(environ)
             if arguments.name is not None:
                 logger.info(
                     "Using sensor node name: %s", settings.sensor_node.name
                 )
-                environment_pytest = dict(environ)
                 environment_pytest["DYNACONF_SENSOR_NODE__NAME"] = (
                     arguments.name
                 )
