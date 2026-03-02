@@ -37,7 +37,7 @@ async def check_firmware_upload(node_settings: DynaBox):
         image_filepath = Path(firmware_location).expanduser().resolve()
         if not image_filepath.exists():
             raise FileNotFoundError(
-                "Firmware file {image_filepath} does not exist"
+                f"Firmware file {image_filepath} does not exist"
             )
         if not image_filepath.is_file():
             raise FileNotFoundError(
