@@ -315,7 +315,7 @@ class Commander:
             self._run_command(
                 command=[
                     "flash",
-                    f"{firmware_filepath}",
+                    f"{filepath}",
                     "-d",
                     f"{chip}",
                 ],
