@@ -1,6 +1,4 @@
-# ICOtest Documentation
-
-## Purpose
+# ICOtest
 
 The ICOtest package contains test for the [ICOtronic system] that make sure that hardware works as expected. For this purpose the test software checks various attributes of the hardware. For example:
 
