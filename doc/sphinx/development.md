@@ -2,7 +2,7 @@
 
 ## Requirements
 
-While not strictly required we assume that you installed [`just`] in the description below.
+While not strictly required we assume that you installed [`just`][just] in the description below.
 
 ## Install
 
