@@ -24,6 +24,9 @@ project = name  # noqa: F821 # type: ignore[name-defined]
 
 # -- General configuration ----------------------------------------------------
 
+extensions = [
+    "myst_parser",
+]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 

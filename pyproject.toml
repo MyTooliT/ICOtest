@@ -42,6 +42,7 @@ version = "0.8.1"
 dev = [
     "Flake8-pyproject>=1.2.3",
     "mypy>=1.18.2",
+    "myst-parser>=5",
     "pydoclint[flake8]>=0.7.3",
     "pylint>=3.3.8",
     "pytest-rerunfailures>=16.1",
