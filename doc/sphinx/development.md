@@ -1,20 +1,14 @@
----
-substitutions:
-  gh: '`gh`'
-  just: '`just`'
----
-
 # Development
 
 ## Requirements
 
-While not strictly required we assume that you installed [just] in the description below.
+While not strictly required we assume that you installed [`just`] in the description below.
 
 ## Install
 
 ### uv
 
-We recommend you use [uv](https://docs.astral.sh/uv) to install
+We recommend you use [`uv`](https://docs.astral.sh/uv) to install
 the package. To do that please use the following commands in the root of
 the repository:
 
