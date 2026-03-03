@@ -24,8 +24,6 @@ project = name  # noqa: F821 # type: ignore[name-defined]
 
 # -- General configuration ----------------------------------------------------
 
-# Run doctest from doctest directive, but not nested tests from autodoc code
-doctest_test_doctest_blocks = ""
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
