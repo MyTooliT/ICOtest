@@ -83,8 +83,7 @@ with the version that you want to release (e.g. `0.2.0`).
    release](https://github.com/MyTooliT/ICOtest/releases/new)
    1. Paste them into the main text of the release web page
    2. Insert the version number into the tag field
-   3. For the release title use “Version ”, where `<VERSION>`
-      specifies the version number (e.g. “Version 0.2”)
+   3. For the release title use “Version `<VERSION>`” (e.g. “Version 0.2”)
    4. Click on “Publish Release”
 
    **Note:** Alternatively you can also use the
