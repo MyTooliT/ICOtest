@@ -69,7 +69,6 @@ with the version that you want to release (e.g. `0.2.0`).
 
 5. Release a new version on
    [PyPI](https://pypi.org/project/icotest/):
-
    1. Increase version number
    2. Add git tag containing version number
    3. Push changes
@@ -82,7 +81,6 @@ with the version that you want to release (e.g. `0.2.0`).
    notes](https://github.com/MyTooliT/ICOtest/tree/main/doc/release)
    for the latest version and [create a new
    release](https://github.com/MyTooliT/ICOtest/releases/new)
-
    1. Paste them into the main text of the release web page
    2. Insert the version number into the tag field
    3. For the release title use “Version ”, where `<VERSION>`
