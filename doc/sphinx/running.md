@@ -59,6 +59,26 @@ While most values used by the tests can only be changed by updating the {ref}`co
 icotest run --name <sensor_node_name> …
 ```
 
+## JSON Report
+
+To store data about a test run in a JSON file use the option `--json-report`:
+
+```sh
+icotest run --json-report …
+```
+
+Tests might also store additional metadata in this JSON file. For example, the test `test_set_base64name` adds the sensor node name to the metadata. If we execute the test with the command:
+
+```sh
+icotest run --json-report -k 'sensor_node and base64'
+```
+
+and the test finishes successfully, then there should be a file `.report.json` in the current working directory. This file stores the name of the sensor node in an object with the key `Sensor Node Name`. You can print the name using the following [`yq`](https://github.com/mikefarah/yq) command:
+
+```sh
+yq '.tests[0].metadata.["Sensor Node Name"]' .report.json
+```
+
 ## Debugging Tests
 
 Sometimes you want to get additional information about test execution. For that purpose you can increase the logging level. For example, to output info logging messages (in addition to the warning and error logging messages enabled by default) you can use the `icotest` option `--log` with the argument `info`:
