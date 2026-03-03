@@ -8,7 +8,6 @@ The ICOtest package contains test for the [ICOtronic system] that make sure that
 - Does the hardware use a certain expected amount of power?
 
 ```{toctree}
-:caption: 'Contents:'
 :maxdepth: 2
 
 requirements
