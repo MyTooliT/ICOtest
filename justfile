@@ -32,11 +32,6 @@ test: check
 	uv run pytest -k 'not firmware_upload and not base64' \
 		--reruns 5 --reruns-delay 1
 
-# Build documentation
-[group('documentation')]
-documentation: setup
-	uv run sphinx-build -M html {{sphinx_input_directory}} {{sphinx_directory}}
-
 # Release new package version
 [group('release')]
 [unix]
@@ -60,3 +55,27 @@ release version:
 	git tag "${version}"
 	git push
 	git push --tags
+
+# =================
+# = Documentation =
+# =================
+
+# Generate documentation
+[group('documentation')]
+documentation: setup
+	uv run sphinx-build -M html {{sphinx_input_directory}} {{sphinx_directory}}
+
+# Remove documentation
+[group('documentation')]
+[windows]
+clean:
+	#!pwsh
+	Remove-Item -Recurse {{sphinx_directory}}
+
+# Remove documentation
+[group('documentation')]
+[unix]
+clean:
+	#!/usr/bin/env sh -e
+	rm -rf {{sphinx_directory}}
+
