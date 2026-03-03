@@ -73,3 +73,34 @@ If you **do not want to change the config**, and Simplicity Commander (`commande
 
 [default values]: https://github.com/MyTooliT/ICOtest/blob/main/icotest/config/config.yaml
 [dynaconf]: https://www.dynaconf.com
+
+## Firmware Files
+
+Since ICOtest `0.8` you can upload multiple flash images via the configuration values:
+
+- `sensor node` → `firmware` → `locations` and
+- `stu` → `firmware` → `locations`.
+
+```{eval-rst}
+.. hint::
+
+   Please note that we changed the configuration key from the singular ``location`` to the plural ``locations`` in ICOtest ``0.8`` to reflect that ``locations`` contain a list instead of a scalar value (like ``location`` used to)!
+```
+
+If you want to adapt the user configuration for your target and **you enabled merging with `dynaconf_merge: true`** in your {ref}`user configuration file <configuration>`, then please **do not forget to set `dynaconf_merge: false` for the locations value**:
+
+```yaml
+dynaconf_merge: true
+
+# …
+
+sensor node:
+  firmware:
+    dynaconf_merge: false
+    # …
+    locations:
+      - filepath_first_firmware_image.s37
+      - filepath_second_firmware_image.s37
+```
+
+Otherwise the default locations and your configuration values will be merged instead of overwritten.
