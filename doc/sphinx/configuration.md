@@ -10,13 +10,13 @@ icotest config
 
 which will open the the user configuration in your default text editor. You can then edit this file and save your changes to update the configuration.
 
-:::{figure} editor_output.webp
+```{figure} editor_output.webp
 :align: center
 :alt: Editor output in Terminal after using icotest config
 :scale: 40 %
 
 The command `icontest config` opens your the user configuration in the default text editor.
-:::
+```
 
 ```{eval-rst}
 .. hint::
