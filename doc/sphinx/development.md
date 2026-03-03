@@ -57,7 +57,7 @@ with the version that you want to release (e.g. `0.2.0`).
    ```shell
    pip install -e .
    icotest run -k 'stu and test_connection'
-   pip uninstall icotest
+   pip uninstall -y icotest
    ```
 
 3. Make sure all [workflows of the CI system work
