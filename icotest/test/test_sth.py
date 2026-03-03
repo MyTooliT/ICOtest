@@ -107,7 +107,7 @@ async def test_acceleration_noise(sth: STH):
         length=number_streaming_messages,
     )
 
-    values = [datapoint.value for datapoint in measurement_data.first()]
+    values = measurement_data.values()
     assert number_values <= len(values) <= number_values + 2
     acceleration = values[:number_values]
     assert len(acceleration) == number_values
