@@ -77,7 +77,7 @@ with the version that you want to release (e.g. `0.2.0`).
    just release <VERSION>
    ```
 
-5) Open the [release
+6. Open the [release
    notes](https://github.com/MyTooliT/ICOtest/tree/main/doc/release)
    for the latest version and [create a new
    release](https://github.com/MyTooliT/ICOtest/releases/new)
