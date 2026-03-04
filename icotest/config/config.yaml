@@ -57,13 +57,17 @@ sensor node:
   firmware:
     # Microcontroller identifier used for firmware upload
     # Use “BGM113A256V2” for hardware version 1 and “BGM123A256V2” for version 2
-    chip: "BGM113A256V2"
+    chip: "BGM123A256V2"
     locations:
       # This list contain paths to firmware images, which will be uploaded to
       # the node in the given order. Both `.s37` and `.hex` files are supported.
       # Relative paths will be interpreted in relation to the current working
       # directory. You can use `~` to refer to the user’s home directory.
-      - ~/Documents/Firmware/manufacturingImageSthv2.1.10.hex
+      - ~/Documents/Firmware/bootloader_old.s37
+      - ~/Documents/Firmware/v4_2_0.s37
+      - ~/Documents/Firmware/bootloader-v4_2_0.s37
+      - ~/Documents/Firmware/v4_2_0.s37
+
     release name: Minion # Code name of the current firmware release
 
   gtin: 0 # Global Trade Item Number
