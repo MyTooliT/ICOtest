@@ -49,18 +49,14 @@ async def test_supply_voltage(sensor_node: SensorNode):
     expected_maximum_voltage = expected_voltage + tolerance_voltage
 
     assert supply_voltage >= expected_minimum_voltage, (
-        (
-            f"Supply voltage of {supply_voltage:.3f} V is lower "
-            "than expected minimum voltage of "
-            f"{expected_minimum_voltage:.3f} V"
-        ),
+        f"Supply voltage of {supply_voltage:.3f} V is lower "
+        "than expected minimum voltage of "
+        f"{expected_minimum_voltage:.3f} V"
     )
     assert supply_voltage <= expected_maximum_voltage, (
-        (
-            f"Supply voltage of {supply_voltage:.3f} V is "
-            "greater than expected maximum voltage of "
-            f"{expected_minimum_voltage:.3f} V"
-        ),
+        f"Supply voltage of {supply_voltage:.3f} V is "
+        "greater than expected maximum voltage of "
+        f"{expected_minimum_voltage:.3f} V"
     )
 
 
