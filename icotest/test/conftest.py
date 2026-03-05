@@ -70,16 +70,16 @@ async def sth(stu, sensor_node_name) -> STH:
 
 @fixture
 def json_metadata(request):
-    """Fixture für JSON-Metadaten (für --json-report)
+    """Fixture for JSON metadata (for --json-report)
     
-    Ermöglicht Tests, Metadaten zum JSON-Report hinzuzufügen.
+    Allows tests to add metadata to the JSON report.
     """
     metadata = {}
     
-    # Metadaten nach Test-Ausführung zum Report hinzufügen
+    # Add metadata to report after test execution
     def finalizer():
         if hasattr(request.config, '_json_report') and request.config._json_report:
-            # Finde den aktuellen Test im Report
+            # Find the current test in the report
             for test in request.config._json_report.get('tests', []):
                 if test.get('nodeid') == request.node.nodeid:
                     if 'metadata' not in test:
@@ -92,34 +92,34 @@ def json_metadata(request):
 
 
 def pytest_configure(config):
-    # Registriere Custom Markers
+    # Register custom markers
     config.addinivalue_line(
-        "markers", "initial_setup: Tests für initiales Setup (Firmware-Upload, Umbenennung)"
+        "markers", "initial_setup: Tests for initial setup (firmware upload, renaming)"
     )
     config.addinivalue_line(
-        "markers", "basic: Basis-Tests (Verbindung, EEPROM, etc.)"
+        "markers", "basic: Basic tests (connection, EEPROM, etc.)"
     )
     config.addinivalue_line(
-        "markers", "power: Stromaufnahme-Tests"
+        "markers", "power: Power consumption tests"
     )
     config.addinivalue_line(
-        "markers", "sensor: Sensor-Tests (Standard)"
+        "markers", "sensor: Sensor tests (standard)"
     )
     config.addinivalue_line(
-        "markers", "backpack: Tests für Boards mit BackPack"
+        "markers", "backpack: Tests for boards with BackPack"
     )
     config.addinivalue_line(
-        "markers", "stu: STU-spezifische Tests"
+        "markers", "stu: STU-specific tests"
     )
     
     if config.getoption("--json-report", default=False):
-        # create a report folder if tht is not yet the case
+        # Create a report folder if it does not yet exist
         if not os.path.exists('reports'):
             os.makedirs('reports')
 
-        # generate a time dependent report name
+        # Generate a time-dependent report name
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
         report_name = f"reports/hardware_test_{timestamp}.json"
 
-        # set the path for the plugin
+        # Set the path for the plugin
         config.option.json_report_file = report_name

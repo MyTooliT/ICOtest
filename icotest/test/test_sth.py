@@ -149,8 +149,8 @@ async def test_acceleration_noise(sth: STH):
 async def test_acceleration_3a_alt(sth: STH):
     """Test the triple axis accelerometer reading"""
 
-    # configure all of those using the config file
-    # assume it lies on the table
+    # Configure all of these using the config file
+    # Assume it lies on the table
     test_acc_bias = np.array([1.0, 0.0, 0.0])
     #test_acc_tollerance_g = 0.5
 
@@ -166,7 +166,7 @@ async def test_acceleration_3a_alt(sth: STH):
         reference_voltage=1.8,
     )
 
-    #set the correct channels
+    # Set the correct channels
     await sth.set_sensor_configuration(
        SensorConfiguration(first=2,second=3,third=4)
     )
@@ -174,7 +174,7 @@ async def test_acceleration_3a_alt(sth: STH):
 
     acc_bias = []
     acc_noise = []
-    #hown long should the recording sample be
+    # How long should the recording sample be
     number_values = 10_000
 
     # We want `number_values` values which means we need to collect data from
@@ -189,7 +189,7 @@ async def test_acceleration_3a_alt(sth: STH):
         getLogger(__name__).info("🎛️ Config: %s", config)
         measurement_data = await read_streaming_data(sth, config, length=number_streaming_messages)
 
-        # this block strips the meta data since we seem to be allways getting 3xN array
+        # This block strips the metadata since we seem to always be getting a 3xN array
         all_values =  measurement_data.first().data + measurement_data.second().data + measurement_data.third().data
         acceleration = [datapoint.value for datapoint in all_values]
 
@@ -200,15 +200,15 @@ async def test_acceleration_3a_alt(sth: STH):
             "🫣 Channel “%s” mean: %.2f = %.2f g @ SNR: %.2f dB" , channel, mean(acceleration), acceleration_g, acceleration_noise
         )
 
-        #put in into the list for analysis
+        # Put it into the list for analysis
         acc_bias.append(acceleration_g)
         acc_noise.append(acceleration_noise)
 
 
-    #store the results into the json file
+    # Store the results into the json file
     #json_metadata["Sensor Node Name"] = name
 
-    # substract the expected gravity
+    # Subtract the expected gravity
     earth_acc = 1.0
     acc_bias_error = np.linalg.norm(np.array(acc_bias)) - earth_acc
     getLogger(__name__).info(
@@ -241,8 +241,8 @@ async def test_acceleration_3a_alt(sth: STH):
 async def test_acceleration_3a_optimized(sth: STH):
     """Test the triple axis accelerometer reading (optimized version)"""
 
-    # 2do configure all of those using the config file
-    # we use the vector represenation of the acceleration therefore placement of the board should make no difference.
+    # TODO: configure all of these using the config file
+    # We use the vector representation of the acceleration therefore placement of the board should make no difference.
     test_acc_tollerance_g = 2.5
     test_acc_noise = np.array([50.0, 50.0, 50.0])
 
@@ -258,7 +258,7 @@ async def test_acceleration_3a_optimized(sth: STH):
         SensorConfiguration(first=2, second=3, third=4)
     )
 
-    # how long should the recording sample be
+    # How long should the recording sample be
     number_values = 10_000
 
     # We want `number_values` values which means we need to collect data from
@@ -339,7 +339,7 @@ async def test_BaP_torr_accelleration(sth: STH):
     test_acc_tollerance_g = 2.5
     test_noise_limit_db = -85
 
-    #set the correct channels to address Backpack
+    # Set the correct channels to address BackPack
     await sth.set_sensor_configuration(
        SensorConfiguration(first=7,second=8,third=9)
     )
@@ -348,7 +348,7 @@ async def test_BaP_torr_accelleration(sth: STH):
     acc_bias = []
     acc_noise = []
 
-    #hown long should the recording sample be
+    # How long should the recording sample be
     number_values = 10_000
 
     # We want `number_values` values which means we need to collect data from
@@ -363,9 +363,9 @@ async def test_BaP_torr_accelleration(sth: STH):
     acceleration_torr_raw = np.array([datapoint.value for datapoint in measurement_data.second()])
     acceleration_y_raw = np.array([datapoint.value for datapoint in measurement_data.third()])
 
-    # this block strips the meta data since we seem to be allways getting 3xN array
+    # This block strips the metadata since we seem to always be getting a 3xN array
     acceleration_x = (acceleration_x_raw / 65535 - 0.5)*200
-    # the combination sensors add up which results in an inherent gain of two
+    # The combination sensors add up which results in an inherent gain of two
     acceleration_y = (acceleration_y_raw / 65535 - 0.5) * 100
     acceleration_torr = (acceleration_torr_raw / 65535 - 0.5)*100
 
@@ -380,12 +380,12 @@ async def test_BaP_torr_accelleration(sth: STH):
     getLogger(__name__).info(
         "Channel X,Y mean: %.2f g, %.2f g @ SNR: %.2f, %.2f dB" , acc_bias_x, acc_bias_y, acceleration_noise_x, acceleration_noise_y
     )
-    # add some information because g is not really suitable here
+    # Add some information because g is not really suitable here
     getLogger(__name__).info(
         "Channel torr mean: %.2f g @ SNR: %.2f" , acc_bias_torr, acceleration_noise_torr
     )
 
-    #store the results into the json file
+    # Store the results into the json file
     #json_metadata["Sensor Node Name"] = name
 
     assert max(acc_bias_x,acc_bias_y,acc_bias_torr) < test_acc_tollerance_g, (

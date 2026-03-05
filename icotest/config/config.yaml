@@ -46,7 +46,7 @@ commands:
 sensor node:
   batch number: 200 # (32 bit unsigned) number that describes the current batch
   hardware:
-    # Gibt an, ob das Board ein BackPack hat (für spezielle Sensor-Tests)
+    # Indicates whether the board has a BackPack (for special sensor tests)
     has backpack: false
   bluetooth:
     # Advertisement time 1 in ms
