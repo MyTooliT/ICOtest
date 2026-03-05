@@ -180,7 +180,8 @@ async def test_acceleration_3a_alt(sth: STH):
             sth, config, length=number_streaming_messages
         )
 
-        # this block strips the meta data since we seem to be always getting 3xN array
+        # this block strips the meta data since we seem to be always getting
+        # 3xN array
         all_values = (
             measurement_data.first().data
             + measurement_data.second().data
@@ -271,7 +272,8 @@ async def test_BaP_torr_accelleration(sth: STH):
         [datapoint.value for datapoint in measurement_data.third()]
     )
 
-    # this block strips the meta data since we seem to be always getting 3xN array
+    # this block strips the meta data since we seem to be always getting 3xN
+    # array
     acceleration_x = (acceleration_x_raw / 65535 - 0.5) * 200
     # the combination sensors add up which results in an inherent gain of two
     acceleration_y = (acceleration_y_raw / 65535 - 0.5) * 100
