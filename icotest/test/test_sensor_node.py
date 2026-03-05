@@ -30,6 +30,8 @@ from icotronic.measurement.constants import ADC_MAX_VALUE
 # -- Functions ----------------------------------------------------------------
 
 
+# Order 10-19: Basic Tests
+
 @mark.order(10)
 @mark.basic
 async def test_connection(sensor_node: SensorNode):
@@ -60,6 +62,8 @@ async def test_supply_voltage(sensor_node: SensorNode):
         "greater than expected maximum voltage of "
         f"{expected_minimum_voltage:.3f} V"
     )
+
+# Order 20-29: Power Tests
 
 @mark.order(20)
 @mark.power

@@ -30,10 +30,10 @@ import numpy as np
 
 # -- Functions ----------------------------------------------------------------
 
+# Order 30-39: Sensor Tests (Standard)
 
 @mark.order(30)
 @mark.sensor
-@mark.basic
 async def test_acceleration_sensor_self_test(sth: STH):
     """Use the self test of a acceleration sensor to check for problems"""
 
@@ -330,8 +330,9 @@ async def test_acceleration_3a_optimized(sth: STH):
     )
 
 
+# Order 40-49: BackPack Tests
+
 @mark.order(40)
-@mark.sensor
 @mark.backpack
 async def test_BaP_torr_accelleration(sth: STH):
     """Test the triple axis accelerometer reading"""
@@ -400,6 +401,8 @@ async def test_BaP_torr_accelleration(sth: STH):
 
 
 
+
+# Order 10-19: Basic Tests
 
 @mark.order(13)
 @mark.basic

@@ -1,8 +1,8 @@
-"""STH Initial Setup Tests - Firmware Upload und Umbenennung
+"""STH Initial Setup Tests - Firmware Upload and Renaming
 
-Diese Tests müssen in einer bestimmten Reihenfolge ausgeführt werden:
+These tests must be executed in a specific order:
 1. Firmware Upload (order=1)
-2. Base64 Name setzen (order=2)
+2. Set Base64 Name (order=2)
 """
 
 # -- Imports ------------------------------------------------------------------
@@ -23,7 +23,7 @@ from icotest.test.support.mac import convert_mac_base64
 @mark.order(1)
 @mark.initial_setup
 async def test_firmware_upload():
-    """Upload firmware - MUSS als ERSTES ausgeführt werden"""
+    """Upload firmware - MUST be executed FIRST"""
 
     await check_firmware_upload(settings.sensor_node)
 
@@ -31,33 +31,33 @@ async def test_firmware_upload():
 @mark.order(2)
 @mark.initial_setup
 async def test_set_base64name(sth: STH, sensor_node_mac_address, json_metadata):
-    """Setze Sensor Node Name auf Base64-kodierte MAC-Adresse
+    """Set Sensor Node Name to Base64-encoded MAC address
     
-    Dieser Test:
-    1. Liest die MAC-Adresse des Sensor Nodes
-    2. Konvertiert sie zu Base64
-    3. Benennt den Node auf diesen Namen um
-    4. Speichert den Namen in den JSON-Metadaten
+    This test:
+    1. Reads the MAC address of the Sensor Node
+    2. Converts it to Base64
+    3. Renames the node to this name
+    4. Stores the name in the JSON metadata
     
-    WICHTIG: Muss NACH test_firmware_upload ausgeführt werden (order=2)
+    IMPORTANT: Must be executed AFTER test_firmware_upload (order=2)
     """
 
     logger = getLogger(__name__)
     
-    # MAC-Adresse zu Base64 konvertieren
+    # Convert MAC address to Base64
     name = convert_mac_base64(sensor_node_mac_address)
-    logger.info("Base64-kodierte MAC-Adresse: %s", name)
+    logger.info("Base64-encoded MAC address: %s", name)
     
-    # Node umbenennen
+    # Rename node
     await sth.eeprom.write_name(name)
-    logger.info("Sensor Node umbenannt auf: %s", name)
+    logger.info("Sensor Node renamed to: %s", name)
     
-    # Name in JSON-Metadaten speichern (für --json-report)
+    # Store name in JSON metadata (for --json-report)
     json_metadata["Sensor Node Name"] = name
-    logger.info("Name in JSON-Metadaten gespeichert")
+    logger.info("Name stored in JSON metadata")
     
-    # Verifizieren dass der Name korrekt gesetzt wurde
+    # Verify that the name was set correctly
     read_name = await sth.eeprom.read_name()
     assert read_name == name, (
-        f"Gelesener Name '{read_name}' stimmt nicht mit gesetztem Namen '{name}' überein"
+        f"Read name '{read_name}' does not match set name '{name}'"
     )
