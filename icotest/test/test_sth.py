@@ -212,8 +212,7 @@ async def test_acceleration_3a_alt(sth: STH):
 
     acc_noise_margin = np.max(acc_noise + test_acc_noise)
     getLogger(__name__).info(
-        "Noise check, we expect about %.2f dB are off by %.2f dB in the "
-        "worst channel",
+        "Noise check: expected threshold = %.2f dB, worst channel margin = %.2f dB",
         np.mean(test_acc_noise),
         acc_noise_margin,
     )
@@ -255,7 +254,7 @@ async def test_acceleration_3a_optimized(sth: STH):
 
     # Stream all three channels simultaneously
     config = StreamingConfiguration(first=True, second=True, third=True)
-    getLogger(__name__).info("🎛️ Config: %s", config)
+    getLogger(__name__).info("Streaming config: %s", config)
     measurement_data = await read_streaming_data(
         sth, config, length=number_streaming_messages
     )
@@ -278,7 +277,7 @@ async def test_acceleration_3a_optimized(sth: STH):
         acceleration_noise = ratio_noise_max(acceleration_raw)
 
         getLogger(__name__).info(
-            "🫣 Channel \"%s\" mean: %.2f = %.2f g @ SNR: %.2f dB",
+            "Channel \"%s\": mean raw value = %.2f, acceleration = %.2f g, SNR = %.2f dB",
             axis_name,
             mean(acceleration_raw),
             acceleration_g,
@@ -292,7 +291,7 @@ async def test_acceleration_3a_optimized(sth: STH):
     earth_acc = 1.0
     acc_bias_error = np.linalg.norm(np.array(acc_bias)) - earth_acc
     getLogger(__name__).info(
-        "Bias check, we expect %.2f g are off by %.2f g",
+        "Bias check: expected = %.2f g, measured error = %.2f g",
         earth_acc,
         acc_bias_error,
     )
