@@ -229,8 +229,8 @@ async def test_acceleration_3a_alt(sth: STH):
 async def test_acceleration_3a_optimized(sth: STH):
     """Test the triple axis accelerometer reading (optimized version)"""
 
-    # configure all of those using the config file
-    # assume it lies on the table
+    # 2do configure all of those using the config file
+    # we use the vector represenation of the acceleration therefore placement of the board should make no difference.
     test_acc_tollerance_g = 2.5
     test_acc_noise = np.array([50.0, 50.0, 50.0])
 
