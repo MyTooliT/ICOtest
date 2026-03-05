@@ -91,7 +91,16 @@ ignore_missing_imports = true
 [tool.pylint]
 ignore-paths = [ "^.venv.*$" ]
 
-[tool.pytest]
+[tool.pytest.ini_options]
 addopts = ["--doctest-modules"]
 anyio_mode = "auto"
 minversion = "9.0"
+markers = [
+    "order: Test execution order (provided by pytest-ordering)",
+    "basic: Basic functionality tests",
+    "power: Power consumption tests",
+    "sensor: Sensor functionality tests",
+    "backpack: BackPack hardware tests",
+    "initial_setup: Initial setup tests (firmware upload, renaming)",
+    "stu: STU-specific tests",
+]
