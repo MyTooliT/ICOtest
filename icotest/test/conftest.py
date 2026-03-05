@@ -10,6 +10,10 @@ from netaddr import EUI
 
 from icotest.config import settings
 
+# for renaming the output files
+import datetime
+import os
+
 # pylint: disable=redefined-outer-name
 
 # -- Fixtures -----------------------------------------------------------------
@@ -62,3 +66,17 @@ async def sth(stu, sensor_node_name) -> STH:
 
     async with stu.connect_sensor_node(sensor_node_name, STH) as sth:
         yield sth
+
+
+def pytest_configure(config):
+    if config.getoption("--json-report", default=False):
+        # create a report folder if tht is not yet the case
+        if not os.path.exists('reports'):
+            os.makedirs('reports')
+
+        # generate a time dependent report name
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+        report_name = f"reports/hardware_test_{timestamp}.json"
+
+        # set the path for the plugin
+        config.option.json_report_file = report_name
