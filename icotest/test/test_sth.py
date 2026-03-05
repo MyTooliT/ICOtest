@@ -226,6 +226,104 @@ async def test_acceleration_3a_alt(sth: STH):
 
 
 
+async def test_acceleration_3a_optimized(sth: STH):
+    """Test the triple axis accelerometer reading (optimized version)"""
+
+    # configure all of those using the config file
+    # assume it lies on the table
+    test_acc_tollerance_g = 2.5
+    test_acc_noise = np.array([50.0, 50.0, 50.0])
+
+    await sth.set_adc_configuration(
+        prescaler=2,
+        acquisition_time=8,
+        oversampling_rate=64,
+        reference_voltage=1.8,
+    )
+
+    # set the correct channels
+    await sth.set_sensor_configuration(
+        SensorConfiguration(first=2, second=3, third=4)
+    )
+
+    # how long should the recording sample be
+    number_values = 10_000
+
+    # We want `number_values` values which means we need to collect data from
+    # `number_values/3` messages, if we use a single channel
+    number_streaming_messages = ceil(number_values / 3)
+
+    # Stream all three channels simultaneously
+    config = StreamingConfiguration(first=True, second=True, third=True)
+    getLogger(__name__).info("🎛️ Config: %s", config)
+    measurement_data = await read_streaming_data(
+        sth, config, length=number_streaming_messages
+    )
+
+    # Extract raw data from each channel
+    acceleration_x_raw = np.array([
+        datapoint.value for datapoint in measurement_data.first()
+    ])
+    acceleration_y_raw = np.array([
+        datapoint.value for datapoint in measurement_data.second()
+    ])
+    acceleration_z_raw = np.array([
+        datapoint.value for datapoint in measurement_data.third()
+    ])
+
+    # Convert to g and calculate noise for each axis
+    acc_bias = []
+    acc_noise = []
+
+    for axis_name, acceleration_raw in [
+        ("x", acceleration_x_raw),
+        ("y", acceleration_y_raw),
+        ("z", acceleration_z_raw),
+    ]:
+        acceleration_g = (mean(acceleration_raw) + 400 - exp2(15)) * 1.3733e-3
+        acceleration_noise = ratio_noise_max(acceleration_raw)
+
+        getLogger(__name__).info(
+            "🫣 Channel "%s" mean: %.2f = %.2f g @ SNR: %.2f dB",
+            axis_name,
+            mean(acceleration_raw),
+            acceleration_g,
+            acceleration_noise,
+        )
+
+        acc_bias.append(acceleration_g)
+        acc_noise.append(acceleration_noise)
+
+    # subtract the expected gravity
+    earth_acc = 1.0
+    acc_bias_error = np.linalg.norm(np.array(acc_bias)) - earth_acc
+    getLogger(__name__).info(
+        "Bias check, we expect %.2f g are off by %.2f g",
+        earth_acc,
+        acc_bias_error,
+    )
+    assert acc_bias_error < test_acc_tollerance_g, (
+        f"Accelerometer offset error {acc_bias_error:.3f} g is higher than "
+        f"{test_acc_tollerance_g:.3f} g "
+        f"the measured values are {acc_bias[0]:.3f} {acc_bias[1]:.3f} "
+        f"{acc_bias[2]:.3f} g"
+    )
+
+    acc_noise_margin = np.max(acc_noise + test_acc_noise)
+    getLogger(__name__).info(
+        "Noise check, we expect about %.2f dB are off by %.2f dB in the "
+        "worst channel",
+        np.mean(test_acc_noise),
+        acc_noise_margin,
+    )
+    assert acc_noise_margin < 0.0, (
+        f"Accelerometer noise error! The noise margin is "
+        f"{acc_noise_margin:.3f} "
+        f"the measured values are {acc_noise[0]:.3f} {acc_noise[1]:.3f} "
+        f"{acc_noise[2]:.3f} dB"
+    )
+
+
 async def test_BaP_torr_accelleration(sth: STH):
     """Test the triple axis accelerometer reading"""
 
