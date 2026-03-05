@@ -163,7 +163,7 @@ async def test_acceleration_3a_alt(sth: STH):
 
     acc_bias = []
     acc_noise = []
-    # hown long should the recording sample be
+    # how long should the recording sample be
     number_values = 10_000
 
     # We want `number_values` values which means we need to collect data from
@@ -180,7 +180,7 @@ async def test_acceleration_3a_alt(sth: STH):
             sth, config, length=number_streaming_messages
         )
 
-        # this block strips the meta data since we seem to be allways getting 3xN array
+        # this block strips the meta data since we seem to be always getting 3xN array
         all_values = (
             measurement_data.first().data
             + measurement_data.second().data
@@ -206,7 +206,7 @@ async def test_acceleration_3a_alt(sth: STH):
     # store the results into the json file
     # json_metadata["Sensor Node Name"] = name
 
-    # substract the expected gravity
+    # subtract the expected gravity
     earth_acc = 1.0
     acc_bias_error = np.linalg.norm(np.array(acc_bias)) - earth_acc
     getLogger(__name__).info(
@@ -248,7 +248,7 @@ async def test_BaP_torr_accelleration(sth: STH):
     acc_bias = []
     acc_noise = []
 
-    # hown long should the recording sample be
+    # how long should the recording sample be
     number_values = 10_000
 
     # We want `number_values` values which means we need to collect data from
@@ -271,7 +271,7 @@ async def test_BaP_torr_accelleration(sth: STH):
         [datapoint.value for datapoint in measurement_data.third()]
     )
 
-    # this block strips the meta data since we seem to be allways getting 3xN array
+    # this block strips the meta data since we seem to be always getting 3xN array
     acceleration_x = (acceleration_x_raw / 65535 - 0.5) * 200
     # the combination sensors add up which results in an inherent gain of two
     acceleration_y = (acceleration_y_raw / 65535 - 0.5) * 100
