@@ -19,8 +19,7 @@ from icotest.config import settings
 from icotest.test.support.node import check_write_read_eeprom_close
 from icotest.test.support.sensor_node import read_streaming_data
 from icotest.test.support.sth import read_self_test_voltages
-from icotronic.can import Connection, SensorConfiguration
-from icotronic.can.adc import ADCConfiguration
+from icotronic.can import SensorConfiguration
 
 from statistics import mean
 from math import exp2
