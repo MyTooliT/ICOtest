@@ -57,6 +57,21 @@ def create_icotest_parser() -> ArgumentParser:
         help="Name of sensor node",
         type=node_name,
     )
+    run_parser.add_argument(
+        "--test-group",
+        choices=["initial", "production", "full"],
+        help=(
+            "Vordefinierte Test-Gruppe: "
+            "initial=Firmware-Upload+Umbenennung, "
+            "production=Strom+Sensoren, "
+            "full=alle außer STU"
+        ),
+    )
+    run_parser.add_argument(
+        "--skip-backpack",
+        action="store_true",
+        help="BackPack-Tests überspringen, auch wenn konfiguriert",
+    )
 
     return parser
 
@@ -126,15 +141,42 @@ def main() -> None:
             ConfigurationUtility.open_user_config()
         case "run":
             environment_pytest = dict(environ)
+            pytest_markers = []
+            
             if arguments.name is not None:
                 logger.info(
-                    "Using sensor node name: %s", settings.sensor_node.name
+                    "Using sensor node name: %s", arguments.name
                 )
                 environment_pytest["DYNACONF_SENSOR_NODE__NAME"] = (
                     arguments.name
                 )
+            
+            # Test-Gruppen verarbeiten
+            if hasattr(arguments, 'test_group') and arguments.test_group:
+                if arguments.test_group == "initial":
+                    pytest_markers.extend(["-m", "initial_setup"])
+                    logger.info("Führe initiale Setup-Tests aus")
+                elif arguments.test_group == "production":
+                    pytest_markers.extend(["-m", "power or sensor"])
+                    logger.info("Führe Produktions-Tests aus (Strom + Sensoren)")
+                elif arguments.test_group == "full":
+                    pytest_markers.extend(["-m", "not stu"])
+                    logger.info("Führe vollständige Tests aus (ohne STU)")
+            
+            # BackPack-Tests überspringen wenn gewünscht oder nicht konfiguriert
+            skip_backpack = (
+                hasattr(arguments, 'skip_backpack') and arguments.skip_backpack
+            ) or not settings.get('sensor_node.hardware.has_backpack', False)
+            
+            if skip_backpack:
+                logger.info("Überspringe BackPack-Tests")
+                if pytest_markers:
+                    # Erweitere bestehende Marker-Expression
+                    pytest_markers[-1] += " and not backpack"
+                else:
+                    pytest_markers.extend(["-m", "not backpack"])
 
-            run_pytest(log_level, additional_args, environment_pytest)
+            run_pytest(log_level, additional_args + pytest_markers, environment_pytest)
 
 
 if __name__ == "__main__":

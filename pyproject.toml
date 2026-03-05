@@ -22,6 +22,7 @@ dependencies = [
   "platformdirs>=3.5.0,<5",
   "pytest>=9.0.1,<10",
   "pytest-json-report>=1.5.0,<2",
+  "pytest-ordering>=0.6",
   "semantic-version>=2,<3",
   "universal-startfile>=0.4",
 ]

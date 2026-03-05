@@ -4,7 +4,7 @@
 
 from logging import getLogger
 
-from pytest import fixture
+from pytest import fixture, mark
 from icotronic.can import Connection, SensorNode, STH, STU
 from netaddr import EUI
 
@@ -69,6 +69,26 @@ async def sth(stu, sensor_node_name) -> STH:
 
 
 def pytest_configure(config):
+    # Registriere Custom Markers
+    config.addinivalue_line(
+        "markers", "initial_setup: Tests für initiales Setup (Firmware-Upload, Umbenennung)"
+    )
+    config.addinivalue_line(
+        "markers", "basic: Basis-Tests (Verbindung, EEPROM, etc.)"
+    )
+    config.addinivalue_line(
+        "markers", "power: Stromaufnahme-Tests"
+    )
+    config.addinivalue_line(
+        "markers", "sensor: Sensor-Tests (Standard)"
+    )
+    config.addinivalue_line(
+        "markers", "backpack: Tests für Boards mit BackPack"
+    )
+    config.addinivalue_line(
+        "markers", "stu: STU-spezifische Tests"
+    )
+    
     if config.getoption("--json-report", default=False):
         # create a report folder if tht is not yet the case
         if not os.path.exists('reports'):

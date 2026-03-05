@@ -2,6 +2,8 @@
 
 # -- Imports ------------------------------------------------------------------
 
+from pytest import mark
+
 from icotronic.can import STU
 
 from icotest.config import settings
@@ -16,18 +18,24 @@ from icotest.test.support.node import (
 # -- Functions ----------------------------------------------------------------
 
 
+@mark.stu
+@mark.initial_setup
 async def test_firmware_upload():
     """Upload firmware"""
 
     await check_firmware_upload(settings.stu)
 
 
+@mark.stu
+@mark.basic
 async def test_connection(stu: STU):
     """Test if connection to STU is possible"""
 
     await check_connection(stu)
 
 
+@mark.stu
+@mark.basic
 async def test_eeprom(stu: STU):
     "Test if reading and writing of EEPROM values works"
 

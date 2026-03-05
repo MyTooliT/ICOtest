@@ -5,6 +5,8 @@
 from asyncio import Event, TaskGroup, to_thread
 from logging import getLogger
 
+from pytest import mark
+
 from icotronic.can import SensorNode, StreamingConfiguration, STU
 
 from icotest.cli.commander import Commander
@@ -30,12 +32,14 @@ from icotronic.measurement.constants import ADC_MAX_VALUE
 
 # moved test_firmware_upload to test_sth_modify
 
+@mark.basic
 async def test_connection(sensor_node: SensorNode):
     """Test if connection to sensor node is possible"""
 
     await check_connection(sensor_node)
 
 
+@mark.basic
 async def test_supply_voltage(sensor_node: SensorNode):
     """Test if battery voltage is within expected bounds"""
 
@@ -57,6 +61,7 @@ async def test_supply_voltage(sensor_node: SensorNode):
         f"{expected_minimum_voltage:.3f} V"
     )
 
+@mark.power
 async def test_power_usage_disconnected(
     stu: STU,  # pylint: disable=unused-argument
 ) -> None:
@@ -71,6 +76,7 @@ async def test_power_usage_disconnected(
         power_usage_mw, settings.sensor_node.power.disconnected
     )
 
+@mark.power
 async def test_power_usage_connected(
     sensor_node: SensorNode,  # pylint: disable=unused-argument
 ) -> None:
@@ -86,6 +92,7 @@ async def test_power_usage_connected(
     )
 
 
+@mark.power
 async def test_power_usage_streaming(sensor_node: SensorNode):
     """Test power usage of sensor node while streaming"""
 
@@ -119,6 +126,7 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
     )
 
 
+@mark.basic
 async def test_eeprom(sensor_node: SensorNode):
     "Test if reading and writing of EEPROM values works"
 

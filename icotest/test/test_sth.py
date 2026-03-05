@@ -11,6 +11,8 @@ Use this test code in addition to the one for the sensor node:
 from logging import getLogger
 from math import ceil
 
+from pytest import mark
+
 from icotronic.can import STH, StreamingConfiguration
 from icotronic.measurement.constants import ADC_MAX_VALUE
 from icotronic.measurement import convert_raw_to_g, ratio_noise_max
@@ -29,6 +31,8 @@ import numpy as np
 # -- Functions ----------------------------------------------------------------
 
 
+@mark.sensor
+@mark.basic
 async def test_acceleration_sensor_self_test(sth: STH):
     """Use the self test of a acceleration sensor to check for problems"""
 
@@ -66,6 +70,7 @@ async def test_acceleration_sensor_self_test(sth: STH):
     )
 
 
+@mark.sensor
 async def test_acceleration_single_value(sth: STH):
     """Test stationary acceleration value"""
 
@@ -100,6 +105,7 @@ async def test_acceleration_single_value(sth: STH):
     )
 
 
+@mark.sensor
 async def test_acceleration_noise(sth: STH):
     """Test ratio of noise to maximal possible measurement value"""
 
@@ -135,6 +141,7 @@ async def test_acceleration_noise(sth: STH):
 
 
 
+@mark.sensor
 async def test_acceleration_3a_alt(sth: STH):
     """Test the triple axis accelerometer reading"""
 
@@ -225,6 +232,7 @@ async def test_acceleration_3a_alt(sth: STH):
 
 
 
+@mark.sensor
 async def test_acceleration_3a_optimized(sth: STH):
     """Test the triple axis accelerometer reading (optimized version)"""
 
@@ -317,6 +325,8 @@ async def test_acceleration_3a_optimized(sth: STH):
     )
 
 
+@mark.sensor
+@mark.backpack
 async def test_BaP_torr_accelleration(sth: STH):
     """Test the triple axis accelerometer reading"""
 
@@ -385,6 +395,7 @@ async def test_BaP_torr_accelleration(sth: STH):
 
 
 
+@mark.basic
 async def test_eeprom(sth: STH):
     """Test if reading and writing STH EEPROM data works"""
 
