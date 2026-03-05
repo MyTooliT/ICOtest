@@ -15,6 +15,7 @@ from icotronic.can import STH
 
 from icotest.config import settings
 from icotest.test.support.node import check_firmware_upload
+from icotest.cli.commander import Commander
 from icotest.test.support.mac import convert_mac_base64
 
 # -- Functions ----------------------------------------------------------------
@@ -61,3 +62,8 @@ async def test_set_base64name(sth: STH, sensor_node_mac_address, json_metadata):
     assert read_name == name, (
         f"Read name '{read_name}' does not match set name '{name}'"
     )
+    
+    # Reset device to apply changes
+    logger.info("Resetting device to apply name change")
+    Commander().reset_device()
+    logger.info("Device reset complete")

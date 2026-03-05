@@ -323,6 +323,28 @@ class Commander:
             )
             logger.info("Uploaded firmware: %s", filepath)
 
+    def reset_device(self) -> None:
+        """Reset device using a pin reset
+
+        Examples:
+
+            Reset connected device
+
+            >>> commander = Commander()
+            >>> commander.reset_device()
+
+        """
+
+        self._run_command(
+            command="device reset".split(),
+            description="reset device",
+            possible_error_reasons=[
+                "device not connected",
+                "programmer not connected",
+            ],
+            regex_output="Resetting chip",
+        )
+
     def read_power_usage(self, seconds: float = 1) -> float:
         """Read the power usage of the connected hardware
 
