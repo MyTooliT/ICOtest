@@ -19,9 +19,8 @@ from icotest.test.support.node import (
 
 
 @mark.stu
-@mark.initial_setup
 async def test_firmware_upload():
-    """Upload firmware"""
+    """Upload firmware for STU (separate from sensor node initial setup)"""
 
     await check_firmware_upload(settings.stu)
 
