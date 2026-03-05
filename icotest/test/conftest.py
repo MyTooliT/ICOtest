@@ -71,8 +71,8 @@ async def sth(stu, sensor_node_name) -> STH:
 def pytest_configure(config):
     if config.getoption("--json-report", default=False):
         # create a report folder if tht is not yet the case
-        if not os.path.exists('reports'):
-            os.makedirs('reports')
+        if not os.path.exists("reports"):
+            os.makedirs("reports")
 
         # generate a time dependent report name
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
