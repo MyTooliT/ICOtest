@@ -68,6 +68,29 @@ async def sth(stu, sensor_node_name) -> STH:
         yield sth
 
 
+@fixture
+def json_metadata(request):
+    """Fixture für JSON-Metadaten (für --json-report)
+    
+    Ermöglicht Tests, Metadaten zum JSON-Report hinzuzufügen.
+    """
+    metadata = {}
+    
+    # Metadaten nach Test-Ausführung zum Report hinzufügen
+    def finalizer():
+        if hasattr(request.config, '_json_report') and request.config._json_report:
+            # Finde den aktuellen Test im Report
+            for test in request.config._json_report.get('tests', []):
+                if test.get('nodeid') == request.node.nodeid:
+                    if 'metadata' not in test:
+                        test['metadata'] = {}
+                    test['metadata'].update(metadata)
+                    break
+    
+    request.addfinalizer(finalizer)
+    return metadata
+
+
 def pytest_configure(config):
     # Registriere Custom Markers
     config.addinivalue_line(

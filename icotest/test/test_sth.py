@@ -31,6 +31,7 @@ import numpy as np
 # -- Functions ----------------------------------------------------------------
 
 
+@mark.order(30)
 @mark.sensor
 @mark.basic
 async def test_acceleration_sensor_self_test(sth: STH):
@@ -70,6 +71,7 @@ async def test_acceleration_sensor_self_test(sth: STH):
     )
 
 
+@mark.order(31)
 @mark.sensor
 async def test_acceleration_single_value(sth: STH):
     """Test stationary acceleration value"""
@@ -105,6 +107,7 @@ async def test_acceleration_single_value(sth: STH):
     )
 
 
+@mark.order(32)
 @mark.sensor
 async def test_acceleration_noise(sth: STH):
     """Test ratio of noise to maximal possible measurement value"""
@@ -141,6 +144,7 @@ async def test_acceleration_noise(sth: STH):
 
 
 
+@mark.order(33)
 @mark.sensor
 async def test_acceleration_3a_alt(sth: STH):
     """Test the triple axis accelerometer reading"""
@@ -232,6 +236,7 @@ async def test_acceleration_3a_alt(sth: STH):
 
 
 
+@mark.order(34)
 @mark.sensor
 async def test_acceleration_3a_optimized(sth: STH):
     """Test the triple axis accelerometer reading (optimized version)"""
@@ -325,6 +330,7 @@ async def test_acceleration_3a_optimized(sth: STH):
     )
 
 
+@mark.order(40)
 @mark.sensor
 @mark.backpack
 async def test_BaP_torr_accelleration(sth: STH):
@@ -395,6 +401,7 @@ async def test_BaP_torr_accelleration(sth: STH):
 
 
 
+@mark.order(13)
 @mark.basic
 async def test_eeprom(sth: STH):
     """Test if reading and writing STH EEPROM data works"""

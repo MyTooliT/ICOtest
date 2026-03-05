@@ -30,8 +30,7 @@ from icotronic.measurement.constants import ADC_MAX_VALUE
 # -- Functions ----------------------------------------------------------------
 
 
-# moved test_firmware_upload to test_sth_modify
-
+@mark.order(10)
 @mark.basic
 async def test_connection(sensor_node: SensorNode):
     """Test if connection to sensor node is possible"""
@@ -39,6 +38,7 @@ async def test_connection(sensor_node: SensorNode):
     await check_connection(sensor_node)
 
 
+@mark.order(11)
 @mark.basic
 async def test_supply_voltage(sensor_node: SensorNode):
     """Test if battery voltage is within expected bounds"""
@@ -61,6 +61,7 @@ async def test_supply_voltage(sensor_node: SensorNode):
         f"{expected_minimum_voltage:.3f} V"
     )
 
+@mark.order(20)
 @mark.power
 async def test_power_usage_disconnected(
     stu: STU,  # pylint: disable=unused-argument
@@ -76,6 +77,7 @@ async def test_power_usage_disconnected(
         power_usage_mw, settings.sensor_node.power.disconnected
     )
 
+@mark.order(21)
 @mark.power
 async def test_power_usage_connected(
     sensor_node: SensorNode,  # pylint: disable=unused-argument
@@ -92,6 +94,7 @@ async def test_power_usage_connected(
     )
 
 
+@mark.order(22)
 @mark.power
 async def test_power_usage_streaming(sensor_node: SensorNode):
     """Test power usage of sensor node while streaming"""
@@ -126,6 +129,7 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
     )
 
 
+@mark.order(12)
 @mark.basic
 async def test_eeprom(sensor_node: SensorNode):
     "Test if reading and writing of EEPROM values works"
