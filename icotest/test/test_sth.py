@@ -284,7 +284,7 @@ async def test_acceleration_3a_optimized(sth: STH):
         acceleration_noise = ratio_noise_max(acceleration_raw)
 
         getLogger(__name__).info(
-            "🫣 Channel "%s" mean: %.2f = %.2f g @ SNR: %.2f dB",
+            "🫣 Channel \"%s\" mean: %.2f = %.2f g @ SNR: %.2f dB",
             axis_name,
             mean(acceleration_raw),
             acceleration_g,
