@@ -261,15 +261,9 @@ async def test_acceleration_3a_optimized(sth: STH):
     )
 
     # Extract raw data from each channel
-    acceleration_x_raw = np.array([
-        datapoint.value for datapoint in measurement_data.first()
-    ])
-    acceleration_y_raw = np.array([
-        datapoint.value for datapoint in measurement_data.second()
-    ])
-    acceleration_z_raw = np.array([
-        datapoint.value for datapoint in measurement_data.third()
-    ])
+    acceleration_x_raw = np.array(measurement_data.first().values())
+    acceleration_y_raw = np.array(measurement_data.second().values())
+    acceleration_z_raw = np.array(measurement_data.third().values())
 
     # Convert to g and calculate noise for each axis
     acc_bias = []
