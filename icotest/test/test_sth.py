@@ -204,17 +204,24 @@ async def test_acceleration_3a_alt(sth: STH):
         "Bias check, we expect %.2f g are off by %.2f g", earth_acc, acc_bias_error
     )
     assert acc_bias_error < test_acc_tollerance_g, (
-        f"Accelerometer offset error {acc_bias_error:.3f} g is higher than {test_acc_tollerance_g:.3f} g "
-        f"the measured values are {acc_bias[0]:.3f} {acc_bias[1]:.3f} {acc_bias[2]:.3f} g"
+        f"Accelerometer offset error {acc_bias_error:.3f} g is higher than "
+        f"{test_acc_tollerance_g:.3f} g "
+        f"the measured values are {acc_bias[0]:.3f} {acc_bias[1]:.3f} "
+        f"{acc_bias[2]:.3f} g"
     )
 
-    acc_noise_margin = np.max(acc_noise+test_acc_noise)
+    acc_noise_margin = np.max(acc_noise + test_acc_noise)
     getLogger(__name__).info(
-        "Noise check, we expect about %.2f dB are off by %.2f dB in the worst channel", np.mean(test_acc_noise), acc_noise_margin
+        "Noise check, we expect about %.2f dB are off by %.2f dB in the "
+        "worst channel",
+        np.mean(test_acc_noise),
+        acc_noise_margin,
     )
     assert acc_noise_margin < 0.0, (
-        f"Accelerometer noise error! The noise margin is {acc_noise_margin:.3f} "
-        f"the measured values are {acc_noise[0]:.3f} {acc_noise[1]:.3f} {acc_noise[2]:.3f} dB"
+        f"Accelerometer noise error! The noise margin is "
+        f"{acc_noise_margin:.3f} "
+        f"the measured values are {acc_noise[0]:.3f} {acc_noise[1]:.3f} "
+        f"{acc_noise[2]:.3f} dB"
     )
 
 
