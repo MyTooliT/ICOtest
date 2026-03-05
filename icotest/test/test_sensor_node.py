@@ -23,14 +23,12 @@ from icotest.test.support.sensor_node import (
     check_eeprom_bluetooth_times,
 )
 
+from icotronic.measurement.constants import ADC_MAX_VALUE
+
 # -- Functions ----------------------------------------------------------------
 
 
-async def test_firmware_upload():
-    """Upload firmware"""
-
-    await check_firmware_upload(settings.sensor_node)
-
+# moved test_firmware_upload to test_sth_modify
 
 async def test_connection(sensor_node: SensorNode):
     """Test if connection to sensor node is possible"""
@@ -59,7 +57,6 @@ async def test_supply_voltage(sensor_node: SensorNode):
         f"{expected_minimum_voltage:.3f} V"
     )
 
-
 async def test_power_usage_disconnected(
     stu: STU,  # pylint: disable=unused-argument
 ) -> None:
@@ -73,7 +70,6 @@ async def test_power_usage_disconnected(
     await check_power_usage(
         power_usage_mw, settings.sensor_node.power.disconnected
     )
-
 
 async def test_power_usage_connected(
     sensor_node: SensorNode,  # pylint: disable=unused-argument
@@ -132,15 +128,5 @@ async def test_eeprom(sensor_node: SensorNode):
     await check_eeprom_status(sensor_node)
     await check_eeprom_bluetooth_times(sensor_node, settings.sensor_node)
 
+# moved test_set_base64name to test_sth_modify.py
 
-async def test_set_base64name(sensor_node: SensorNode, capsys, json_metadata):
-    """Set name to Base64 encoded MAC address of sensor node"""
-
-    mac_address = await sensor_node.get_mac_address()
-    getLogger().info("MAC address: %s", mac_address)
-    name = convert_mac_base64(mac_address)
-    with capsys.disabled():
-        print(f"Base64 encoded MAC address (Bluetooth name): {name}")
-    json_metadata["Sensor Node Name"] = name
-
-    await sensor_node.set_name(name)
