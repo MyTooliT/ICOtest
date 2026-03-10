@@ -142,32 +142,34 @@ def main() -> None:
         case "run":
             environment_pytest = dict(environ)
             pytest_markers = []
-            
+
             if arguments.name is not None:
-                logger.info(
-                    "Using sensor node name: %s", arguments.name
-                )
-                environment_pytest["DYNACONF_SENSOR_NODE__NAME"] = (
-                    arguments.name
-                )
-            
+                logger.info("Using sensor node name: %s", arguments.name)
+                environment_pytest["DYNACONF_SENSOR_NODE__NAME"] = arguments.name
+
             # Process test groups
-            if hasattr(arguments, 'test_group') and arguments.test_group:
+            if hasattr(arguments, "test_group") and arguments.test_group:
                 if arguments.test_group == "initial":
                     pytest_markers.extend(["-m", "initial_setup"])
                     logger.info("Running initial setup tests")
                 elif arguments.test_group == "production":
                     pytest_markers.extend(["-m", "power or sensor"])
                     logger.info("Running production tests (power + sensors)")
+                    # Auto-enable JSON report for production tests
+                    if "--json-report" not in additional_args:
+                        additional_args.append("--json-report")
                 elif arguments.test_group == "full":
                     pytest_markers.extend(["-m", "not stu"])
                     logger.info("Running full tests (without STU)")
-            
+                    # Auto-enable JSON report for full tests
+                    if "--json-report" not in additional_args:
+                        additional_args.append("--json-report")
+
             # Skip BackPack tests if requested or not configured
             skip_backpack = (
-                hasattr(arguments, 'skip_backpack') and arguments.skip_backpack
-            ) or not settings.get('sensor_node.hardware.has_backpack', False)
-            
+                hasattr(arguments, "skip_backpack") and arguments.skip_backpack
+            ) or not settings.get("sensor_node.hardware.has_backpack", False)
+
             if skip_backpack:
                 logger.info("Skipping BackPack tests")
                 if pytest_markers:
