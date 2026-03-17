@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 from logging import basicConfig, getLogger
 from os import environ
 from subprocess import run, CalledProcessError
-from sys import exit as sys_exit
+from sys import exit as sys_exit, executable
 
 from icotronic.cmdline.types import node_name
 
@@ -98,6 +98,8 @@ def run_pytest(
     """
 
     command = [
+        executable,
+        "-m",
         "pytest",
         "--log-cli-level",
         log_level,
@@ -152,6 +154,9 @@ def main() -> None:
                 if arguments.test_group == "initial":
                     pytest_markers.extend(["-m", "initial_setup"])
                     logger.info("Running initial setup tests")
+                    # Auto-enable JSON report for initial tests
+                    if "--json-report" not in additional_args:
+                        additional_args.append("--json-report")
                 elif arguments.test_group == "production":
                     pytest_markers.extend(["-m", "power or sensor"])
                     logger.info("Running production tests (power + sensors)")

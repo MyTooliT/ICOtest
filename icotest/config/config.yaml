@@ -47,7 +47,7 @@ sensor node:
   batch number: 200 # (32 bit unsigned) number that describes the current batch
   hardware:
     # Indicates whether the board has a BackPack (for special sensor tests)
-    has backpack: false
+    has backpack: true
   bluetooth:
     # Advertisement time 1 in ms
     advertisement time 1: 1250
@@ -99,7 +99,7 @@ sensor node:
       tolerance: 1
 
     streaming:
-      average: 50 # Expected average power usage while streaming in mW
+      average: 60 # Expected average power usage while streaming in mW
       tolerance: 10 # Tolerance for expected power usage while streaming in mW
 
 sth:

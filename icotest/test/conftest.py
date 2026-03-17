@@ -83,9 +83,14 @@ def json_metadata(request):
 
     Allows tests to add metadata to the JSON report.
     """
-    metadata = {}
+    # Use the plugin's internal metadata storage if available
+    if hasattr(request.node, "_json_report_extra"):
+        metadata_dict = request.node._json_report_extra.setdefault("metadata", {})
+    else:
+        # Fallback if the plugin is not active
+        metadata_dict = {}
 
-    # Helper for standardized measurement recording
+    # Standardized measurement recording function
     def record_measurement(
         name, value, unit=None, lower=None, upper=None, description=None
     ):
@@ -98,26 +103,29 @@ def json_metadata(request):
             measurement["upper_limit"] = upper
         if description:
             measurement["description"] = description
-        metadata[name] = measurement
+        metadata_dict[name] = measurement
 
-    metadata["record"] = record_measurement
+    # Create a proxy object that provides the 'record' helper but doesn't
+    # store it in the actual metadata dictionary that gets serialized
+    class MetadataProxy(dict):
+        def __getitem__(self, key):
+            if key == "record":
+                return record_measurement
+            return super().__getitem__(key)
 
-    # Add metadata to report after test execution
-    def finalizer():
-        # Remove helper from metadata before saving
-        metadata.pop("record", None)
+        def __setitem__(self, key, value):
+            metadata_dict[key] = value
 
-        if hasattr(request.config, "_json_report") and request.config._json_report:
-            # Find the current test in the report
-            for test in request.config._json_report.get("tests", []):
-                if test.get("nodeid") == request.node.nodeid:
-                    if "metadata" not in test:
-                        test["metadata"] = {}
-                    test["metadata"].update(metadata)
-                    break
+        def update(self, *args, **kwargs):
+            metadata_dict.update(*args, **kwargs)
 
-    request.addfinalizer(finalizer)
-    return metadata
+        def setdefault(self, key, default=None):
+            return metadata_dict.setdefault(key, default)
+
+        def pop(self, key, default=None):
+            return metadata_dict.pop(key, default)
+
+    return MetadataProxy(metadata_dict)
 
 
 def pytest_sessionfinish(session, exitstatus):
