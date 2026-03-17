@@ -1,106 +1,214 @@
 [build-system]
+
 requires = ["poetry-core>=2.0.0,<3.0.0"]
+
 build-backend = "poetry.core.masonry.api"
 
+
+
 [project]
+
 authors = [
+
     {name = "René Schwaiger", email = "rene.schwaiger@ift.at"},
+
 ]
+
 classifiers = [
+
     "Development Status :: 3 - Alpha",
+
     "Natural Language :: English",
+
     "Operating System :: MacOS",
+
     "Operating System :: POSIX :: Linux",
+
     "Operating System :: Microsoft :: Windows :: Windows 11",
+
     "Programming Language :: Python",
+
 ]
+
+
 
 dependencies = [
+
   "anyio>=4.11",
+
   "dynaconf>=3.1.12,<4",
+
   "icotronic>=7,<=8",
+
   "platformdirs>=3.5.0,<5",
+
   "pytest>=9.0.1,<10",
+
   "pytest-json-report>=1.5.0,<2",
+
   "pytest-ordering>=0.6",
+
   "semantic-version>=2,<3",
+
   "universal-startfile>=0.4",
+  "PySide6>=6.6",
+
 ]
+
 description = """Hardware tests for ICOtronic system"""
+
 keywords = [
+
     "smart-tool",
+
     "smh",
+
     "stu",
-    "sth",
+
+    "sta",
+
     "tool-holder",
+
 ]
+
 name = "icotest"
+
 readme = "Readme.md"
+
 requires-python = ">=3.12,<4"
+
 version = "0.8.1"
 
+
+
 [project.optional-dependencies]
+
 dev = [
+
     "Flake8-pyproject>=1.2.3",
+
     "mypy>=1.18.2",
+
     "myst-parser>=5",
+
     "pydoclint[flake8]>=0.7.3",
+
     "pylint>=3.3.8",
+
     "pytest-rerunfailures>=16.1",
+
     "sphinx-pyproject>=0.3",
+
     "sphinx_rtd_theme",
+
 ]
+
+
 
 [project.scripts]
+
 icotest = "icotest.cli.tool:main"
+icotest-gui = "icotest.cli.gui_main:main"
+
+
 
 [project.urls]
+
 Source = "https://github.com/mytoolit/ICOtest/"
 
+
+
 [tool.black]
+
 line-length = 79
+
 preview = true
+
 unstable = true
+
 enable-unstable-feature = ["string_processing"]
 
+
+
 [tool.flake8]
+
 ignore = [
+
   # Whitespace before colon
+
   "E203",
+
   # Module level import not at top of file
+
   "E402",
+
   # Line break before binary operator
+
   "W503",
+
   # Line break after binary operator
+
   "W504",
+
 ]
+
 per-file-ignores = "__init__.py:F401"
+
 exclude = [
+
   ".git",
+
   "__pycache__",
+
   "._*",
+
   ".venv",
+
 ]
+
 style = "google"
+
 arg-type-hints-in-docstring = false
+
 check-return-types = false
 
+
+
 [tool.mypy]
+
 ignore_missing_imports = true
 
+
+
 [tool.pylint]
+
 ignore-paths = [ "^.venv.*$" ]
 
+
+
 [tool.pytest.ini_options]
+
 addopts = ["--doctest-modules"]
+
 anyio_mode = "auto"
+
 minversion = "9.0"
+
 markers = [
+
     "order: Test execution order (provided by pytest-ordering)",
+
     "basic: Basic functionality tests",
+
     "power: Power consumption tests",
+
     "sensor: Sensor functionality tests",
+
     "backpack: BackPack hardware tests",
+
     "initial_setup: Initial setup tests (firmware upload, renaming)",
+
     "stu: STU-specific tests",
+
 ]
+
