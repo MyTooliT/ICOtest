@@ -71,7 +71,7 @@ sensor node:
 
   gtin: 0 # Global Trade Item Number
   hardware version: "2.1" # The current version of the PCB design
-  name: Test-STH # This value specifies the current name of the STH unit
+  name: Minion04 # This value specifies the current name of the STH unit
   oem data: *oem_data # OEM specific data
   # Product name for the  manufacturer (maximum of 128 byte UTF-8 encoded text)
   product name: "0"
