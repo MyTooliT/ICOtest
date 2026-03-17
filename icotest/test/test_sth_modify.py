@@ -33,36 +33,43 @@ async def test_firmware_upload():
 @mark.initial_setup
 async def test_set_base64name(sth: STH, sensor_node_mac_address, json_metadata):
     """Set Sensor Node Name to Base64-encoded MAC address
-    
+
     This test:
     1. Reads the MAC address of the Sensor Node
     2. Converts it to Base64
     3. Renames the node to this name
     4. Stores the name in the JSON metadata
-    
+
     IMPORTANT: Must be executed AFTER test_firmware_upload (order=2)
     """
 
     logger = getLogger(__name__)
-    
+
     # Convert MAC address to Base64
     name = convert_mac_base64(sensor_node_mac_address)
     logger.info("Base64-encoded MAC address: %s", name)
-    
+
     # Rename node
     await sth.eeprom.write_name(name)
-    logger.info("Sensor Node renamed to: %s", name)
-    
+
+    # High-visibility output for the operator (logged at WARNING level to ensure visibility)
+    logger.warning("\n" + "*" * 60)
+    logger.warning("DEVICE RENAMED SUCCESSFULLY")
+    logger.warning("NEW NAME (BASE64 MAC): %s", name)
+    logger.warning("PLEASE WRITE THIS NAME ON THE PCB LABEL!")
+    logger.warning("*" * 60 + "\n")
+
     # Store name in JSON metadata (for --json-report)
+
     json_metadata["Sensor Node Name"] = name
     logger.info("Name stored in JSON metadata")
-    
+
     # Verify that the name was set correctly
     read_name = await sth.eeprom.read_name()
     assert read_name == name, (
         f"Read name '{read_name}' does not match set name '{name}'"
     )
-    
+
     # Reset device to apply changes
     logger.info("Resetting device to apply name change")
     Commander().reset_device()

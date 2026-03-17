@@ -3,6 +3,7 @@
 # -- Imports ------------------------------------------------------------------
 
 from logging import getLogger
+from typing import AsyncGenerator
 
 from pytest import fixture, mark, StashKey, CollectReport
 from icotronic.can import Connection, SensorNode, STH, STU
@@ -54,7 +55,7 @@ async def sensor_node_mac_address(request, sensor_node_name: str) -> EUI:
 
 
 @fixture
-async def stu() -> STU:
+async def stu() -> AsyncGenerator[STU, None]:
     """Connect to and disconnect from STU"""
 
     async with Connection() as stu:
@@ -62,7 +63,7 @@ async def stu() -> STU:
 
 
 @fixture
-async def sensor_node(stu, sensor_node_name) -> SensorNode:
+async def sensor_node(stu, sensor_node_name) -> AsyncGenerator[SensorNode, None]:
     """Connect to and disconnect from sensor node"""
 
     async with stu.connect_sensor_node(sensor_node_name) as sensor_node:
@@ -70,7 +71,7 @@ async def sensor_node(stu, sensor_node_name) -> SensorNode:
 
 
 @fixture
-async def sth(stu, sensor_node_name) -> STH:
+async def sth(stu, sensor_node_name) -> AsyncGenerator[STH, None]:
     """Connect to and disconnect from an STH"""
 
     async with stu.connect_sensor_node(sensor_node_name, STH) as sth:

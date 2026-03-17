@@ -3,10 +3,11 @@
 # -- Imports ------------------------------------------------------------------
 
 from argparse import ArgumentParser
-from logging import basicConfig, getLogger
-from os import environ
+from logging import basicConfig, getLogger, FileHandler, Formatter
+from os import environ, makedirs, path
 from subprocess import run, CalledProcessError
 from sys import exit as sys_exit, executable
+from datetime import datetime
 
 from icotronic.cmdline.types import node_name
 
@@ -77,7 +78,10 @@ def create_icotest_parser() -> ArgumentParser:
 
 
 def run_pytest(
-    log_level: str, pytest_args: list[str], environment: dict[str, str]
+    log_level: str,
+    pytest_args: list[str],
+    environment: dict[str, str],
+    log_file: str | None = None,
 ) -> None:
     """Run pytest for the package using the given arguments
 
@@ -95,6 +99,10 @@ def run_pytest(
 
             Environment for pytest call
 
+        log_file:
+
+            Path to log file for pytest output
+
     """
 
     command = [
@@ -105,7 +113,12 @@ def run_pytest(
         log_level,
         "--pyargs",
         "icotest.test",
-    ] + pytest_args
+    ]
+
+    if log_file:
+        command.extend(["--log-file", log_file, "--log-file-level", "INFO"])
+
+    command += pytest_args
     print(f"\nTest Command:\n\n  {' '.join(command)}\n")
     try:
         run(command, check=True, env=environment)
@@ -126,14 +139,33 @@ def main() -> None:
         arguments = parser.parse_args()
 
     log_level = arguments.log.upper()
-    basicConfig(
-        level=log_level,
-        style="{",
-        format="{asctime} {levelname:7} {message}",
-    )
+
+    # Configure root logger
+    logger_root = getLogger()
+    logger_root.setLevel(log_level)
+
+    log_format = Formatter("{asctime} {levelname:7} {message}", style="{")
+
+    # Console handler
+    import logging
+
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(log_format)
+    logger_root.addHandler(console_handler)
+
+    # Ensure reports directory exists for logs
+    if not path.exists("reports"):
+        makedirs("reports")
+
+    # File handler for production audit trail
+    log_file_path = f"reports/icotest_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log"
+    file_handler = FileHandler(log_file_path, encoding="utf-8")
+    file_handler.setFormatter(log_format)
+    logger_root.addHandler(file_handler)
 
     logger = getLogger(__name__)
     logger.info("CLI arguments: %s", arguments)
+    logger.info("Log file created at: %s", log_file_path)
     logger.info("Additional unrecognized arguments: %s", additional_args)
 
     subcommand = arguments.subcommand
@@ -183,7 +215,15 @@ def main() -> None:
                 else:
                     pytest_markers.extend(["-m", "not backpack"])
 
-            run_pytest(log_level, additional_args + pytest_markers, environment_pytest)
+            # Determine log file for this run
+            test_log_file = log_file_path.replace(".log", "_pytest.log")
+
+            run_pytest(
+                log_level,
+                additional_args + pytest_markers,
+                environment_pytest,
+                log_file=test_log_file,
+            )
 
 
 if __name__ == "__main__":
