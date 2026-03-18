@@ -71,8 +71,6 @@ class TestRunner(QThread):
             self.device_name,
             "--test-group",
             self.test_group,
-            "--log-cli-level",
-            self.log_level,
         ]
 
         if self.backpack_model == "None":
