@@ -195,6 +195,11 @@ def main() -> None:
                     # Auto-enable JSON report for production tests
                     if "--json-report" not in additional_args:
                         additional_args.append("--json-report")
+
+                    # Include backpack tests if backpack is configured
+                    if not arguments.skip_backpack:
+                        pytest_markers[-1] += " or backpack"
+                        logger.info("Including BackPack tests")
                 elif arguments.test_group == "full":
                     pytest_markers.extend(["-m", "not stu"])
                     logger.info("Running full tests (without STU)")
@@ -202,18 +207,15 @@ def main() -> None:
                     if "--json-report" not in additional_args:
                         additional_args.append("--json-report")
 
-            # Skip BackPack tests if requested or not configured
+            # Skip BackPack tests if explicitly requested via --skip-backpack
             skip_backpack = (
                 hasattr(arguments, "skip_backpack") and arguments.skip_backpack
-            ) or not settings.get("sensor_node.hardware.has_backpack", False)
+            )
 
-            if skip_backpack:
+            if skip_backpack and "backpack" in pytest_markers[-1]:
                 logger.info("Skipping BackPack tests")
-                if pytest_markers:
-                    # Extend existing marker expression
-                    pytest_markers[-1] += " and not backpack"
-                else:
-                    pytest_markers.extend(["-m", "not backpack"])
+                # Remove "or backpack" from production group marker
+                pytest_markers[-1] = pytest_markers[-1].replace(" or backpack", "")
 
             # Determine log file for this run
             test_log_file = log_file_path.replace(".log", "_pytest.log")
