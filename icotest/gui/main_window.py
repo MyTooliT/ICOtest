@@ -17,12 +17,40 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QApplication,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QThread, Signal
 
 from icotest.gui.dialogs.combined_result import CombinedResultDialog
 from icotest.gui.dialogs.terminal_output import TerminalWindow
 from icotest.gui.workers.test_runner import TestRunner
 from icotest.gui.database.device_db import DeviceDatabase
+
+
+class DeviceScanner(QThread):
+    """Background worker to scan for Bluetooth sensor nodes"""
+
+    devices_found = Signal(list)
+    scan_failed = Signal(str)
+
+    def run(self):
+        """Scan for available sensor nodes"""
+        from icotronic.can.connection import Connection
+        import asyncio
+
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+            async def scan():
+                async with Connection() as stu:
+                    nodes = await stu.collect_sensor_nodes(timeout=5)
+                    return [(node.name, str(node.mac_address)) for node in nodes]
+
+            devices = loop.run_until_complete(scan())
+            loop.close()
+            self.devices_found.emit(devices)
+
+        except Exception as e:
+            self.scan_failed.emit(str(e))
 
 
 class MainWindow(QMainWindow):
@@ -82,12 +110,21 @@ class MainWindow(QMainWindow):
         self.backpack_combo.addItems(["None", "BaP-DBS-1.3.0"])
         form_layout.addRow("BackPack Hardware:", self.backpack_combo)
 
-        # Device Name
-        self.name_input = QLineEdit()
-        self.name_input.setMaxLength(8)
-        self.name_input.setPlaceholderText("Leave blank for new device")
-        self.name_input.textChanged.connect(self._validate_ui_state)
-        form_layout.addRow("Device Name (for retest only):", self.name_input)
+        # Device Name (for retest only) - Scan button + dropdown
+        device_layout = QHBoxLayout()
+        self.device_combo = QComboBox()
+        self.device_combo.setEditable(True)
+        self.device_combo.setPlaceholderText("Select device or enter name...")
+        self.device_combo.setMinimumWidth(200)
+        self.device_combo.currentIndexChanged.connect(self._validate_ui_state)
+        device_layout.addWidget(self.device_combo)
+
+        self.scan_btn = QPushButton("Scan")
+        self.scan_btn.setMaximumWidth(60)
+        self.scan_btn.clicked.connect(self._on_scan_clicked)
+        device_layout.addWidget(self.scan_btn)
+
+        form_layout.addRow("Device (for retest):", device_layout)
 
         main_layout.addWidget(config_group)
         main_layout.addSpacing(20)
@@ -134,7 +171,7 @@ class MainWindow(QMainWindow):
 
     def _validate_ui_state(self):
         """Enable/disable buttons based on input"""
-        name = self.name_input.text().strip()
+        name = self.device_combo.currentText().strip()
 
         # Flash: requires empty name
         self.flash_btn.setEnabled(len(name) == 0)
@@ -145,7 +182,8 @@ class MainWindow(QMainWindow):
 
     def _set_ui_running(self, is_running):
         """Disable inputs during execution"""
-        self.name_input.setEnabled(not is_running)
+        self.device_combo.setEnabled(not is_running)
+        self.scan_btn.setEnabled(not is_running)
         self.backpack_combo.setEnabled(not is_running)
         self.logger_combo.setEnabled(not is_running)
 
@@ -214,9 +252,54 @@ class MainWindow(QMainWindow):
         # Run production tests
         self._run_production_tests(base64_mac, is_new_device=True)
 
+    def _on_scan_clicked(self):
+        """Scan for available Bluetooth sensor nodes"""
+        self.scan_btn.setEnabled(False)
+        self.scan_btn.setText("Scanning...")
+        self.status_label.setText("Status: Scanning for devices...")
+        self.terminal.append_text("Scanning for Bluetooth sensor nodes...\n")
+
+        self.scanner = DeviceScanner(self)
+        self.scanner.devices_found.connect(self._on_scan_completed)
+        self.scanner.scan_failed.connect(self._on_scan_failed)
+        self.scanner.start()
+
+    def _on_scan_completed(self, devices):
+        """Handle scan completed - populate dropdown"""
+        self.scan_btn.setEnabled(True)
+        self.scan_btn.setText("Scan")
+        self.status_label.setText("Status: Ready")
+
+        # Clear and populate combo
+        self.device_combo.clear()
+
+        if not devices:
+            self.terminal.append_text("No sensor nodes found.\n")
+            QMessageBox.information(self, "Scan Complete", "No sensor nodes found.")
+            return
+
+        # Add devices to combo (name + MAC)
+        for name, mac in devices:
+            display = f"{name} ({mac})"
+            self.device_combo.addItem(display, name)  # Store name as userData
+
+        self.terminal.append_text(f"Found {len(devices)} device(s):\n")
+        for name, mac in devices:
+            self.terminal.append_text(f"  - {name} ({mac})\n")
+
+    def _on_scan_failed(self, error_msg):
+        """Handle scan failure"""
+        self.scan_btn.setEnabled(True)
+        self.scan_btn.setText("Scan")
+        self.status_label.setText("Status: Scan failed")
+        self.terminal.append_text(f"Scan failed: {error_msg}\n")
+        QMessageBox.warning(
+            self, "Scan Failed", f"Failed to scan for devices:\n{error_msg}"
+        )
+
     def _on_retest_clicked(self):
         """Start the 'Retest Existing' workflow"""
-        device_name = self.name_input.text().strip()
+        device_name = self.device_combo.currentText().strip()
         self._set_ui_running(True)
         self.status_label.setText(f"Status: Running tests on {device_name}...")
         self.status_label.setStyleSheet(
@@ -273,7 +356,7 @@ class MainWindow(QMainWindow):
 
         if dialog.exec():
             # User clicked "Test Another Device"
-            self.name_input.clear()
+            self.device_combo.setCurrentIndex(0)
             self.status_label.setText("Status: Ready")
             self.status_label.setStyleSheet("font-size: 11pt; color: #555;")
         else:
