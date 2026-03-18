@@ -278,10 +278,9 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Scan Complete", "No sensor nodes found.")
             return
 
-        # Add devices to combo (name + MAC)
+        # Add devices to combo - show only name, store name as data
         for name, mac in devices:
-            display = f"{name} ({mac})"
-            self.device_combo.addItem(display, name)  # Store name as userData
+            self.device_combo.addItem(name, name)  # Display name, store name as data
 
         self.terminal.append_text(f"Found {len(devices)} device(s):\n")
         for name, mac in devices:
@@ -299,7 +298,10 @@ class MainWindow(QMainWindow):
 
     def _on_retest_clicked(self):
         """Start the 'Retest Existing' workflow"""
-        device_name = self.device_combo.currentText().strip()
+        # Use currentData if available (from scan), otherwise currentText (manual entry)
+        device_name = (
+            self.device_combo.currentData() or self.device_combo.currentText().strip()
+        )
         self._set_ui_running(True)
         self.status_label.setText(f"Status: Running tests on {device_name}...")
         self.status_label.setStyleSheet(
