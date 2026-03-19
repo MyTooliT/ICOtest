@@ -16,6 +16,12 @@ from netaddr import EUI
 from icotest.config import settings
 from icotest.test.support.mac import convert_mac_base64
 
+# for renaming the output files
+import asyncio
+import datetime
+import os
+import shutil
+
 # Stash key for the MAC address
 MAC_STASH_KEY = StashKey[str]()
 
@@ -61,22 +67,52 @@ async def stu() -> AsyncGenerator[STU, None]:
         yield stu
 
 
+async def _connect_with_retry(stu, sensor_node_name, node_class=None):
+    """Helper to connect to a sensor node with automatic STU reset on failure"""
+    try:
+        if node_class:
+            async with stu.connect_sensor_node(sensor_node_name, node_class) as node:
+                yield node
+        else:
+            async with stu.connect_sensor_node(sensor_node_name) as node:
+                yield node
+    except TimeoutError as e:
+        if "Unable to connect to sensor" in str(e):
+            getLogger().warning(
+                "Failed to connect to sensor node '%s': %s. Resetting STU and retrying...",
+                sensor_node_name,
+                e,
+            )
+            await stu.reset()
+            await asyncio.sleep(3)
+            if node_class:
+                async with stu.connect_sensor_node(
+                    sensor_node_name, node_class
+                ) as node:
+                    yield node
+            else:
+                async with stu.connect_sensor_node(sensor_node_name) as node:
+                    yield node
+        else:
+            raise
+
+
 @fixture
 async def sensor_node(
     stu, sensor_node_name
 ) -> AsyncGenerator[SensorNode, None]:
     """Connect to and disconnect from sensor node"""
 
-    async with stu.connect_sensor_node(sensor_node_name) as sensor_node:
-        yield sensor_node
+    async for node in _connect_with_retry(stu, sensor_node_name):
+        yield node
 
 
 @fixture
 async def sth(stu, sensor_node_name) -> AsyncGenerator[STH, None]:
     """Connect to and disconnect from an STH"""
 
-    async with stu.connect_sensor_node(sensor_node_name, STH) as sth:
-        yield sth
+    async for node in _connect_with_retry(stu, sensor_node_name, STH):
+        yield node
 
 
 @fixture

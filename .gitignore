@@ -2,3 +2,5 @@
 /sphinx
 /uv.lock
 .aider*
+reports
+opencode.json
