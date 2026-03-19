@@ -70,6 +70,8 @@ class TestRunner(QThread):
 
             if process.returncode == 0:
                 self._handle_success()
+            elif process.returncode == 1:
+                self._handle_test_failure()
             else:
                 self.error_occurred.emit(
                     f"Tests failed with exit code {process.returncode}"
@@ -84,13 +86,13 @@ class TestRunner(QThread):
             sys.executable,
             "-m",
             "icotest.cli.tool",
+            "--log",
+            self.log_level.lower(),
             "run",
             "-n",
             self.device_name,
             "--test-group",
             self.test_group,
-            "--log",
-            self.log_level.lower(),
         ]
 
         if self.backpack_model == "None":
@@ -119,6 +121,21 @@ class TestRunner(QThread):
                 "results": report_data.get("results", {}),
             })
         except Exception as e:  # pylint: disable=broad-exception-caught
+            self.error_occurred.emit(f"Failed to parse test report: {str(e)}")
+
+    def _handle_test_failure(self):
+        """Parse JSON report and emit failure results"""
+        try:
+            report_data = self._parse_latest_report()
+            self.test_completed.emit(
+                {
+                    "returncode": 1,
+                    "device_name": report_data.get("device_name", self.device_name),
+                    "report_path": report_data.get("report_path"),
+                    "results": report_data.get("results", {}),
+                }
+            )
+        except Exception as e:
             self.error_occurred.emit(f"Failed to parse test report: {str(e)}")
 
     # pylint: disable=too-many-locals
@@ -169,9 +186,20 @@ class TestRunner(QThread):
             if outcome == "failed":
                 longrepr = test.get("call", {}).get("longrepr", "")
                 if longrepr:
-                    # Get first few lines of error
-                    lines = str(longrepr).split("\n")
-                    error = "\n".join(lines[:3])
+                    error_lines = []
+                    for line in str(longrepr).split("\n"):
+                        if line.startswith("E "):
+                            content = line[2:].strip()
+                            # Skip the raw variable evaluation line created by Pytest
+                            if not content.startswith("assert "):
+                                error_lines.append(content)
+
+                    if error_lines:
+                        error = "\n".join(error_lines)
+                    else:
+                        # Fallback if no specific 'E' lines were found
+                        lines = str(longrepr).split("\n")
+                        error = "\n".join(lines[:3])
 
             results["tests"].append(
                 {"name": test_name, "outcome": outcome, "error": error}

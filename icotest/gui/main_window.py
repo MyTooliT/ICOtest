@@ -105,15 +105,6 @@ class MainWindow(QMainWindow):
 
         header_layout.addStretch()
 
-        header_layout.addWidget(QLabel("Logger Level:"))
-        self.logger_combo = QComboBox()
-        self.logger_combo.addItems(["DEBUG", "INFO", "WARNING", "ERROR"])
-        self.logger_combo.setCurrentText(
-            self.config.get("logger_level", "WARNING")
-        )
-        self.logger_combo.currentTextChanged.connect(self._save_config)
-        header_layout.addWidget(self.logger_combo)
-
         main_layout.addLayout(header_layout)
         main_layout.addSpacing(20)
 
@@ -205,7 +196,6 @@ class MainWindow(QMainWindow):
         self.device_combo.setEnabled(not is_running)
         self.scan_btn.setEnabled(not is_running)
         self.backpack_combo.setEnabled(not is_running)
-        self.logger_combo.setEnabled(not is_running)
 
         if is_running:
             self.flash_btn.setEnabled(False)
@@ -225,7 +215,7 @@ class MainWindow(QMainWindow):
                 pass
 
     def _save_config(self):
-        self.config["logger_level"] = self.logger_combo.currentText()
+        pass  # logger level is hardcoded to INFO
         try:
             # pylint: disable=unspecified-encoding
             with open(self.config_file, "w") as f:
@@ -247,7 +237,7 @@ class MainWindow(QMainWindow):
         self.test_runner = TestRunner(
             device_name="Minion04",
             test_group="initial",
-            log_level=self.logger_combo.currentText(),
+            log_level="INFO",
             backpack_model=self.backpack_combo.currentText(),
             parent=self,
         )
@@ -353,7 +343,7 @@ class MainWindow(QMainWindow):
         self.production_runner = TestRunner(
             device_name=device_name,
             test_group="production",
-            log_level=self.logger_combo.currentText(),
+            log_level="INFO",
             backpack_model=self.backpack_combo.currentText(),
             parent=self,
         )
