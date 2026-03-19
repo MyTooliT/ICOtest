@@ -2,6 +2,8 @@
 
 # -- Imports ------------------------------------------------------------------
 
+import asyncio
+# for renaming the output files
 import datetime
 import os
 import shutil
@@ -15,12 +17,6 @@ from netaddr import EUI
 
 from icotest.config import settings
 from icotest.test.support.mac import convert_mac_base64
-
-# for renaming the output files
-import asyncio
-import datetime
-import os
-import shutil
 
 # Stash key for the MAC address
 MAC_STASH_KEY = StashKey[str]()
@@ -178,7 +174,7 @@ def json_metadata(request):
 def pytest_sessionfinish(
     session, exitstatus  # pylint: disable=unused-argument
 ):
-    """Rename the JSON report using the MAC address if available"""
+    """Rename the JSON report using the MAC address and sensor_name if available"""
     config = session.config
     report_file = config.getoption("--json-report-file")
 
@@ -188,12 +184,12 @@ def pytest_sessionfinish(
             # Clean Base64 for filename (replace / and +)
             mac_clean = mac_b64.replace("/", "_").replace("+", "-")
 
-            # Identify node type (STH, SMH, etc.)
-            node_type = settings.get("sensor_node.type", "ICOtronic")
+            # Get the sensor node name (Bluetooth call name)
+            sensor_name = settings.sensor_node.name
 
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
             new_report_name = (
-                f"reports/{node_type}_{mac_clean}_{timestamp}.json"
+                f"reports/{sensor_name}_{mac_clean}_{timestamp}.json"
             )
 
             # Use shutil.move for safer cross-filesystem moves
