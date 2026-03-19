@@ -1,0 +1,18 @@
+# OpenCode Project Rules
+
+To ensure alignment with project requirements and local conventions, follow these operational rules:
+
+1. **Ask for Clarification**: If you encounter any ambiguity regarding project-specific logic, naming conventions (e.g., node names like "Pelzm_04" vs. "Minion04"), or architectural decisions, stop and ask the user for clarification using the `question` tool or a direct inquiry.
+2. **Confirm Before Significant Action**: Provide a concise plan for complex tasks and wait for user approval before implementing changes.
+3. **Adhere to Conventions**: Rigorously follow the existing style and structural patterns found in the codebase.
+4. **Data Integrity**: Prioritize capturing and logging measurement data in the production reporting system as established in `PRODUCTION_DATA_COLLECTION.md`.
+5. **No Assumptions**: Do not assume the presence of hardware identifiers or configurations. Verify them or ask the user if they differ from the defaults.
+6. **Ask if you want to add a commit**: Do not commit changes without asking the user if he wants to do that. Present a commit message suggestions but ask for refinements from the user.
+7. **Use the survey tool for complex questions (default behavior)**: When facing decisions with multiple options, configurations, or design choices, use the `question` tool instead of asking in text. This includes:
+   - Multiple implementation choices or design decisions
+   - Configuration or naming convention options
+   - Scope decisions (e.g., "should this apply to X, Y, or Z?")
+   - Any decision affecting code changes
+   This ensures clarity, captures decisions clearly, and provides a better user experience.
+8. **Not every suggestions needs to be implemented**: If some aspects that the user suggest may complicate implementation challenge him about it. In some many cases only a part of that idea is suitable for being implemented right now. If other aspects are valuable but not well formed enough to be implemented, they should become a 2do or part of the documentation.
+
