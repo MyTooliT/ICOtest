@@ -161,7 +161,7 @@ def json_metadata(request):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    """Rename the JSON report using the MAC address if available"""
+    """Rename the JSON report using sensor node name and MAC address if available"""
     config = session.config
     report_file = config.getoption("--json-report-file")
 
@@ -171,11 +171,11 @@ def pytest_sessionfinish(session, exitstatus):
             # Clean Base64 for filename (replace / and +)
             mac_clean = mac_b64.replace("/", "_").replace("+", "-")
 
-            # Identify node type (STH, SMH, etc.)
-            node_type = settings.get("sensor_node.type", "ICOtronic")
+            # Get the sensor node name (Bluetooth call name)
+            sensor_name = settings.sensor_node.name
 
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-            new_report_name = f"reports/{node_type}_{mac_clean}_{timestamp}.json"
+            new_report_name = f"reports/{sensor_name}_{mac_clean}_{timestamp}.json"
 
             # Use shutil.move for safer cross-filesystem moves
             shutil.move(report_file, new_report_name)
