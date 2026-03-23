@@ -9,7 +9,7 @@ ICOtest is a Python-based framework for testing hardware devices (sensor nodes).
 - A PySide6 GUI for production testing workflows
 - SQLite database for tracking device test history
 - JSON report generation for test results
-- Automatic STU (Stationary Transceiver Unit) reset on connection failures
+- Automatic error recovery with STU reset on connection and streaming failures
 
 ## Operational Guidelines
 
@@ -81,9 +81,10 @@ Not every suggestion needs to be fully implemented. When the user makes suggesti
 
 **Features**:
 - Automatic STU reset when connection fails with "Unable to connect to sensor"
+- Automatic STU reset when data streaming disable fails with "Unable to disable data streaming"
 - Auto-retry after reset (3-second wait)
 - Comprehensive error extraction for GUI display
-- JSON report generation with device tracking
+- JSON report generation with device tracking including sensor MAC address
 
 ### Test Groups
 
