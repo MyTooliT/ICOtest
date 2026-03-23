@@ -51,6 +51,24 @@ dev = [
   "sphinx_rtd_theme",
 ]
 
+notebooks = [
+
+    "jupyterlab>=4.0",
+
+    "pandas>=2.0",
+
+    "numpy>=1.24",
+
+    "matplotlib>=3.7",
+
+    "seaborn>=0.12",
+
+    "ipywidgets>=8.0",
+
+]
+
+
+
 [project.scripts]
 
 icotest = "icotest.cli.tool:main"
