@@ -13,7 +13,7 @@ from math import ceil
 
 from pytest import mark
 
-from icotronic.can import STH, StreamingConfiguration
+from icotronic.can import STH, STU, StreamingConfiguration
 from icotronic.measurement.constants import ADC_MAX_VALUE
 from icotronic.measurement import convert_raw_to_g, ratio_noise_max
 
@@ -35,7 +35,7 @@ import numpy as np
 
 @mark.order(30)
 @mark.sensor
-async def test_acceleration_sensor_self_test(sth: STH, json_metadata: dict):
+async def test_acceleration_sensor_self_test(sth: STH, stu: STU, json_metadata: dict):
     """Use the self test of a acceleration sensor to check for problems"""
 
     logger = getLogger(__name__)
@@ -106,7 +106,7 @@ async def test_acceleration_sensor_self_test(sth: STH, json_metadata: dict):
 
 @mark.order(31)
 @mark.sensor
-async def test_acceleration_single_value(sth: STH):
+async def test_acceleration_single_value(sth: STH, stu: STU):
     """Test stationary acceleration value"""
 
     logger = getLogger(__name__)
@@ -139,7 +139,7 @@ async def test_acceleration_single_value(sth: STH):
 
 @mark.order(32)
 @mark.sensor
-async def test_acceleration_noise(sth: STH, json_metadata: dict):
+async def test_acceleration_noise(sth: STH, stu: STU, json_metadata: dict):
     """Test ratio of noise to maximal possible measurement value"""
 
     logger = getLogger(__name__)
@@ -159,6 +159,7 @@ async def test_acceleration_noise(sth: STH, json_metadata: dict):
         sth,
         StreamingConfiguration(first=True),
         length=number_streaming_messages,
+        stu=stu,
     )
 
     values = measurement_data.values()
@@ -209,6 +210,7 @@ async def test_acceleration_noise(sth: STH, json_metadata: dict):
         sth,
         StreamingConfiguration(first=True),
         length=number_streaming_messages,
+        stu=stu,
     )
 
     values = measurement_data.values()
@@ -237,7 +239,7 @@ async def test_acceleration_noise(sth: STH, json_metadata: dict):
 
 @mark.order(33)
 @mark.sensor
-async def test_acceleration_3a_alt(sth: STH):
+async def test_acceleration_3a_alt(sth: STH, stu: STU):
     """Test the triple axis accelerometer reading"""
 
     logger = getLogger(__name__)
@@ -290,7 +292,7 @@ async def test_acceleration_3a_alt(sth: STH):
             config = StreamingConfiguration(first=False, **{channel: True})
         getLogger(__name__).info("🎛️ Config: %s", config)
         measurement_data = await read_streaming_data(
-            sth, config, length=number_streaming_messages
+            sth, config, length=number_streaming_messages, stu=stu
         )
 
         # This block strips the metadata since we seem to always be getting a 3xN array
@@ -360,7 +362,7 @@ async def test_acceleration_3a_alt(sth: STH):
 
 @mark.order(34)
 @mark.sensor
-async def test_acceleration_3a_optimized(sth: STH, json_metadata: dict):
+async def test_acceleration_3a_optimized(sth: STH, stu: STU, json_metadata: dict):
     """Test the triple axis accelerometer reading (optimized version)"""
 
     logger = getLogger(__name__)
@@ -407,7 +409,7 @@ async def test_acceleration_3a_optimized(sth: STH, json_metadata: dict):
     config = StreamingConfiguration(first=True, second=True, third=True)
     logger.info("Streaming config: %s", config)
     measurement_data = await read_streaming_data(
-        sth, config, length=number_streaming_messages
+        sth, config, length=number_streaming_messages, stu=stu
     )
 
     # Extract raw data from each channel
@@ -539,7 +541,7 @@ async def test_acceleration_3a_optimized(sth: STH, json_metadata: dict):
     config = StreamingConfiguration(first=True, second=True, third=True)
     logger.info("Streaming config: %s", config)
     measurement_data = await read_streaming_data(
-        sth, config, length=number_streaming_messages
+        sth, config, length=number_streaming_messages, stu=stu
     )
 
     # Extract raw data from each channel
@@ -616,12 +618,13 @@ async def test_acceleration_3a_optimized(sth: STH, json_metadata: dict):
 
 @mark.order(40)
 @mark.backpack
-async def test_BaP_torr_accelleration(sth: STH, json_metadata: dict):
+async def test_BaP_torr_accelleration(sth: STH, stu: STU, json_metadata: dict):
     """Test the triple axis accelerometer reading"""
 
     logger = getLogger(__name__)
     logger.info("Starting BackPack torr acceleration test")
 
+    test_acc_bias_g = 0.0
     test_acc_tollerance_g = 2.5
     test_noise_limit_db = -85
 
@@ -650,7 +653,7 @@ async def test_BaP_torr_accelleration(sth: STH, json_metadata: dict):
     config = StreamingConfiguration(first=True, second=True, third=True)
     logger.info("Streaming config: %s", config)
     measurement_data = await read_streaming_data(
-        sth, config, length=number_streaming_messages
+        sth, config, length=number_streaming_messages, stu=stu
     )
 
     acceleration_x_raw = np.array(
@@ -703,17 +706,21 @@ async def test_BaP_torr_accelleration(sth: STH, json_metadata: dict):
     json_metadata["record"]("backpack_acc_y_snr", acceleration_noise_y, unit="dB")
     json_metadata["record"]("backpack_acc_torr_snr", acceleration_noise_torr, unit="dB")
 
-    max_bias = max(acc_bias_x, acc_bias_y, acc_bias_torr)
+    max_bias_diff = max(
+        abs(acc_bias_x - test_acc_bias_g),
+        abs(acc_bias_y - test_acc_bias_g),
+        abs(acc_bias_torr - test_acc_tollerance_g),
+    )
     max_noise = max(acceleration_noise_x, acceleration_noise_y, acceleration_noise_torr)
 
     json_metadata["record"](
-        "backpack_max_bias", max_bias, unit="g", upper=test_acc_tollerance_g
+        "backpack_max_bias", max_bias_diff, unit="g", upper=test_acc_bias_diff_g
     )
     json_metadata["record"](
         "backpack_max_noise", max_noise, unit="dB", upper=test_noise_limit_db
     )
 
-    assert max_bias < test_acc_tollerance_g, (
+    assert max_bias_diff < test_acc_tollerance_g, (
         f"Accelerometer offset error! Over the limit of {test_acc_tollerance_g} g"
         f"the measured values are X: {acc_bias_x:.3f} Y: {acc_bias_y:.3f} torr: {acc_bias_torr:.3f} g > {test_acc_tollerance_g:.3f} "
     )
@@ -743,7 +750,7 @@ async def test_BaP_torr_accelleration(sth: STH, json_metadata: dict):
     config = StreamingConfiguration(first=True, second=True, third=True)
     logger.info("Streaming config: %s", config)
     measurement_data = await read_streaming_data(
-        sth, config, length=number_streaming_messages
+        sth, config, length=number_streaming_messages, stu=stu
     )
 
     acceleration_x_raw = np.array(

@@ -2,8 +2,11 @@
 
 # -- Imports ------------------------------------------------------------------
 
+import asyncio
+from logging import getLogger
+
 from dynaconf.utils.boxing import DynaBox
-from icotronic.can import SensorNode, StreamingConfiguration
+from icotronic.can import SensorNode, StreamingConfiguration, STU
 from icotronic.measurement import MeasurementData
 
 from icotest.test.support.node import check_write_read_eeprom
@@ -57,7 +60,10 @@ async def check_eeprom_bluetooth_times(node: SensorNode, settings: DynaBox):
 
 
 async def read_streaming_data(
-    node: SensorNode, config: StreamingConfiguration, length: int
+    node: SensorNode,
+    config: StreamingConfiguration,
+    length: int,
+    stu: STU | None = None,
 ) -> MeasurementData:
     """Collect a certain number of streaming data (messages)
 
@@ -75,18 +81,47 @@ async def read_streaming_data(
 
             The amount of streaming data stored in the returned measurement
 
+        stu:
+            Optional STU connection for automatic recovery on streaming
+            disable errors
+
     Returns:
 
         A measurement storing ``length`` streaming messages
 
+    Raises:
+
+        Exception: Re-raised if error is not related to streaming disable or
+            if STU recovery fails
+
     """
+    logger = getLogger(__name__)
 
     measurement_data = MeasurementData(config)
-    async with node.open_data_stream(config) as stream:
+    try:
+        async with node.open_data_stream(config) as stream:
+            async for data, _ in stream:
+                measurement_data.append(data)
+                if len(measurement_data) >= length:
+                    break
 
-        async for data, _ in stream:
-            measurement_data.append(data)
-            if len(measurement_data) >= length:
-                break
+    except Exception as e:
+        if stu and "Unable to disable data streaming" in str(e):
+            logger.warning(
+                "Failed to disable data streaming: %s. "
+                "Resetting STU and retrying once...",
+                e,
+            )
+            await stu.reset()
+            await asyncio.sleep(3)
+
+            measurement_data = MeasurementData(config)
+            async with node.open_data_stream(config) as stream:
+                async for data, _ in stream:
+                    measurement_data.append(data)
+                    if len(measurement_data) >= length:
+                        break
+        else:
+            raise
 
     return measurement_data
