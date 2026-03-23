@@ -110,10 +110,11 @@ async def sth(stu, sensor_node_name) -> AsyncGenerator[STH, None]:
 
 
 @fixture
-def json_metadata(request):
+def json_metadata(request, sensor_node_mac_address):
     """Fixture for JSON metadata (for --json-report)
 
     Allows tests to add metadata to the JSON report.
+    Automatically includes sensor_mac_base64 for device identification.
     """
     # Use the plugin's internal metadata storage if available
     if hasattr(request.node, "_json_report_extra"):
@@ -121,6 +122,11 @@ def json_metadata(request):
     else:
         # Fallback if the plugin is not active
         metadata_dict = {}
+
+    # Add base64-encoded MAC address for device identification
+    # This helps differentiate individual devices in the test reports
+    if sensor_node_mac_address:
+        metadata_dict["sensor_mac_base64"] = convert_mac_base64(sensor_node_mac_address)
 
     # Standardized measurement recording function
     def record_measurement(
