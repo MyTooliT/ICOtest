@@ -39,14 +39,10 @@ async def test_acceleration_sensor_self_test(sth: STH, stu: STU, json_metadata: 
     logger = getLogger(__name__)
     logger.info("Starting acceleration sensor self-test")
 
-    voltage_diff_abs, voltage_diff_before_after = (
-        await read_self_test_voltages(sth)
-    )
+    voltage_diff_abs, voltage_diff_before_after = await read_self_test_voltages(sth)
 
     logger.info("Voltage difference (absolute): %.2f mV", voltage_diff_abs)
-    logger.info(
-        "Voltage difference (before/after): %.2f mV", voltage_diff_before_after
-    )
+    logger.info("Voltage difference (before/after): %.2f mV", voltage_diff_before_after)
 
     sensor = settings.acceleration_sensor()
 
@@ -116,9 +112,7 @@ async def test_acceleration_single_value(sth: STH, stu: STU):
 
     stream_data = await sth.get_streaming_data_single()
     sensor = settings.acceleration_sensor()
-    acceleration = convert_raw_to_g(
-        stream_data.values[0], sensor.acceleration.maximum
-    )
+    acceleration = convert_raw_to_g(stream_data.values[0], sensor.acceleration.maximum)
 
     logger.info("Raw value: %d", stream_data.values[0])
     logger.info("Measured acceleration value: %.2f g", acceleration)
@@ -126,12 +120,8 @@ async def test_acceleration_single_value(sth: STH, stu: STU):
     # We expect a stationary acceleration between -g₀ and g₀ (g₀ = 9.807 m/s²)
     expected_acceleration = 0
     tolerance_acceleration = sensor.acceleration.tolerance
-    expected_minimum_acceleration = (
-        expected_acceleration - tolerance_acceleration
-    )
-    expected_maximum_acceleration = (
-        expected_acceleration + tolerance_acceleration
-    )
+    expected_minimum_acceleration = expected_acceleration - tolerance_acceleration
+    expected_maximum_acceleration = expected_acceleration + tolerance_acceleration
 
     assert expected_minimum_acceleration <= acceleration, (
         f"Measured acceleration {acceleration:.3f} g is lower "
@@ -203,44 +193,7 @@ async def test_acceleration_noise(sth: STH, stu: STU, json_metadata: dict):
         description="Mean acceleration measured during noise test",
     )
     # Store FULL recording
-    json_metadata["acceleration_full_recording"] = [
-        int(v) for v in acceleration
-    ]
-
-    assert ratio_noise_maximum <= maximum_ratio_allowed, (
-        "The ratio noise to possible maximum measured value of "
-        f"{ratio_noise_maximum} dB is higher than the maximum allowed level "
-        f"of {maximum_ratio_allowed} dB"
-    )
-
-    # We want `number_values` values which means we need to collect data from
-    # `number_values/3` messages, if we use a single channel
-    number_streaming_messages = ceil(number_values / 3)
-    measurement_data = await read_streaming_data(
-        sth,
-        StreamingConfiguration(first=True),
-        length=number_streaming_messages,
-        stu=stu,
-    )
-
-    values = measurement_data.values()
-    assert number_values <= len(values) <= number_values + 2
-    acceleration = values[:number_values]
-    assert len(acceleration) == number_values
-
-    ratio_noise_maximum = ratio_noise_max(acceleration)
-    sensor = settings.acceleration_sensor()
-    maximum_ratio_allowed = sensor.acceleration.ratio_noise_to_max_value
-
-    mean_value = convert_raw_to_g(
-        (sum(acceleration) / len(acceleration)), 100.0
-    )
-    logger.info(
-        "SNR: %.2f dB (max allowed: %.2f dB)",
-        ratio_noise_maximum,
-        maximum_ratio_allowed,
-    )
-    logger.info("Mean acceleration: %.2f g", mean_value)
+    json_metadata["acceleration_full_recording"] = [int(v) for v in acceleration]
 
     assert ratio_noise_maximum <= maximum_ratio_allowed, (
         "The ratio noise to possible maximum measured value of "
@@ -249,13 +202,12 @@ async def test_acceleration_noise(sth: STH, stu: STU, json_metadata: dict):
     )
 
 
-# pylint: disable=too-many-locals
-
-
-@mark.order(33)
-@mark.sensor
-async def test_acceleration_3a_alt(sth: STH, stu: STU):
-    """Test the triple axis accelerometer reading"""
+# NOTE: This is a reference implementation using an alternative measurement approach.
+# It does not add value to production testing compared to test_acceleration_3a_optimized.
+# Kept for reference/comparison purposes only. Do not add back to test markers without
+# consensus from the team. The optimized version provides superior metadata capture.
+async def reference_acceleration_3a_alt(sth: STH, stu: STU):
+    """Reference: triple axis acceleration reading (alternative method - NOT RUN)"""
 
     logger = getLogger(__name__)
     logger.info("Starting triple axis acceleration test (alternative method)")
@@ -277,8 +229,7 @@ async def test_acceleration_3a_alt(sth: STH, stu: STU):
     )
 
     logger.info(
-        "Configuring ADC: prescaler=2, acq_time=8, oversampling=64,"
-        " ref_voltage=1.8V"
+        "Configuring ADC: prescaler=2, acq_time=8, oversampling=64, ref_voltage=1.8V"
     )
     await sth.set_adc_configuration(
         prescaler=2,
@@ -289,9 +240,7 @@ async def test_acceleration_3a_alt(sth: STH, stu: STU):
 
     logger.info("Setting sensor channels: first=2, second=3, third=4")
     # Set the correct channels
-    await sth.set_sensor_configuration(
-        SensorConfiguration(first=2, second=3, third=4)
-    )
+    await sth.set_sensor_configuration(SensorConfiguration(first=2, second=3, third=4))
 
     acc_bias = []
     acc_noise = []
@@ -368,8 +317,7 @@ async def test_acceleration_3a_alt(sth: STH, stu: STU):
         acc_noise[2],
     )
     logger.info(
-        "Noise check - expected threshold: %.2f dB, worst channel margin:"
-        " %.2f dB",
+        "Noise check - expected threshold: %.2f dB, worst channel margin: %.2f dB",
         np.mean(test_acc_noise),
         acc_noise_margin,
     )
@@ -409,8 +357,7 @@ async def test_acceleration_3a_optimized(sth: STH, stu: STU, json_metadata: dict
     )
 
     logger.info(
-        "Configuring ADC: prescaler=2, acq_time=8, oversampling=64,"
-        " ref_voltage=1.8V"
+        "Configuring ADC: prescaler=2, acq_time=8, oversampling=64, ref_voltage=1.8V"
     )
     await sth.set_adc_configuration(
         prescaler=2,
@@ -421,9 +368,7 @@ async def test_acceleration_3a_optimized(sth: STH, stu: STU, json_metadata: dict
 
     logger.info("Setting sensor channels: first=2, second=3, third=4")
     # set the correct channels
-    await sth.set_sensor_configuration(
-        SensorConfiguration(first=2, second=3, third=4)
-    )
+    await sth.set_sensor_configuration(SensorConfiguration(first=2, second=3, third=4))
 
     # How long should the recording sample be
     number_values = 10_000
@@ -453,15 +398,9 @@ async def test_acceleration_3a_optimized(sth: STH, stu: STU, json_metadata: dict
     acc_noise = []
 
     # Store FULL recordings in metadata
-    json_metadata["acceleration_x_recording"] = [
-        int(v) for v in acceleration_x_raw
-    ]
-    json_metadata["acceleration_y_recording"] = [
-        int(v) for v in acceleration_y_raw
-    ]
-    json_metadata["acceleration_z_recording"] = [
-        int(v) for v in acceleration_z_raw
-    ]
+    json_metadata["acceleration_x_recording"] = [int(v) for v in acceleration_x_raw]
+    json_metadata["acceleration_y_recording"] = [int(v) for v in acceleration_y_raw]
+    json_metadata["acceleration_z_recording"] = [int(v) for v in acceleration_z_raw]
 
     for axis_name, acceleration_raw in [
         ("x", acceleration_x_raw),
@@ -472,8 +411,7 @@ async def test_acceleration_3a_optimized(sth: STH, stu: STU, json_metadata: dict
         acceleration_noise = ratio_noise_max(acceleration_raw)
 
         getLogger(__name__).info(
-            'Channel "%s": mean raw value = %.2f, acceleration = %.2f g, SNR ='
-            " %.2f dB",
+            'Channel "%s": mean raw value = %.2f, acceleration = %.2f g, SNR = %.2f dB',
             axis_name,
             mean(acceleration_raw),
             acceleration_g,
@@ -532,8 +470,7 @@ async def test_acceleration_3a_optimized(sth: STH, stu: STU, json_metadata: dict
         acc_noise[2],
     )
     logger.info(
-        "Noise check - expected threshold: %.2f dB, worst channel margin:"
-        " %.2f dB",
+        "Noise check - expected threshold: %.2f dB, worst channel margin: %.2f dB",
         np.mean(test_acc_noise),
         acc_noise_margin,
     )
@@ -542,116 +479,9 @@ async def test_acceleration_3a_optimized(sth: STH, stu: STU, json_metadata: dict
         "acceleration_noise_margin",
         acc_noise_margin,
         upper=0.0,
-        description=(
-            "Worst-case margin against noise limits across all channels"
-        ),
+        description=("Worst-case margin against noise limits across all channels"),
     )
 
-    assert acc_noise_margin < 0.0, (
-        "Accelerometer noise error! The noise margin is "
-        f"{acc_noise_margin:.3f} "
-        f"the measured values are {acc_noise[0]:.3f} {acc_noise[1]:.3f} "
-        f"{acc_noise[2]:.3f} dB"
-    )
-
-    logger.info(
-        "Configuring ADC: prescaler=2, acq_time=8, oversampling=64,"
-        " ref_voltage=1.8V"
-    )
-    await sth.set_adc_configuration(
-        prescaler=2,
-        acquisition_time=8,
-        oversampling_rate=64,
-        reference_voltage=1.8,
-    )
-
-    logger.info("Setting sensor channels: first=2, second=3, third=4")
-    # set the correct channels
-    await sth.set_sensor_configuration(
-        SensorConfiguration(first=2, second=3, third=4)
-    )
-
-    # How long should the recording sample be
-    number_values = 10_000
-    logger.info(
-        "Collecting %d values from all three channels simultaneously",
-        number_values,
-    )
-
-    # We want `number_values` values which means we need to collect data from
-    # `number_values/3` messages, if we use a single channel
-    number_streaming_messages = ceil(number_values / 3)
-
-    # Stream all three channels simultaneously
-    config = StreamingConfiguration(first=True, second=True, third=True)
-    logger.info("Streaming config: %s", config)
-    measurement_data = await read_streaming_data(
-        sth, config, length=number_streaming_messages, stu=stu
-    )
-
-    # Extract raw data from each channel
-    acceleration_x_raw = np.array(measurement_data.first().values())
-    acceleration_y_raw = np.array(measurement_data.second().values())
-    acceleration_z_raw = np.array(measurement_data.third().values())
-
-    # Convert to g and calculate noise for each axis
-    acc_bias = []
-    acc_noise = []
-
-    for axis_name, acceleration_raw in [
-        ("x", acceleration_x_raw),
-        ("y", acceleration_y_raw),
-        ("z", acceleration_z_raw),
-    ]:
-        acceleration_g = (mean(acceleration_raw) + 400 - exp2(15)) * 1.3733e-3
-        acceleration_noise = ratio_noise_max(acceleration_raw)
-
-        getLogger(__name__).info(
-            'Channel "%s": mean raw value = %.2f, acceleration = %.2f g, SNR ='
-            " %.2f dB",
-            axis_name,
-            mean(acceleration_raw),
-            acceleration_g,
-            acceleration_noise,
-        )
-
-        acc_bias.append(acceleration_g)
-        acc_noise.append(acceleration_noise)
-
-    # subtract the expected gravity
-    earth_acc = 1.0
-    acc_bias_error = np.linalg.norm(np.array(acc_bias)) - earth_acc
-    logger.info(
-        "Measured acceleration vector: [%.2f, %.2f, %.2f] g",
-        acc_bias[0],
-        acc_bias[1],
-        acc_bias[2],
-    )
-    logger.info(
-        "Bias check - expected: %.2f g, measured error: %.2f g",
-        earth_acc,
-        acc_bias_error,
-    )
-    assert acc_bias_error < test_acc_tollerance_g, (
-        f"Accelerometer offset error {acc_bias_error:.3f} g is higher than "
-        f"{test_acc_tollerance_g:.3f} g "
-        f"the measured values are {acc_bias[0]:.3f} {acc_bias[1]:.3f} "
-        f"{acc_bias[2]:.3f} g"
-    )
-
-    acc_noise_margin = np.max(acc_noise + test_acc_noise)
-    logger.info(
-        "Measured noise: [%.2f, %.2f, %.2f] dB",
-        acc_noise[0],
-        acc_noise[1],
-        acc_noise[2],
-    )
-    logger.info(
-        "Noise check - expected threshold: %.2f dB, worst channel margin:"
-        " %.2f dB",
-        np.mean(test_acc_noise),
-        acc_noise_margin,
-    )
     assert acc_noise_margin < 0.0, (
         "Accelerometer noise error! The noise margin is "
         f"{acc_noise_margin:.3f} "
@@ -688,9 +518,7 @@ async def test_BaP_torr_accelleration(sth: STH, stu: STU, json_metadata: dict):
     logger.info("Setting BackPack sensor channels: first=7, second=8, third=9")
 
     # Set the correct channels to address BackPack
-    await sth.set_sensor_configuration(
-        SensorConfiguration(first=7, second=8, third=9)
-    )
+    await sth.set_sensor_configuration(SensorConfiguration(first=7, second=8, third=9))
 
     # How long should the recording sample be
     number_values = 10_000
@@ -725,15 +553,9 @@ async def test_BaP_torr_accelleration(sth: STH, stu: STU, json_metadata: dict):
     acceleration_torr = (acceleration_torr_raw / 65535 - 0.5) * 100
 
     # Store FULL recordings
-    json_metadata["backpack_x_recording"] = [
-        int(v) for v in acceleration_x_raw
-    ]
-    json_metadata["backpack_y_recording"] = [
-        int(v) for v in acceleration_y_raw
-    ]
-    json_metadata["backpack_torr_recording"] = [
-        int(v) for v in acceleration_torr_raw
-    ]
+    json_metadata["backpack_x_recording"] = [int(v) for v in acceleration_x_raw]
+    json_metadata["backpack_y_recording"] = [int(v) for v in acceleration_y_raw]
+    json_metadata["backpack_torr_recording"] = [int(v) for v in acceleration_torr_raw]
 
     acc_bias_x = mean(acceleration_x)
     acc_bias_y = mean(acceleration_y)
@@ -764,48 +586,41 @@ async def test_BaP_torr_accelleration(sth: STH, stu: STU, json_metadata: dict):
     json_metadata["record"]("backpack_acc_y_bias", acc_bias_y, unit="g")
     json_metadata["record"]("backpack_acc_torr_bias", acc_bias_torr, unit="g")
 
-    json_metadata["record"](
-        "backpack_acc_x_snr", acceleration_noise_x, unit="dB"
-    )
-    json_metadata["record"](
-        "backpack_acc_y_snr", acceleration_noise_y, unit="dB"
-    )
-    json_metadata["record"](
-        "backpack_acc_torr_snr", acceleration_noise_torr, unit="dB"
-    )
+    json_metadata["record"]("backpack_acc_x_snr", acceleration_noise_x, unit="dB")
+    json_metadata["record"]("backpack_acc_y_snr", acceleration_noise_y, unit="dB")
+    json_metadata["record"]("backpack_acc_torr_snr", acceleration_noise_torr, unit="dB")
 
     max_bias_diff = max(
         abs(acc_bias_x - test_acc_bias_g),
         abs(acc_bias_y - test_acc_bias_g),
-        abs(acc_bias_torr - test_acc_tollerance_g),
+        abs(acc_bias_torr - test_acc_bias_g),
     )
     max_noise = max(acceleration_noise_x, acceleration_noise_y, acceleration_noise_torr)
 
     json_metadata["record"](
-        "backpack_max_bias", max_bias_diff, unit="g", upper=test_acc_bias_diff_g
+        "backpack_max_bias", max_bias_diff, unit="g", upper=test_acc_tollerance_g
     )
     json_metadata["record"](
         "backpack_max_noise", max_noise, unit="dB", upper=test_noise_limit_db
     )
 
     assert max_bias_diff < test_acc_tollerance_g, (
-        f"Accelerometer offset error! Over the limit of {test_acc_tollerance_g} g"
+        f"Accelerometer offset error! Over the limit of {test_acc_tollerance_g} g\n"
         f"the measured values are X: {acc_bias_x:.3f} Y: {acc_bias_y:.3f} torr: {acc_bias_torr:.3f} g > {test_acc_tollerance_g:.3f} "
     )
 
     assert max_noise < test_noise_limit_db, (
-        "Accelerometer noise error! Over the limit of"
-        f" {test_noise_limit_db:.3f} dB the measured values are x:"
-        f" {acceleration_noise_x:.3f} y: {acceleration_noise_y:.3f} torr:"
-        f" {acceleration_noise_torr:.3f} dB"
+        f"Accelerometer noise error! Over the limit of "
+        f"{test_noise_limit_db:.3f} dB\n"
+        f"the measured values are x: {acceleration_noise_x:.3f} "
+        f"y: {acceleration_noise_y:.3f} torr: "
+        f"{acceleration_noise_torr:.3f} dB"
     )
 
     logger.info("Setting BackPack sensor channels: first=7, second=8, third=9")
 
     # Set the correct channels to address BackPack
-    await sth.set_sensor_configuration(
-        SensorConfiguration(first=7, second=8, third=9)
-    )
+    await sth.set_sensor_configuration(SensorConfiguration(first=7, second=8, third=9))
 
     # How long should the recording sample be
     number_values = 10_000
@@ -866,9 +681,7 @@ async def test_BaP_torr_accelleration(sth: STH, stu: STU, json_metadata: dict):
     # Store the results into the json file
     # json_metadata["Sensor Node Name"] = name
 
-    assert (
-        max(acc_bias_x, acc_bias_y, acc_bias_torr) < test_acc_tollerance_g
-    ), (
+    assert max(acc_bias_x, acc_bias_y, acc_bias_torr) < test_acc_tollerance_g, (
         "Accelerometer offset error! Over the limit of"
         f" {test_acc_tollerance_g} gthe measured values are X:"
         f" {acc_bias_x:.3f} Y: {acc_bias_y:.3f} torr: {acc_bias_torr:.3f} g >"
@@ -876,15 +689,14 @@ async def test_BaP_torr_accelleration(sth: STH, stu: STU, json_metadata: dict):
     )
 
     assert (
-        max(
-            acceleration_noise_x, acceleration_noise_y, acceleration_noise_torr
-        )
+        max(acceleration_noise_x, acceleration_noise_y, acceleration_noise_torr)
         < test_noise_limit_db
     ), (
-        "Accelerometer noise error! Over the limit of"
-        f" {test_noise_limit_db:.3f} dB the measured values are x:"
-        f" {acceleration_noise_x:.3f} y: {acceleration_noise_y:.3f} torr:"
-        f" {acceleration_noise_torr:.3f} dB"
+        f"Accelerometer noise error! Over the limit of "
+        f"{test_noise_limit_db:.3f} dB\n"
+        f"the measured values are x: {acceleration_noise_x:.3f} "
+        f"y: {acceleration_noise_y:.3f} torr: "
+        f"{acceleration_noise_torr:.3f} dB"
     )
 
 
