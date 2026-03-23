@@ -40,6 +40,99 @@ pip install -e .[dev]
 pip uninstall icotest
 ```
 
+## Error Recovery Patterns
+
+The ICOtest framework implements automatic error recovery for transient hardware communication issues. When developing new tests or features, you should understand these patterns to maintain consistency and reliability.
+
+### Connection Failure Recovery Pattern
+
+**Location**: `icotest/test/conftest.py` - `_connect_with_retry()` function
+
+**Pattern**: When the framework attempts to connect to a sensor node:
+
+1. Try to establish the connection
+2. If "Unable to connect to sensor" error occurs:
+   - Log a warning message
+   - Reset the STU via `await stu.reset()`
+   - Wait 3 seconds: `await asyncio.sleep(3)`
+   - Retry the connection exactly once
+3. If any other error occurs, re-raise it immediately
+
+**When to Use**: Use the `sensor_node` or `sth` fixtures in your tests. These fixtures already implement this pattern automatically through the `_connect_with_retry()` helper function.
+
+**Example**:
+```python
+async def test_my_feature(sensor_node: SensorNode):
+    # Connection errors are automatically recovered
+    # No additional error handling needed
+    await sensor_node.some_operation()
+```
+
+### Data Streaming Disable Error Recovery Pattern
+
+**Location**: `icotest/test/support/sensor_node.py` - `read_streaming_data()` function
+
+**Pattern**: When the framework collects streaming data from a sensor:
+
+1. Open a data stream and collect measurements
+2. If "Unable to disable data streaming" error occurs during cleanup:
+   - Log a warning message with the original error
+   - Reset the STU via `await stu.reset()`
+   - Wait 3 seconds: `await asyncio.sleep(3)`
+   - Retry the streaming operation exactly once
+3. If any other error occurs, re-raise it immediately
+4. Return the collected measurement data
+
+**When to Use**: When you need to collect streaming data from a sensor in your tests, pass the `stu` fixture to the `read_streaming_data()` function.
+
+**Example**:
+```python
+async def test_acceleration(sth: STH, stu: STU):
+    config = StreamingConfiguration(first=True)
+    # Pass stu to enable automatic recovery
+    measurement_data = await read_streaming_data(
+        sth, config, length=100, stu=stu
+    )
+```
+
+### Implementing Similar Recovery
+
+If you need to implement error recovery in other parts of the framework:
+
+1. **Identify the error condition**: Determine what error message indicates a transient STU state issue
+2. **Wrap in try-except**: Catch the specific error condition
+3. **Reset and retry**: Reset the STU and wait 3 seconds before retrying
+4. **Limit retries**: Only retry once to avoid infinite loops
+5. **Log appropriately**: Use `getLogger().warning()` to document recovery attempts
+6. **Re-raise other errors**: Don't suppress errors unrelated to the transient condition
+
+**Recovery Template**:
+```python
+try:
+    # Attempt operation
+    await perform_operation()
+except TimeoutError as e:
+    if "specific error message" in str(e):
+        logger = getLogger(__name__)
+        logger.warning(
+            "Error occurred: %s. Resetting STU and retrying...", e
+        )
+        await stu.reset()
+        await asyncio.sleep(3)
+        # Retry exactly once
+        await perform_operation()
+    else:
+        raise
+```
+
+### Best Practices
+
+- **Always pass STU when needed**: Functions that might encounter transient errors should accept an optional `stu` parameter
+- **Document recovery behavior**: Include information about recovery in function docstrings
+- **Use consistent logging**: Follow the existing pattern of warning-level logs for recovery attempts
+- **Don't suppress unexpected errors**: Only handle the specific transient errors you expect
+- **Test recovery logic**: When adding new recovery code, test both success and failure paths
+
 ## Release
 
 **Note:** In the text below we assume that you want to release version

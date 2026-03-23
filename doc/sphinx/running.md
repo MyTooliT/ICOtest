@@ -79,9 +79,78 @@ and the test finishes successfully, then there should be a file `.report.json` i
 yq '.tests[0].metadata.["Sensor Node Name"]' .report.json
 ```
 
-## Debugging Tests
+## Error Recovery and Resilience
 
-Sometimes you want to get additional information about test execution. For that purpose you can increase the logging level. For example, to output info logging messages (in addition to the warning and error logging messages enabled by default) you can use the `icotest` option `--log` with the argument `info`:
+The ICOtest framework is designed to automatically recover from transient hardware communication errors. This improves test reliability by handling temporary STU (Stationary Transceiver Unit) state issues without manual intervention.
+
+### Automatic Error Recovery
+
+The test framework automatically detects and recovers from two types of errors:
+
+**1. Connection Failures**
+- **Error**: "Unable to connect to sensor"
+- **Trigger**: Occurs when the test cannot establish a connection to a sensor node
+- **Recovery**: The framework automatically resets the STU, waits 3 seconds, and retries the connection
+- **Result**: Tests continue automatically if the retry succeeds
+
+**2. Data Streaming Disable Failures**
+- **Error**: "Unable to disable data streaming"
+- **Trigger**: Occurs when the framework cannot properly clean up data streaming from a sensor
+- **Recovery**: The framework automatically resets the STU, waits 3 seconds, and retries the operation
+- **Result**: Tests continue automatically if the retry succeeds
+
+### What You'll See in Logs
+
+When automatic recovery is triggered, you'll see warning-level log messages indicating:
+- What error occurred
+- That the STU is being reset
+- That the operation will be retried
+
+For example:
+```
+WARNING: Failed to connect to sensor node 'DeviceName': Unable to connect to sensor. Resetting STU and retrying...
+```
+
+or
+
+```
+WARNING: Failed to disable data streaming: Unable to disable data streaming. Resetting STU and retrying once...
+```
+
+### When Manual Intervention May Be Needed
+
+If errors persist after automatic recovery:
+- The test will fail with the original error message
+- Check that the STU and sensor hardware are properly connected
+- Verify that the sensor node is powered on and within range
+- Try running the test again after a longer wait period
+- If the problem continues, manually reset the hardware and try again
+
+## Troubleshooting Tests
+
+### Common Error Messages and Solutions
+
+**"Unable to connect to sensor"**
+- This error indicates the STU cannot establish communication with the sensor node
+- The framework will automatically attempt to recover by resetting the STU and retrying
+- If this error persists across multiple test runs:
+  - Verify the sensor node is powered on and has a charged battery
+  - Check that the sensor is within Bluetooth range of the STU
+  - Manually reset the STU by power-cycling it
+  - Check for interference from other wireless devices
+
+**"Unable to disable data streaming"**
+- This error indicates the STU is in an inconsistent state and cannot properly clean up streaming operations
+- The framework will automatically attempt to recover by resetting the STU and retrying
+- If this error persists:
+  - The STU may need to be manually reset
+  - Try rerunning the test after a 30-second delay to allow the STU to fully recover
+  - Check that no other applications are communicating with the STU
+  - Consider power-cycling the STU if problems continue
+
+### Enabling Verbose Logging for Debugging
+
+If you need to understand more about what's happening during test execution, you can increase the logging level. For example, to output info logging messages (in addition to the warning and error logging messages enabled by default) you can use the `icotest` option `--log` with the argument `info`:
 
 ```shell
 icotest --log info run
@@ -89,10 +158,12 @@ icotest --log info run
 
 The `--log` option supports the [standard log levels](https://docs.python.org/3/library/logging.html#logging-levels):
 
-- `debug`
-- `info`
-- `warning`
-- `error`
-- `critical`
+- `debug` - Very detailed information for diagnosing problems
+- `info` - Confirmation that things are working as expected (including error recovery steps)
+- `warning` - Indicates an unexpected condition (default level)
+- `error` - Error has occurred but recovery is being attempted
+- `critical` - A serious error that recovery cannot fix
+
+Using `--log debug` can help identify whether automatic recovery is being triggered and whether it's succeeding.
 
 [pytest]: https://pytest.org
