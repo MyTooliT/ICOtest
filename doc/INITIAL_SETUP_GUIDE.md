@@ -36,6 +36,27 @@ PLEASE WRITE THIS NAME ON THE PCB LABEL!
 
 ---
 
+## 2.a Recovery: Rename-only test group
+
+If you reflash a board that already completed initial setup, it will still boot with whatever name is written in EEPROM (for example `Minion03`).
+The CLI only knows the device by its current advertised name, so the recovery path is to run the new rename-only test group. The command uses the
+old name with `-n`, runs **only** `test_set_base64name`, and rewrites the identity to the Base64-encoded MAC.
+
+```bash
+uv run icotest --log info run --test-group rename -n Minion03
+```
+
+The rename step logs the same high-visibility warning box as the standard initial setup and produces a JSON report, so you retain an audit trail for the recovery.
+After it succeeds, use the newly assigned Base64 name (e.g., `BYUgAHwA`) in the production test group:
+
+```bash
+uv run icotest --log info run --test-group production -n BYUgAHwA
+```
+
+Use this flow whenever you need to recover a reflashed board whose EEPROM still contains its old name.
+
+---
+
 ## 3. Step 2: Hardware Verification (Production Test)
 
 After the initial setup is complete, you must verify the physical quality of the device.
