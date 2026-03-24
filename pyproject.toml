@@ -224,7 +224,8 @@ markers = [
 
     "initial_setup: Initial setup tests (firmware upload, renaming)",
 
+    "rename: Rename-only recovery test (set Base64 name)",
+
     "stu: STU-specific tests",
 
 ]
-
