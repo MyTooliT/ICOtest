@@ -28,6 +28,12 @@ board path.
 - Match the scanned node by the current Bluetooth name passed with `-n`.
 - Use the scanned `mac_address` for rename metadata and report naming.
 
+## Related Filename Issue
+
+Some Base64 MAC values include `/`, which is not safe in report filenames.
+The report renaming logic now sanitizes both the device name and the Base64 MAC
+before moving the JSON report into `reports/`.
+
 ## Operator Impact
 
 Recovery rename flow:
