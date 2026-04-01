@@ -2,7 +2,6 @@
 
 import json
 import os
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -40,6 +39,7 @@ class TestRunner(QThread):
                 bufsize=1,  # Line buffered
                 encoding="utf-8",
                 errors="replace",
+                env=self._build_environment(),
             )
 
             # Read output in real-time
@@ -66,6 +66,8 @@ class TestRunner(QThread):
         """Construct the CLI command list"""
         cmd = [
             sys.executable,
+            "-X",
+            "utf8",
             "-m",
             "icotest.cli.tool",
             "--log",
@@ -81,6 +83,14 @@ class TestRunner(QThread):
             cmd.append("--skip-backpack")
 
         return cmd
+
+    def _build_environment(self):
+        """Force UTF-8 behavior for the child process."""
+
+        env = os.environ.copy()
+        env["PYTHONUTF8"] = "1"
+        env["PYTHONIOENCODING"] = "utf-8"
+        return env
 
     def _parse_status_from_line(self, line):
         """Extract status updates from log lines"""
@@ -139,13 +149,8 @@ class TestRunner(QThread):
         with open(latest_report, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        # Extract device name from filename (e.g. ICOtronic_BYUgAHwA_2026-03-17.json)
-        device_name = self.device_name
-        filename = latest_report.stem
-        match = re.search(r"_([A-Za-z0-9]{8})_", filename)
-        if match and self.test_group == "initial":
-            # In initial run, we started with Minion04 but the report has the new Base64 MAC
-            device_name = match.group(1)
+        # Prefer the device name stored in test metadata.
+        device_name = self._extract_device_name_from_report(data) or self.device_name
 
         # Parse test results
         summary = data.get("summary", {})
@@ -188,3 +193,19 @@ class TestRunner(QThread):
             "report_path": str(latest_report),
             "results": results,
         }
+
+    @staticmethod
+    def _extract_device_name_from_report(data):
+        """Read the real device name from report test metadata when present."""
+
+        for test in data.get("tests", []):
+            metadata = test.get("metadata")
+            if not isinstance(metadata, dict):
+                continue
+
+            for key in ("Sensor Node Name", "device_name", "sensor_mac_base64"):
+                value = metadata.get(key)
+                if value:
+                    return value
+
+        return None

@@ -21,6 +21,17 @@ import shutil
 # Stash key for the MAC address
 MAC_STASH_KEY = StashKey[str]()
 
+
+def _sanitize_filename_component(value: str) -> str:
+    """Return a filesystem-safe filename component."""
+
+    unsafe_chars = '<>:"/\\|?*'
+    sanitized = value
+    for char in unsafe_chars:
+        sanitized = sanitized.replace(char, "_")
+    return sanitized
+
+
 # pylint: disable=redefined-outer-name
 
 # -- Fixtures -----------------------------------------------------------------
@@ -47,12 +58,22 @@ async def sensor_node_mac_address(request, sensor_node_name: str) -> EUI:
     """Return the MAC address of the sensor node used for the test"""
 
     async with Connection() as stu:
-        async with stu.connect_sensor_node(sensor_node_name) as sensor_node:
-            mac = await sensor_node.get_mac_address()
-            # Stash the MAC address for later renaming
-            mac_b64 = convert_mac_base64(mac)
-            request.config.stash[MAC_STASH_KEY] = mac_b64
-            return mac
+        nodes = await stu.collect_sensor_nodes(timeout=5)
+        for node in nodes:
+            if node.name == sensor_node_name:
+                mac = node.mac_address
+                # Stash the MAC address for later renaming
+                mac_b64 = convert_mac_base64(mac)
+                request.config.stash[MAC_STASH_KEY] = mac_b64
+                return mac
+
+        available_nodes = ", ".join(
+            f"{node.name} ({node.mac_address})" for node in nodes
+        )
+        raise TimeoutError(
+            f"Unable to find sensor node with name '{sensor_node_name}' while scanning. "
+            f"Available nodes: {available_nodes or 'none'}"
+        )
 
 
 @fixture
@@ -175,10 +196,10 @@ def pytest_sessionfinish(session, exitstatus):
         mac_b64 = config.stash.get(MAC_STASH_KEY, None)
         if mac_b64:
             # Clean Base64 for filename (replace / and +)
-            mac_clean = mac_b64.replace("/", "_").replace("+", "-")
+            mac_clean = _sanitize_filename_component(mac_b64).replace("+", "-")
 
             # Get the sensor node name (Bluetooth call name)
-            sensor_name = settings.sensor_node.name
+            sensor_name = _sanitize_filename_component(settings.sensor_node.name)
 
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
             new_report_name = f"reports/{sensor_name}_{mac_clean}_{timestamp}.json"
@@ -193,6 +214,10 @@ def pytest_configure(config):
     # Register custom markers
     config.addinivalue_line(
         "markers", "initial_setup: Tests for initial setup (firmware upload, renaming)"
+    )
+    config.addinivalue_line(
+        "markers",
+        "initial_firmware_only: Tests for firmware upload only without rename",
     )
     config.addinivalue_line("markers", "basic: Basic tests (connection, EEPROM, etc.)")
     config.addinivalue_line("markers", "power: Power consumption tests")

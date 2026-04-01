@@ -60,10 +60,11 @@ def create_icotest_parser() -> ArgumentParser:
     )
     run_parser.add_argument(
         "--test-group",
-        choices=["initial", "production", "full", "rename"],
+        choices=["initial", "production", "full", "rename", "flash-only"],
         help=(
             "Predefined test group: "
             "initial=firmware upload+rename, "
+            "flash-only=firmware upload only, "
             "production=power+sensors, "
             "full=all except STU, "
             "rename=rename-only recovery test"
@@ -210,6 +211,11 @@ def main() -> None:
                 elif arguments.test_group == "rename":
                     pytest_markers.extend(["-m", "rename"])
                     logger.info("Running rename-only (Base64 naming) tests")
+                    if "--json-report" not in additional_args:
+                        additional_args.append("--json-report")
+                elif arguments.test_group == "flash-only":
+                    pytest_markers.extend(["-m", "initial_firmware_only"])
+                    logger.info("Running firmware-only flash tests")
                     if "--json-report" not in additional_args:
                         additional_args.append("--json-report")
 

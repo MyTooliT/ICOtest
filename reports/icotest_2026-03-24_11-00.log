@@ -1,0 +1,5 @@
+2026-03-24 11:00:57,527 INFO    CLI arguments: Namespace(log='info', subcommand='run', name='Pelzm_04', test_group='rename', skip_backpack=False)
+2026-03-24 11:00:57,527 INFO    Log file created at: reports/icotest_2026-03-24_11-00.log
+2026-03-24 11:00:57,527 INFO    Additional unrecognized arguments: []
+2026-03-24 11:00:57,528 INFO    Using sensor node name: Pelzm_04
+2026-03-24 11:00:57,528 INFO    Running rename-only (Base64 naming) tests

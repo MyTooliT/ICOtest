@@ -57,6 +57,18 @@ Use this flow whenever you need to recover a reflashed board whose EEPROM still 
 
 ---
 
+## 2.b Flash-only test group
+
+If you only need to reflash the firmware and do not want to rename or run the production test suite yet, use the flash-only workflow.
+
+```bash
+uv run icotest --log info run --test-group flash-only -n Minion03
+```
+
+This flashes the board, records the current device name in the report, and stops after the firmware upload step. It is useful when a device must be restored before a later rename or test run.
+
+---
+
 ## 3. Step 2: Hardware Verification (Production Test)
 
 After the initial setup is complete, you must verify the physical quality of the device.

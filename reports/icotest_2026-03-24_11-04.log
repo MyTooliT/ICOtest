@@ -1,0 +1,5 @@
+2026-03-24 11:04:16,479 INFO    CLI arguments: Namespace(log='info', subcommand='run', name='FC1Brsqh', test_group='production', skip_backpack=True)
+2026-03-24 11:04:16,479 INFO    Log file created at: reports/icotest_2026-03-24_11-04.log
+2026-03-24 11:04:16,479 INFO    Additional unrecognized arguments: []
+2026-03-24 11:04:16,480 INFO    Using sensor node name: FC1Brsqh
+2026-03-24 11:04:16,480 INFO    Running production tests (power + sensors)
