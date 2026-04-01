@@ -2,7 +2,7 @@
 
 import asyncio
 import json
-
+import re
 from pathlib import Path
 
 # pylint: disable=no-name-in-module
@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
+    QGridLayout,
     QLabel,
     QComboBox,
     QPushButton,
@@ -73,7 +74,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("ICOtest Production Assistant")
-        self.setFixedSize(700, 450)
+        self.setFixedSize(700, 520)
 
         self.db = DeviceDatabase()
         self.terminal = TerminalWindow(self)
@@ -126,6 +127,7 @@ class MainWindow(QMainWindow):
         self.device_combo.setPlaceholderText("Select device or enter name...")
         self.device_combo.setMinimumWidth(200)
         self.device_combo.currentIndexChanged.connect(self._validate_ui_state)
+        self.device_combo.currentTextChanged.connect(self._validate_ui_state)
         device_layout.addWidget(self.device_combo)
 
         self.scan_btn = QPushButton("Scan")
@@ -139,26 +141,38 @@ class MainWindow(QMainWindow):
         main_layout.addSpacing(20)
 
         # 3. Action Buttons
-        btn_layout = QHBoxLayout()
-        btn_layout.setSpacing(20)
+        btn_layout = QGridLayout()
+        btn_layout.setHorizontalSpacing(20)
+        btn_layout.setVerticalSpacing(15)
 
-        self.flash_btn = QPushButton("Flash New Device\n(Initialize board)")
-        self.flash_btn.setMinimumHeight(60)
-        self.flash_btn.setStyleSheet("""
+        button_style = """
             QPushButton { font-size: 12pt; font-weight: bold; }
             QPushButton:disabled { color: #888; }
-        """)
-        self.flash_btn.clicked.connect(self._on_flash_clicked)
-        btn_layout.addWidget(self.flash_btn)
+        """
+
+        self.flash_test_btn = QPushButton("Flash + Rename + Test")
+        self.flash_test_btn.setMinimumHeight(60)
+        self.flash_test_btn.setStyleSheet(button_style)
+        self.flash_test_btn.clicked.connect(self._on_flash_clicked)
+        btn_layout.addWidget(self.flash_test_btn, 0, 0)
+
+        self.rename_btn = QPushButton("Rename Only")
+        self.rename_btn.setMinimumHeight(60)
+        self.rename_btn.setStyleSheet(button_style)
+        self.rename_btn.clicked.connect(self._on_rename_clicked)
+        btn_layout.addWidget(self.rename_btn, 0, 1)
+
+        self.flash_only_btn = QPushButton("Flash Only")
+        self.flash_only_btn.setMinimumHeight(60)
+        self.flash_only_btn.setStyleSheet(button_style)
+        self.flash_only_btn.clicked.connect(self._on_flash_only_clicked)
+        btn_layout.addWidget(self.flash_only_btn, 1, 0)
 
         self.retest_btn = QPushButton("Retest Existing Device\n(Skip flash)")
         self.retest_btn.setMinimumHeight(60)
-        self.retest_btn.setStyleSheet("""
-            QPushButton { font-size: 12pt; font-weight: bold; }
-            QPushButton:disabled { color: #888; }
-        """)
+        self.retest_btn.setStyleSheet(button_style)
         self.retest_btn.clicked.connect(self._on_retest_clicked)
-        btn_layout.addWidget(self.retest_btn)
+        btn_layout.addWidget(self.retest_btn, 1, 1)
 
         main_layout.addLayout(btn_layout)
         main_layout.addSpacing(20)
@@ -184,12 +198,23 @@ class MainWindow(QMainWindow):
         """Enable/disable buttons based on input"""
         name = self.device_combo.currentText().strip()
 
-        # Flash: requires empty name
-        self.flash_btn.setEnabled(len(name) == 0)
+        # Flash + rename + test: requires empty name
+        self.flash_test_btn.setEnabled(len(name) == 0)
 
-        # Retest: requires valid name
-        is_valid_name = len(name) > 0 and name.isalnum()
+        # Flash only is always available
+        self.flash_only_btn.setEnabled(True)
+
+        # Rename + retest: require valid name
+        is_valid_name = self._is_valid_device_name(name)
+        self.rename_btn.setEnabled(is_valid_name)
+
         self.retest_btn.setEnabled(is_valid_name)
+
+    @staticmethod
+    def _is_valid_device_name(name: str) -> bool:
+        """Allow Base64 names and existing operator-friendly aliases."""
+
+        return bool(re.fullmatch(r"[A-Za-z0-9_+\-/=]+", name))
 
     def _set_ui_running(self, is_running):
         """Disable inputs during execution"""
@@ -198,10 +223,20 @@ class MainWindow(QMainWindow):
         self.backpack_combo.setEnabled(not is_running)
 
         if is_running:
-            self.flash_btn.setEnabled(False)
+            self.flash_test_btn.setEnabled(False)
+            self.rename_btn.setEnabled(False)
+            self.flash_only_btn.setEnabled(False)
             self.retest_btn.setEnabled(False)
         else:
             self._validate_ui_state()
+
+    def _get_selected_device_name(self, default_name: str | None = None) -> str:
+        """Return the current device name from the input field or selection."""
+
+        device_name = self.device_combo.currentText().strip()
+        if not device_name and default_name:
+            return default_name
+        return device_name
 
     def _load_config(self):
         self.config = {}
@@ -225,7 +260,7 @@ class MainWindow(QMainWindow):
             pass
 
     def _on_flash_clicked(self):
-        """Start the 'Flash New Device' workflow"""
+        """Start the 'Flash + Rename + Test' workflow"""
         self._set_ui_running(True)
         self.status_label.setText("Status: Flashing firmware...")
         self.status_label.setStyleSheet(
@@ -251,6 +286,76 @@ class MainWindow(QMainWindow):
 
         self.test_runner.start()
 
+    def _on_flash_only_clicked(self):
+        """Start the firmware-only workflow"""
+
+        device_name = self._get_selected_device_name("Minion04")
+        self._flash_only_device_name = device_name
+        self._set_ui_running(True)
+        self.status_label.setText("Status: Flashing firmware...")
+        self.status_label.setStyleSheet(
+            "font-size: 11pt; color: #0066cc; font-weight: bold;"
+        )
+        self.terminal.text_edit.clear()
+
+        self.db.insert_device(device_name, self.backpack_combo.currentText())
+
+        self.test_runner = TestRunner(
+            device_name=device_name,
+            test_group="flash-only",
+            log_level="INFO",
+            backpack_model=self.backpack_combo.currentText(),
+            parent=self,
+        )
+
+        self.test_runner.status_updated.connect(
+            lambda s: self.status_label.setText(f"Status: {s}")
+        )
+        self.test_runner.output_line.connect(self.terminal.append_text)
+        self.test_runner.error_occurred.connect(self._on_test_error)
+        self.test_runner.test_completed.connect(self._on_flash_only_completed)
+
+        self.test_runner.start()
+
+    def _on_rename_clicked(self):
+        """Rename the board to its Base64 MAC-based name only"""
+
+        device_name = self._get_selected_device_name()
+        if not device_name:
+            QMessageBox.warning(
+                self,
+                "Rename Only",
+                "Please select or enter the current device name first.",
+            )
+            return
+
+        self._set_ui_running(True)
+        self.status_label.setText(f"Status: Renaming {device_name}...")
+        self.status_label.setStyleSheet(
+            "font-size: 11pt; color: #0066cc; font-weight: bold;"
+        )
+        self.terminal.text_edit.clear()
+
+        if not self.db.device_exists(device_name):
+            self.db.insert_device(device_name, self.backpack_combo.currentText())
+
+        self.test_runner = TestRunner(
+            device_name=device_name,
+            test_group="rename",
+            log_level="INFO",
+            backpack_model=self.backpack_combo.currentText(),
+            parent=self,
+        )
+
+        self.test_runner.status_updated.connect(
+            lambda s: self.status_label.setText(f"Status: {s}")
+        )
+        self.test_runner.output_line.connect(self.terminal.append_text)
+        self.test_runner.error_occurred.connect(self._on_test_error)
+        self.test_runner.test_completed.connect(self._on_rename_completed)
+
+        self.test_runner.start()
+
     def _on_flash_completed(self, result_dict):
         """Initial flash is done, now run production tests automatically"""
         base64_mac = result_dict.get("device_name")
@@ -265,6 +370,91 @@ class MainWindow(QMainWindow):
 
         # Run production tests
         self._run_production_tests(base64_mac, is_new_device=True)
+
+    def _on_flash_only_completed(self, result_dict):
+        """Flash-only workflow completed successfully"""
+
+        flashed_name = (
+            getattr(self, "_flash_only_device_name", None)
+            or self._get_selected_device_name()
+        )
+        report_name = result_dict.get("device_name", flashed_name)
+        report_path = result_dict.get("report_path")
+        results = result_dict.get("results", {})
+        passed = result_dict.get("returncode", 1) == 0 and results.get("failed", 0) == 0
+        status = "passed" if passed else "failed"
+        self.status_label.setText(
+            "Status: Flash complete" if passed else "Status: Flash failed"
+        )
+        self.status_label.setStyleSheet(
+            "font-size: 11pt; color: #4caf50; font-weight: bold;"
+            if passed
+            else "font-size: 11pt; color: #d32f2f; font-weight: bold;"
+        )
+        self._set_ui_running(False)
+        self.db.update_test_status(flashed_name, status, report_path)
+
+        if passed:
+            QMessageBox.information(
+                self,
+                "Flash Complete",
+                f"Firmware flash finished successfully.\n\nBase64 name: {report_name}",
+            )
+        else:
+            QMessageBox.warning(
+                self,
+                "Flash Failed",
+                f"Firmware flash finished with errors.\n\nReport name: {report_name}",
+            )
+
+    def _on_rename_completed(self, result_dict):
+        """Rename-only workflow completed successfully"""
+
+        new_device_name = result_dict.get("device_name")
+        report_path = result_dict.get("report_path")
+        results = result_dict.get("results", {})
+        passed = result_dict.get("returncode", 1) == 0 and results.get("failed", 0) == 0
+        status = "passed" if passed else "failed"
+        self.status_label.setText(
+            "Status: Rename complete" if passed else "Status: Rename failed"
+        )
+        self.status_label.setStyleSheet(
+            "font-size: 11pt; color: #4caf50; font-weight: bold;"
+            if passed
+            else "font-size: 11pt; color: #d32f2f; font-weight: bold;"
+        )
+        self._set_ui_running(False)
+
+        if passed and new_device_name:
+            old_device_name = self._get_selected_device_name()
+            if old_device_name and old_device_name != new_device_name:
+                self.db.rename_device(old_device_name, new_device_name)
+                combo_index = self.device_combo.findText(old_device_name)
+                if combo_index >= 0:
+                    self.device_combo.setItemText(combo_index, new_device_name)
+                    self.device_combo.setItemData(combo_index, new_device_name)
+                else:
+                    self.device_combo.addItem(new_device_name, new_device_name)
+            self.device_combo.setEditText(new_device_name)
+            self.db.update_test_status(new_device_name, status, report_path)
+        elif not passed:
+            current_device_name = self._get_selected_device_name()
+            if current_device_name:
+                self.db.update_test_status(current_device_name, status, report_path)
+
+        if passed:
+            QMessageBox.information(
+                self,
+                "Rename Complete",
+                f"Board renamed successfully.\n\nNew device name: {new_device_name}",
+            )
+        else:
+            report_name = new_device_name or self._get_selected_device_name()
+            QMessageBox.warning(
+                self,
+                "Rename Failed",
+                f"Rename-only workflow finished with errors.\n\nReport name: {report_name}",
+            )
 
     def _on_scan_clicked(self):
         """Scan for available Bluetooth sensor nodes"""
@@ -318,12 +508,7 @@ class MainWindow(QMainWindow):
 
     def _on_retest_clicked(self):
         """Start the 'Retest Existing' workflow"""
-        # Use currentData if available (from scan),
-        # otherwise currentText (manual entry)
-        device_name = (
-            self.device_combo.currentData()
-            or self.device_combo.currentText().strip()
-        )
+        device_name = self._get_selected_device_name()
         self._set_ui_running(True)
         self.status_label.setText(f"Status: Running tests on {device_name}...")
         self.status_label.setStyleSheet(

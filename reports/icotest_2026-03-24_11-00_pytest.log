@@ -1,0 +1,11 @@
+INFO     root:conftest.py:40 Using sensor node name: Pelzm_04
+INFO     icotest.test.test_sth_modify:test_sth_modify.py:56 Base64-encoded MAC address: FC1Brsqh
+WARNING  icotest.test.test_sth_modify:test_sth_modify.py:62 
+************************************************************
+WARNING  icotest.test.test_sth_modify:test_sth_modify.py:63 DEVICE RENAMED SUCCESSFULLY
+WARNING  icotest.test.test_sth_modify:test_sth_modify.py:64 NEW NAME (BASE64 MAC): FC1Brsqh
+WARNING  icotest.test.test_sth_modify:test_sth_modify.py:65 PLEASE WRITE THIS NAME ON THE PCB LABEL!
+WARNING  icotest.test.test_sth_modify:test_sth_modify.py:66 ************************************************************
+
+INFO     icotest.test.test_sth_modify:test_sth_modify.py:70 Name stored in JSON metadata
+INFO     root:conftest.py:198 Report renamed to: reports/Pelzm_04_FC1Brsqh_2026-03-24_11-01.json

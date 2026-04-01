@@ -1,0 +1,41 @@
+INFO     root:conftest.py:40 Using sensor node name: FC1Brsqh
+INFO     root:commander.py:140 Running command: “commander adapter dbgmode OUT”
+INFO     root:commander.py:140 Running command: “commander aem measure --windowlength 1000”
+INFO     icotest.test.test_sensor_node:test_sensor_node.py:92 Disconnected power usage: 0.912867 mW
+INFO     root:commander.py:140 Running command: “commander adapter dbgmode OUT”
+INFO     root:commander.py:140 Running command: “commander aem measure --windowlength 1000”
+INFO     icotest.test.test_sensor_node:test_sensor_node.py:123 Connected power usage: 21.24 mW
+INFO     root:commander.py:140 Running command: “commander aem measure --windowlength 1000”
+INFO     icotest.test.test_sensor_node:test_sensor_node.py:166 Streaming power usage: 42.633 mW
+INFO     root:sensor.py:127 Stopping stream
+INFO     icotest.test.test_sth:test_sth.py:42 Starting acceleration sensor self-test
+INFO     C:\Users\nlede\PycharmProjects\ICOtest\icotest\test\support\sth.py:sth.py:42 Voltage before test: 1.6413641565575645 V
+INFO     C:\Users\nlede\PycharmProjects\ICOtest\icotest\test\support\sth.py:sth.py:48 Voltage at test: 1.7166948958571755 V
+INFO     C:\Users\nlede\PycharmProjects\ICOtest\icotest\test\support\sth.py:sth.py:54 Voltage after test: 1.6414145113298237 V
+INFO     icotest.test.test_sth:test_sth.py:46 Voltage difference (absolute): 75.33 mV
+INFO     icotest.test.test_sth:test_sth.py:47 Voltage difference (before/after): 0.05 mV
+INFO     icotest.test.test_sth:test_sth.py:57 Expected voltage difference: 90.00 mV (±20.00 mV)
+INFO     icotest.test.test_sth:test_sth.py:62 Acceptable range: 70.00 mV to 110.00 mV
+INFO     icotest.test.test_sth:test_sth.py:113 Starting single acceleration value test
+INFO     icotest.test.test_sth:test_sth.py:119 Raw value: 32661
+INFO     icotest.test.test_sth:test_sth.py:120 Measured acceleration value: -0.33 g
+INFO     icotest.test.test_sth:test_sth.py:146 Starting acceleration noise test
+INFO     icotest.test.test_sth:test_sth.py:149 Collecting 10000 values (3334 streaming messages)
+INFO     root:sensor.py:127 Stopping stream
+INFO     icotest.test.test_sth:test_sth.py:176 SNR: -55.14 dB (max allowed: -55.00 dB)
+INFO     icotest.test.test_sth:test_sth.py:181 Mean acceleration: -1.08 g
+INFO     icotest.test.test_sth:test_sth.py:338 Starting triple axis acceleration test (optimized method)
+INFO     icotest.test.test_sth:test_sth.py:345 Tolerance: 2.50 g, Noise limits: 50.00/50.00/50.00 dB
+INFO     icotest.test.test_sth:test_sth.py:353 Configuring ADC: prescaler=2, acq_time=8, oversampling=64, ref_voltage=1.8V
+INFO     icotest.test.test_sth:test_sth.py:363 Setting sensor channels: first=2, second=3, third=4
+INFO     icotest.test.test_sth:test_sth.py:369 Collecting 10000 values from all three channels simultaneously
+INFO     icotest.test.test_sth:test_sth.py:379 Streaming config: Channel 1 enabled, Channel 2 enabled, Channel 3 enabled
+INFO     root:sensor.py:127 Stopping stream
+INFO     icotest.test.test_sth:test_sth.py:406 Channel "x": mean raw value = 33858.00, acceleration = 2.05 g, SNR = -42.63 dB
+INFO     icotest.test.test_sth:test_sth.py:406 Channel "y": mean raw value = 33449.00, acceleration = 1.48 g, SNR = -42.74 dB
+INFO     icotest.test.test_sth:test_sth.py:406 Channel "z": mean raw value = 33151.00, acceleration = 1.08 g, SNR = -42.90 dB
+INFO     icotest.test.test_sth:test_sth.py:430 Measured acceleration vector: [2.05, 1.48, 1.08] g
+INFO     icotest.test.test_sth:test_sth.py:436 Bias check - expected: 1.00 g, measured error: 1.75 g
+INFO     icotest.test.test_sth:test_sth.py:459 Measured noise: [-42.63, -42.74, -42.90] dB
+INFO     icotest.test.test_sth:test_sth.py:465 Noise check - expected threshold: 50.00 dB, worst channel margin: 7.37 dB
+INFO     root:conftest.py:198 Report renamed to: reports/FC1Brsqh_FC1Brsqh_2026-03-24_11-02.json

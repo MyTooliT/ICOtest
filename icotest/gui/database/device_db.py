@@ -73,3 +73,58 @@ class DeviceDatabase:
                 "SELECT 1 FROM devices WHERE device_name = ?", (device_name,)
             )
             return cursor.fetchone() is not None
+
+    def rename_device(self, old_name: str, new_name: str):
+        """Rename an existing device record while preserving stored metadata"""
+
+        timestamp = datetime.now().isoformat()
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute(
+                """
+                SELECT programmed_at, backpack_model, test_status,
+                       test_completed_at, report_path
+                FROM devices
+                WHERE device_name = ?
+            """,
+                (old_name,),
+            )
+            row = cursor.fetchone()
+
+            if row is None:
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO devices
+                    (device_name, programmed_at, backpack_model, test_status,
+                     test_completed_at, report_path)
+                    VALUES (?, ?, NULL, 'pending', NULL, NULL)
+                """,
+                    (new_name, timestamp),
+                )
+            else:
+                (
+                    programmed_at,
+                    backpack_model,
+                    test_status,
+                    test_completed_at,
+                    report_path,
+                ) = row
+                conn.execute("DELETE FROM devices WHERE device_name = ?", (old_name,))
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO devices
+                    (device_name, programmed_at, backpack_model, test_status,
+                     test_completed_at, report_path)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                    (
+                        new_name,
+                        programmed_at,
+                        backpack_model,
+                        test_status,
+                        test_completed_at,
+                        report_path,
+                    ),
+                )
+
+            conn.commit()
