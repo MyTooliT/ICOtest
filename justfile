@@ -30,7 +30,7 @@ check: setup
 [default]
 test: check
 	uv run pytest -k 'not firmware_upload and not base64' \
-		--reruns 5 --reruns-delay 1
+		--reruns 1 --reruns-delay 1
 
 # Release new package version
 [group('release')]
