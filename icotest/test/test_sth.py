@@ -142,7 +142,7 @@ async def test_acceleration_3a_alt(sth: STH):
 
     # configure all of those using the config file
     # assume it lies on the table
-    test_acc_bias = np.array([1.0, 0.0, 0.0])
+    # test_acc_bias = np.array([1.0, 0.0, 0.0])
     # test_acc_tollerance_g = 0.5
 
     test_acc_tollerance_g = 2.5
@@ -245,9 +245,6 @@ async def test_BaP_torr_accelleration(sth: STH):
     await sth.set_sensor_configuration(
         SensorConfiguration(first=7, second=8, third=9)
     )
-
-    acc_bias = []
-    acc_noise = []
 
     # how long should the recording sample be
     number_values = 10_000
