@@ -9,21 +9,19 @@ Use this test code in addition to the one for the sensor node:
 # -- Imports ------------------------------------------------------------------
 
 from logging import getLogger
-from math import ceil
+from math import exp2, ceil
+from statistics import mean
 
-from icotronic.can import STH, StreamingConfiguration
+from icotronic.can import SensorConfiguration, STH, StreamingConfiguration
 from icotronic.measurement.constants import ADC_MAX_VALUE
 from icotronic.measurement import convert_raw_to_g, ratio_noise_max
+
+import numpy as np
 
 from icotest.config import settings
 from icotest.test.support.node import check_write_read_eeprom_close
 from icotest.test.support.sensor_node import read_streaming_data
 from icotest.test.support.sth import read_self_test_voltages
-from icotronic.can import SensorConfiguration
-
-from statistics import mean
-from math import exp2
-import numpy as np
 
 # -- Functions ----------------------------------------------------------------
 
@@ -131,10 +129,15 @@ async def test_acceleration_noise(sth: STH):
         f"of {maximum_ratio_allowed} dB"
     )
 
-    mean = convert_raw_to_g((sum(acceleration) / len(acceleration)), 100.0)
-    getLogger(__name__).info(
-        "SNR: %s [dB] , mean: %.2f g", ratio_noise_maximum, mean
+    mean_acceleration = convert_raw_to_g(
+        (sum(acceleration) / len(acceleration)), 100.0
     )
+    getLogger(__name__).info(
+        "SNR: %s [dB] , mean: %.2f g", ratio_noise_maximum, mean_acceleration
+    )
+
+
+# pylint: disable=too-many-locals
 
 
 async def test_acceleration_3a_alt(sth: STH):
@@ -235,7 +238,7 @@ async def test_acceleration_3a_alt(sth: STH):
     )
 
 
-async def test_BaP_torr_accelleration(sth: STH):
+async def test_backpack_torr_accelleration(sth: STH):
     """Test the triple axis accelerometer reading"""
 
     test_acc_tollerance_g = 2.5
@@ -321,6 +324,9 @@ async def test_BaP_torr_accelleration(sth: STH):
         f" {acceleration_noise_x:.3f} y: {acceleration_noise_y:.3f} torr:"
         f" {acceleration_noise_torr:.3f} dB"
     )
+
+
+# pylint: enable=too-many-locals
 
 
 async def test_eeprom(sth: STH):

@@ -4,15 +4,15 @@
 
 from logging import getLogger
 
+# for renaming the output files
+import datetime
+import os
+
 from pytest import fixture
 from icotronic.can import Connection, SensorNode, STH, STU
 from netaddr import EUI
 
 from icotest.config import settings
-
-# for renaming the output files
-import datetime
-import os
 
 # pylint: disable=redefined-outer-name
 
@@ -69,8 +69,10 @@ async def sth(stu, sensor_node_name) -> STH:
 
 
 def pytest_configure(config):
+    """Initialize test environment"""
+
     if config.getoption("--json-report", default=False):
-        # create a report folder if tht is not yet the case
+        # create a report folder if it does not exist
         if not os.path.exists("reports"):
             os.makedirs("reports")
 
