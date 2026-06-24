@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QFormLayout,
     QMessageBox,
+    QFileDialog,
     QApplication,
 )
 from PySide6.QtCore import QThread, Signal
@@ -74,12 +75,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("ICOtest Production Assistant")
-        self.setFixedSize(700, 520)
+        self.setFixedSize(700, 580)
 
         self.db = DeviceDatabase()
         self.terminal = TerminalWindow(self)
         self.test_runner = None
         self.production_runner = None
+        self.customer_export_path = None
 
         # Load persisted settings
         self.config_file = Path.home() / ".icotest_gui.json"
@@ -119,6 +121,20 @@ class MainWindow(QMainWindow):
         self.backpack_combo = QComboBox()
         self.backpack_combo.addItems(["None", "BaP-DBS-1.3.0"])
         form_layout.addRow("BackPack Hardware:", self.backpack_combo)
+
+        # Optional export folder for report copies
+        export_layout = QHBoxLayout()
+        self.export_path_edit = QLineEdit()
+        self.export_path_edit.setReadOnly(True)
+        self.export_path_edit.setPlaceholderText("No export folder selected")
+        export_layout.addWidget(self.export_path_edit)
+
+        self.export_btn = QPushButton("Browse...")
+        self.export_btn.setMaximumWidth(80)
+        self.export_btn.clicked.connect(self._on_browse_export_folder)
+        export_layout.addWidget(self.export_btn)
+
+        form_layout.addRow("Export report to:", export_layout)
 
         # Device Name (for retest only) - Scan button + dropdown
         device_layout = QHBoxLayout()
@@ -221,6 +237,8 @@ class MainWindow(QMainWindow):
         self.device_combo.setEnabled(not is_running)
         self.scan_btn.setEnabled(not is_running)
         self.backpack_combo.setEnabled(not is_running)
+        self.export_btn.setEnabled(not is_running)
+        self.export_path_edit.setEnabled(not is_running)
 
         if is_running:
             self.flash_test_btn.setEnabled(False)
@@ -237,6 +255,28 @@ class MainWindow(QMainWindow):
         if not device_name and default_name:
             return default_name
         return device_name
+
+    def _on_browse_export_folder(self):
+        """Choose a folder for copied report exports."""
+
+        folder = QFileDialog.getExistingDirectory(
+            self,
+            "Select Export Folder",
+            self.customer_export_path or str(Path.home()),
+        )
+
+        if folder:
+            self.customer_export_path = folder
+            self.export_path_edit.setText(folder)
+
+    def _get_export_path(self):
+        """Return the current export folder if it is usable."""
+
+        if self.customer_export_path:
+            path = Path(self.customer_export_path)
+            if path.exists() and path.is_dir():
+                return path
+        return None
 
     def _load_config(self):
         self.config = {}
@@ -274,6 +314,7 @@ class MainWindow(QMainWindow):
             test_group="initial",
             log_level="INFO",
             backpack_model=self.backpack_combo.currentText(),
+            export_path=self._get_export_path(),
             parent=self,
         )
 
@@ -305,6 +346,7 @@ class MainWindow(QMainWindow):
             test_group="flash-only",
             log_level="INFO",
             backpack_model=self.backpack_combo.currentText(),
+            export_path=self._get_export_path(),
             parent=self,
         )
 
@@ -344,6 +386,7 @@ class MainWindow(QMainWindow):
             test_group="rename",
             log_level="INFO",
             backpack_model=self.backpack_combo.currentText(),
+            export_path=self._get_export_path(),
             parent=self,
         )
 
@@ -530,6 +573,7 @@ class MainWindow(QMainWindow):
             test_group="production",
             log_level="INFO",
             backpack_model=self.backpack_combo.currentText(),
+            export_path=self._get_export_path(),
             parent=self,
         )
 
@@ -593,3 +637,8 @@ class MainWindow(QMainWindow):
 
 
 # pylint: enable=too-many-instance-attributes, too-few-public-methods
+    def closeEvent(self, event):
+        """Reset session-only state when the GUI closes."""
+
+        self.customer_export_path = None
+        super().closeEvent(event)

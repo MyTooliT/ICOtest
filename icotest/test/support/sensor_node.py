@@ -7,6 +7,8 @@ from logging import getLogger
 
 from dynaconf.utils.boxing import DynaBox
 from icotronic.can import SensorNode, StreamingConfiguration, STU
+from icotronic.can.error import ErrorResponseError, NoResponseError
+from icotronic.can.streaming.error import StreamingTimeoutError
 from icotronic.measurement import MeasurementData
 
 from icotest.test.support.node import check_write_read_eeprom
@@ -83,7 +85,7 @@ async def read_streaming_data(
 
         stu:
             Optional STU connection for automatic recovery on streaming
-            disable errors
+            errors (timeout, ADC config read, disable failures)
 
     Returns:
 
@@ -91,37 +93,35 @@ async def read_streaming_data(
 
     Raises:
 
-        Exception: Re-raised if error is not related to streaming disable or
-            if STU recovery fails
+        Exception: Re-raised if CAN error is not recoverable or if STU
+            recovery fails after one retry
 
     """
     logger = getLogger(__name__)
 
     measurement_data = MeasurementData(config)
-    try:
-        async with node.open_data_stream(config) as stream:
-            async for data, _ in stream:
-                measurement_data.append(data)
-                if len(measurement_data) >= length:
-                    break
-
-    except Exception as e:
-        if stu and "Unable to disable data streaming" in str(e):
-            logger.warning(
-                "Failed to disable data streaming: %s. "
-                "Resetting STU and retrying once...",
-                e,
-            )
-            await stu.reset()
-            await asyncio.sleep(3)
-
-            measurement_data = MeasurementData(config)
+    for attempt in range(2):
+        measurement_data = MeasurementData(config)
+        try:
             async with node.open_data_stream(config) as stream:
                 async for data, _ in stream:
                     measurement_data.append(data)
                     if len(measurement_data) >= length:
                         break
-        else:
-            raise
+
+            return measurement_data
+
+        except (StreamingTimeoutError, NoResponseError, ErrorResponseError) as e:
+            if stu is None or attempt >= 1:
+                raise
+
+            logger.warning(
+                "CAN communication error during streaming: %s. "
+                "Resetting STU and retrying once...",
+                e,
+            )
+
+            await stu.reset()
+            await asyncio.sleep(3)
 
     return measurement_data

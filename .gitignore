@@ -4,3 +4,19 @@
 .aider*
 reports
 opencode.json
+
+# Agentic coding tools
+opencode.json
+tui.json
+
+# IDE
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Test artifacts
+reports/
+data/*.db

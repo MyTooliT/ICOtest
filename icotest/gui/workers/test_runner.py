@@ -2,6 +2,7 @@
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -31,6 +32,7 @@ class TestRunner(QThread):
         test_group,
         log_level,
         backpack_model="None",
+        export_path=None,
         parent=None,
     ):
         super().__init__(parent)
@@ -38,6 +40,7 @@ class TestRunner(QThread):
         self.test_group = test_group
         self.log_level = log_level
         self.backpack_model = backpack_model
+        self.export_path = export_path
 
     # pylint: enable=too-many-arguments, too-many-positional-arguments
 
@@ -122,21 +125,23 @@ class TestRunner(QThread):
         """Parse JSON report and emit results"""
         try:
             report_data = self._parse_latest_report()
-            self.test_completed.emit({
-                "returncode": 0,
-                "device_name": report_data.get(
-                    "device_name", self.device_name
-                ),
-                "report_path": report_data.get("report_path"),
-                "results": report_data.get("results", {}),
-            })
-        except Exception as e:  # pylint: disable=broad-exception-caught
+            self._copy_report_to_export_folder(report_data.get("report_path"))
+            self.test_completed.emit(
+                {
+                    "returncode": 0,
+                    "device_name": report_data.get("device_name", self.device_name),
+                    "report_path": report_data.get("report_path"),
+                    "results": report_data.get("results", {}),
+                }
+            )
+        except Exception as e:
             self.error_occurred.emit(f"Failed to parse test report: {str(e)}")
 
     def _handle_test_failure(self):
         """Parse JSON report and emit failure results"""
         try:
             report_data = self._parse_latest_report()
+            self._copy_report_to_export_folder(report_data.get("report_path"))
             self.test_completed.emit(
                 {
                     "returncode": 1,
@@ -145,7 +150,7 @@ class TestRunner(QThread):
                     "results": report_data.get("results", {}),
                 }
             )
-        except Exception as e:
+        except Exception as e:	# pylint: disable=broad-exception-caught
             self.error_occurred.emit(f"Failed to parse test report: {str(e)}")
 
     # pylint: disable=too-many-locals
@@ -234,3 +239,38 @@ class TestRunner(QThread):
                     return value
 
         return None
+
+    def _copy_report_to_export_folder(self, report_path):
+        """Copy the generated report to the optional export folder."""
+
+        if not report_path or not self.export_path:
+            return
+
+        export_dir = Path(self.export_path)
+        if not export_dir.exists() or not export_dir.is_dir():
+            self.output_line.emit(
+                f"Export folder is invalid, skipping copy: {export_dir}\n"
+            )
+            return
+
+        source = Path(report_path)
+        if not source.exists():
+            self.output_line.emit(f"Report not found, skipping copy: {source}\n")
+            return
+
+        destination = export_dir / source.name
+
+        try:
+            if source.resolve() == destination.resolve():
+                self.output_line.emit(
+                    f"Export folder is the report folder, skipping copy: {source}\n"
+                )
+                return
+        except Exception:
+            pass
+
+        try:
+            shutil.copy2(source, destination)
+            self.output_line.emit(f"Copied report to: {destination}\n")
+        except Exception as exc:
+            self.output_line.emit(f"Failed to copy report to export folder: {exc}\n")

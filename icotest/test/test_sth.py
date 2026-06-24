@@ -492,6 +492,152 @@ async def test_acceleration_3a_optimized(sth: STH, stu: STU, json_metadata: dict
 
 # pylint: enable=too-many-locals, too-many-statements
 
+@mark.order(35)
+@mark.sensor
+async def test_photo_sensor(sth: STH, stu: STU, json_metadata: dict):
+    """Test ratio of noise to maximal possible measurement value"""
+
+    photo_channel = 6
+
+    logger = getLogger(__name__)
+    logger.info("Starting photo detector test on channel %i", photo_channel)
+
+    # set the correct channels
+    await sth.set_sensor_configuration(SensorConfiguration(first=photo_channel, second=3, third=4))
+
+
+    number_values = 10_000
+    logger.info(
+        "Collecting %d values (%d streaming messages)",
+        number_values,
+        ceil(number_values / 3),
+    )
+
+    # We want `number_values` values which means we need to collect data from
+    # `number_values/3` messages, if we use a single channel
+    number_streaming_messages = ceil(number_values / 3)
+    measurement_data = await read_streaming_data(
+        sth,
+        StreamingConfiguration(first=True),
+        length=number_streaming_messages,
+        stu=stu,
+    )
+
+    values = measurement_data.values()
+    assert number_values <= len(values) <= number_values + 2
+    raw_data = values[:number_values]
+    assert len(raw_data) == number_values
+
+    mean_value_normalized = (sum(raw_data) / len(raw_data))/65535
+    ratio_noise_maximum = ratio_noise_max(raw_data)
+    logger.info(
+        "Photo signal mean: %.4f SNR: %.2f dB",
+        mean_value_normalized,
+        ratio_noise_maximum
+    )
+
+    # Store in JSON report
+    json_metadata["record"](
+        "photo_mean",
+        mean_value_normalized,
+        unit="photo_intensity",
+        description="Mean of photo signal",
+    )
+    json_metadata["record"](
+        "photo_snr",
+        ratio_noise_maximum,
+        unit="dB",
+        description="Signal-to-Noise Ratio of photo signal",
+    )
+
+    # Store FULL recording
+    json_metadata["photo_full_recording"] = [int(v) for v in raw_data]
+
+    # 2do put that into config file
+    # The range is very wide since we don't know how the board is illuminated
+    photo_mean_min = 0.02   #stong light
+    photo_mean_max = 0.95   #alomost no light
+
+    assert photo_mean_min <= mean_value_normalized <= photo_mean_max, (
+        f"The photo signal is {mean_value_normalized} not within bounds!"
+        f"It should be within {photo_mean_min} {photo_mean_max}! "
+    )
+
+
+@mark.order(36)
+@mark.sensor
+async def test_thermo_sensor(sth: STH, stu: STU, json_metadata: dict):
+    """Test ratio of noise to maximal possible measurement value"""
+
+    thermo_channel = 5
+
+    logger = getLogger(__name__)
+    logger.info("Starting thermal detector test on channel %i", thermo_channel)
+
+    # set the correct channels
+    await sth.set_sensor_configuration(SensorConfiguration(first=thermo_channel, second=3, third=4))
+
+
+    number_values = 10_000
+    logger.info(
+        "Collecting %d values (%d streaming messages)",
+        number_values,
+        ceil(number_values / 3),
+    )
+
+    # We want `number_values` values which means we need to collect data from
+    # `number_values/3` messages, if we use a single channel
+    number_streaming_messages = ceil(number_values / 3)
+    measurement_data = await read_streaming_data(
+        sth,
+        StreamingConfiguration(first=True),
+        length=number_streaming_messages,
+        stu=stu,
+    )
+
+    values = measurement_data.values()
+    assert number_values <= len(values) <= number_values + 2
+    raw_data = values[:number_values]
+    assert len(raw_data) == number_values
+
+    mean_value_normalized = (sum(raw_data) / len(raw_data))/65535
+    ratio_noise_maximum = ratio_noise_max(raw_data)
+    logger.info(
+        "Thermometer signal mean: %.4f SNR: %.2f dB",
+        mean_value_normalized,
+        ratio_noise_maximum
+    )
+
+    # Store in JSON report
+    json_metadata["record"](
+        "thermo_mean",
+        mean_value_normalized,
+        unit="AU",
+        description="Mean of thermo signal",
+    )
+    json_metadata["record"](
+        "thermo_snr",
+        ratio_noise_maximum,
+        unit="dB",
+        description="Signal-to-Noise Ratio of thermo signal",
+    )
+
+    # Store FULL recording
+    json_metadata["thermo_full_recording"] = [int(v) for v in raw_data]
+
+    # 2do put that into config file
+    # The range is very wide since we don't know how the board is illuminated
+    thermo_mean_min = 0.1   #cold
+    thermo_mean_max = 0.5   #hot
+
+    assert thermo_mean_min <= mean_value_normalized <= thermo_mean_max, (
+        f"The thermo signal is {mean_value_normalized} not within bounds!"
+        f"It should be within {thermo_mean_min} {thermo_mean_max}! "
+    )
+
+
+
+
 # Order 40-49: BackPack Tests
 
 

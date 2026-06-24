@@ -121,6 +121,7 @@ markers = [
   "sensor: Sensor functionality tests",
   "backpack: BackPack hardware tests",
   "initial_setup: Initial setup tests (firmware upload, renaming)",
+  "initial_firmware_only: Firmware upload only (no rename, no tests)",
   "rename: Rename-only recovery test (set Base64 name)",
   "stu: STU-specific tests",
 ]
