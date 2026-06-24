@@ -2,7 +2,8 @@
 
 These tests must be executed in a specific order:
 1. Firmware Upload (order=1)
-2. Set Base64 Name (order=2)
+2. Flash Only (order=1, rename skipped)
+3. Set Base64 Name (order=2)
 """
 
 # -- Imports ------------------------------------------------------------------
@@ -20,10 +21,8 @@ from icotest.test.support.mac import convert_mac_base64
 # -- Functions ----------------------------------------------------------------
 
 
-@mark.order(1)
-@mark.initial_setup
-async def test_firmware_upload():
-    """Upload firmware - MUST be executed FIRST"""
+async def _upload_and_reset_firmware():
+    """Upload firmware and reset the board to initialize EEPROM."""
 
     await check_firmware_upload(settings.sensor_node)
 
@@ -33,6 +32,22 @@ async def test_firmware_upload():
 
     Commander().reset_device()
     logger.info("Device reset complete - EEPROM initialized with defaults")
+
+
+@mark.order(1)
+@mark.initial_setup
+async def test_firmware_upload():
+    """Upload firmware - MUST be executed FIRST"""
+
+    await _upload_and_reset_firmware()
+
+
+@mark.order(1)
+@mark.initial_firmware_only
+async def test_flash_firmware_only(sensor_node_mac_address):
+    """Upload firmware only without renaming or additional tests"""
+
+    await _upload_and_reset_firmware()
 
 
 @mark.order(2)

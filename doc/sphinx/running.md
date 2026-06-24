@@ -12,6 +12,19 @@ after you {ref}`installed <install>` the package. We also provide a CLI tool tha
 icotest run
 ```
 
+## Test Groups and GUI Buttons
+
+The GUI mirrors the same workflows as the CLI test groups:
+
+| GUI Button | CLI Test Group | Purpose |
+| --- | --- | --- |
+| Flash + Rename + Test | `initial` | Flash new firmware, rename the board, then run production tests |
+| Flash Only | `flash-only` | Flash firmware only, without renaming or production tests |
+| Rename Only | `rename` | Rename a board that still has an old EEPROM name |
+| Retest Existing Device | `production` | Run production tests on an already named board |
+
+Use `flash-only` when a board was reflashed but should keep its current EEPROM name, and use `rename` when you only need to recover the name before testing.
+
 To list all available test use the option `--co` or `--collect-only`:
 
 ```shell

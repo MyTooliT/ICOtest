@@ -218,8 +218,12 @@ CREATE TABLE devices (
 │  └───────────────────────────────────────────────────────────┘ │
 │                                                                 │
 │  ┌─────────────────────────┐  ┌─────────────────────────┐     │
-│  │  Flash New Device       │  │  Retest Existing Device │     │
-│  │  (Initialize board)     │  │  (Run production tests) │     │
+│  │ Flash + Rename + Test   │  │      Rename Only        │     │
+│  │   (Initialize board)    │  │ (Recovery rename only)  │     │
+│  └─────────────────────────┘  └─────────────────────────┘     │
+│  ┌─────────────────────────┐  ┌─────────────────────────┐     │
+│  │     Flash Only          │  │  Retest Existing Device │     │
+│  │  (Firmware only)        │  │  (Run production tests) │     │
 │  └─────────────────────────┘  └─────────────────────────┘     │
 │                                                                 │
 │  Status: Ready                                                 │
@@ -230,7 +234,7 @@ CREATE TABLE devices (
 ```
 
 **Window Properties**:
-- Fixed size: 700x400 pixels
+- Fixed size: 700x520 pixels
 - Centered on screen at startup
 - Title: "ICOtest Production Assistant"
 - Not resizable (keeps layout consistent)
@@ -242,8 +246,10 @@ CREATE TABLE devices (
 | Logger Dropdown | QComboBox | Options: DEBUG, INFO, WARNING, ERROR. Default: WARNING. Persisted to local config. |
 | BackPack Dropdown | QComboBox | Options: "None", "BaP-DBS-1.3.0". Default: "None". |
 | Device Name Input | QLineEdit | Max 8 chars. Alphanumeric only. Placeholder: "Leave blank for new device". |
-| Flash Button | QPushButton | Enabled only when device name is empty. Large (200x60px). |
-| Retest Button | QPushButton | Enabled only when device name is NOT empty. Large (200x60px). |
+| Flash + Rename + Test Button | QPushButton | Enabled only when device name is empty. |
+| Rename Only Button | QPushButton | Enabled when device name is valid. |
+| Flash Only Button | QPushButton | Always enabled. |
+| Retest Button | QPushButton | Enabled only when device name is valid. |
 | Status Label | QLabel | Gray text, left-aligned. Updates during execution. |
 | Terminal Button | QPushButton | Opens terminal window. Always enabled. |
 
@@ -252,16 +258,18 @@ CREATE TABLE devices (
 def validate_ui_state(self):
     device_name = self.device_name_input.text().strip()
     
-    # Flash button: requires empty device name
-    self.flash_button.setEnabled(len(device_name) == 0)
+    # Flash + Rename + Test button: requires empty device name
+    self.flash_test_button.setEnabled(len(device_name) == 0)
     
-    # Retest button: requires non-empty, valid device name
+    # Rename and Retest buttons: require non-empty, valid device name
     is_valid_name = (
         len(device_name) > 0 and 
         len(device_name) <= 8 and 
         device_name.isalnum()
     )
+    self.rename_button.setEnabled(is_valid_name)
     self.retest_button.setEnabled(is_valid_name)
+    self.flash_only_button.setEnabled(True)
 ```
 
 ### 4.2 Combined Result Dialog
@@ -391,7 +399,7 @@ class TerminalWindow(QDialog):
 
 ## 5. Workflow Specifications
 
-### 5.1 Flash New Device Workflow
+### 5.1 Flash + Rename + Test Workflow
 
 **Preconditions**:
 - Device is powered and within range of STU
@@ -400,7 +408,7 @@ class TerminalWindow(QDialog):
 **Steps**:
 1. User selects BackPack configuration
 2. User selects logger level (if not using default)
-3. User clicks "Flash New Device" button
+3. User clicks "Flash + Rename + Test" button
 4. GUI validates: device name is empty ✓
 5. GUI disables buttons, updates status: "Flashing firmware..."
 6. GUI spawns background thread to run:
@@ -447,7 +455,39 @@ class TerminalWindow(QDialog):
 - JSON parsing failure: Show error, return to Ready
 - Database write failure: Log warning, continue (non-critical)
 
-### 5.2 Retest Existing Device Workflow
+### 5.2 Flash Only Workflow
+
+**Preconditions**:
+- Device is powered and within range of STU
+
+**Steps**:
+1. User enters the current device name or leaves the default name in place
+2. User selects BackPack configuration
+3. User clicks "Flash Only" button
+4. GUI validates: button is always available
+5. GUI disables inputs and starts the firmware upload test group
+6. GUI runs:
+   ```bash
+   icotest run -n [DEVICE_NAME] --test-group flash-only --log-cli-level [LEVEL]
+   ```
+7. GUI shows a simple success dialog after flashing completes
+
+### 5.3 Rename Only Workflow
+
+**Preconditions**:
+- Device already has a valid current name in the input field
+
+**Steps**:
+1. User enters the existing device name
+2. User clicks "Rename Only" button
+3. GUI validates the device name
+4. GUI runs:
+   ```bash
+   icotest run -n [DEVICE_NAME] --test-group rename --log-cli-level [LEVEL]
+   ```
+5. GUI updates the device name field with the new Base64 name
+
+### 5.4 Retest Existing Device Workflow
 
 **Preconditions**:
 - Device name input is NOT empty (8 chars max, alphanumeric)

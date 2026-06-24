@@ -2,6 +2,7 @@
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -17,13 +18,20 @@ class TestRunner(QThread):
     error_occurred = Signal(str)
 
     def __init__(
-        self, device_name, test_group, log_level, backpack_model="None", parent=None
+        self,
+        device_name,
+        test_group,
+        log_level,
+        backpack_model="None",
+        export_path=None,
+        parent=None,
     ):
         super().__init__(parent)
         self.device_name = device_name
         self.test_group = test_group
         self.log_level = log_level
         self.backpack_model = backpack_model
+        self.export_path = export_path
 
     def run(self):
         """Run the test subprocess"""
@@ -104,6 +112,7 @@ class TestRunner(QThread):
         """Parse JSON report and emit results"""
         try:
             report_data = self._parse_latest_report()
+            self._copy_report_to_export_folder(report_data.get("report_path"))
             self.test_completed.emit(
                 {
                     "returncode": 0,
@@ -119,6 +128,7 @@ class TestRunner(QThread):
         """Parse JSON report and emit failure results"""
         try:
             report_data = self._parse_latest_report()
+            self._copy_report_to_export_folder(report_data.get("report_path"))
             self.test_completed.emit(
                 {
                     "returncode": 1,
@@ -209,3 +219,38 @@ class TestRunner(QThread):
                     return value
 
         return None
+
+    def _copy_report_to_export_folder(self, report_path):
+        """Copy the generated report to the optional export folder."""
+
+        if not report_path or not self.export_path:
+            return
+
+        export_dir = Path(self.export_path)
+        if not export_dir.exists() or not export_dir.is_dir():
+            self.output_line.emit(
+                f"Export folder is invalid, skipping copy: {export_dir}\n"
+            )
+            return
+
+        source = Path(report_path)
+        if not source.exists():
+            self.output_line.emit(f"Report not found, skipping copy: {source}\n")
+            return
+
+        destination = export_dir / source.name
+
+        try:
+            if source.resolve() == destination.resolve():
+                self.output_line.emit(
+                    f"Export folder is the report folder, skipping copy: {source}\n"
+                )
+                return
+        except Exception:
+            pass
+
+        try:
+            shutil.copy2(source, destination)
+            self.output_line.emit(f"Copied report to: {destination}\n")
+        except Exception as exc:
+            self.output_line.emit(f"Failed to copy report to export folder: {exc}\n")
