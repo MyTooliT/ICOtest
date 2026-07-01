@@ -2,6 +2,9 @@
 
 import json
 from pathlib import Path
+
+# pylint: disable=no-name-in-module
+
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -16,6 +19,8 @@ from PySide6.QtWidgets import (
     QApplication,
 )
 from PySide6.QtCore import QThread, Signal
+
+# pylint: enable=no-name-in-module
 
 from icotest.gui.dialogs.combined_result import CombinedResultDialog
 from icotest.gui.dialogs.terminal_output import TerminalWindow
