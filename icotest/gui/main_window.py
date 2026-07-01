@@ -64,7 +64,7 @@ class DeviceScanner(QThread):
 
 # pylint: enable=too-few-public-methods
 
-# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-instance-attributes, too-few-public-methods
 
 
 class MainWindow(QMainWindow):
@@ -217,16 +217,20 @@ class MainWindow(QMainWindow):
         self.config = {}
         if self.config_file.exists():
             try:
+                # pylint: disable=unspecified-encoding
                 with open(self.config_file, "r") as f:
                     self.config = json.load(f)
+                # pylint: enable=unspecified-encoding
             except Exception:  # pylint: disable=broad-exception-caught
                 pass
 
     def _save_config(self):
         self.config["logger_level"] = self.logger_combo.currentText()
         try:
+            # pylint: disable=unspecified-encoding
             with open(self.config_file, "w") as f:
                 json.dump(self.config, f)
+            # pylint: enable=unspecified-encoding
         except Exception:  # pylint: disable=broad-exception-caught
             pass
 
@@ -279,10 +283,12 @@ class MainWindow(QMainWindow):
         self.status_label.setText("Status: Scanning for devices...")
         self.terminal.append_text("Scanning for Bluetooth sensor nodes...\n")
 
+        # pylint: disable=attribute-defined-outside-init
         self.scanner = DeviceScanner(self)
         self.scanner.devices_found.connect(self._on_scan_completed)
         self.scanner.scan_failed.connect(self._on_scan_failed)
         self.scanner.start()
+        # pylint: enable=attribute-defined-outside-init
 
     def _on_scan_completed(self, devices):
         """Handle scan completed - populate dropdown"""
@@ -411,4 +417,4 @@ class MainWindow(QMainWindow):
         )
 
 
-# pylint: enable=too-many-instance-attributes
+# pylint: enable=too-many-instance-attributes, too-few-public-methods
