@@ -5,7 +5,7 @@
 from logging import getLogger
 from typing import AsyncGenerator
 
-from pytest import fixture, mark, StashKey, CollectReport
+from pytest import fixture, StashKey
 from icotronic.can import Connection, SensorNode, STH, STU
 from netaddr import EUI
 

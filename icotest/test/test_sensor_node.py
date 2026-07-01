@@ -12,10 +12,8 @@ from icotronic.can import SensorNode, StreamingConfiguration, STU
 from icotest.cli.commander import Commander
 from icotest.config import settings
 from icotest.test.support.common import check_power_usage
-from icotest.test.support.mac import convert_mac_base64
 from icotest.test.support.node import (
     check_connection,
-    check_firmware_upload,
     check_eeprom_product_data,
     check_eeprom_statistics,
     check_eeprom_status,
@@ -24,8 +22,6 @@ from icotest.test.support.sensor_node import (
     check_eeprom_name,
     check_eeprom_bluetooth_times,
 )
-
-from icotronic.measurement.constants import ADC_MAX_VALUE
 
 # -- Functions ----------------------------------------------------------------
 

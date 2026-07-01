@@ -3,7 +3,7 @@
 # -- Imports ------------------------------------------------------------------
 
 from argparse import ArgumentParser
-from logging import basicConfig, getLogger, FileHandler, Formatter
+from logging import getLogger, FileHandler, Formatter
 from os import environ, makedirs, path
 from subprocess import run, CalledProcessError
 from sys import exit as sys_exit, executable
@@ -11,7 +11,7 @@ from datetime import datetime
 
 from icotronic.cmdline.types import node_name
 
-from icotest.config import settings, ConfigurationUtility
+from icotest.config import ConfigurationUtility
 
 # -- Functions ----------------------------------------------------------------
 

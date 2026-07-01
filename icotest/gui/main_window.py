@@ -1,6 +1,5 @@
 """Main Application Window for ICOtest GUI"""
 
-import sys
 import json
 from pathlib import Path
 from PySide6.QtWidgets import (
@@ -10,14 +9,13 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QComboBox,
-    QLineEdit,
     QPushButton,
     QGroupBox,
     QFormLayout,
     QMessageBox,
     QApplication,
 )
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import QThread, Signal
 
 from icotest.gui.dialogs.combined_result import CombinedResultDialog
 from icotest.gui.dialogs.terminal_output import TerminalWindow
