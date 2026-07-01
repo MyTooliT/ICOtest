@@ -2,6 +2,8 @@
 
 # -- Imports ------------------------------------------------------------------
 
+import logging
+
 from argparse import ArgumentParser
 from logging import getLogger, FileHandler, Formatter
 from os import environ, makedirs, path
@@ -145,9 +147,6 @@ def main() -> None:
     logger_root.setLevel(log_level)
 
     log_format = Formatter("{asctime} {levelname:7} {message}", style="{")
-
-    # Console handler
-    import logging
 
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(log_format)
