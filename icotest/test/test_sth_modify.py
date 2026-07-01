@@ -16,6 +16,7 @@ from icotronic.can import STH
 from icotest.config import settings
 from icotest.test.support.node import check_firmware_upload
 from icotest.test.support.mac import convert_mac_base64
+from icotest.cli.commander import Commander
 
 # -- Functions ----------------------------------------------------------------
 
@@ -29,7 +30,6 @@ async def test_firmware_upload():
 
     logger = getLogger(__name__)
     logger.info("Resetting device after firmware upload to initialize EEPROM")
-    from icotest.cli.commander import Commander
 
     Commander().reset_device()
     logger.info("Device reset complete - EEPROM initialized with defaults")
