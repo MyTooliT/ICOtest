@@ -61,11 +61,12 @@ async def test_set_base64name(
 
     # High-visibility output for the operator
     # (logged at WARNING level to ensure visibility)
-    logger.warning("\n" + "*" * 60)
+    banner = "\n" + "*" * 60
+    logger.warning(banner)
     logger.warning("DEVICE RENAMED SUCCESSFULLY")
     logger.warning("NEW NAME (BASE64 MAC): %s", name)
     logger.warning("PLEASE WRITE THIS NAME ON THE PCB LABEL!")
-    logger.warning("*" * 60 + "\n")
+    logger.warning(banner)
 
     # Store name in JSON metadata (for --json-report)
     json_metadata["Sensor Node Name"] = name
