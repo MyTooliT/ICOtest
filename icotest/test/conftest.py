@@ -2,6 +2,10 @@
 
 # -- Imports ------------------------------------------------------------------
 
+import datetime
+import os
+import shutil
+
 from logging import getLogger
 from typing import AsyncGenerator
 
@@ -11,11 +15,6 @@ from netaddr import EUI
 
 from icotest.config import settings
 from icotest.test.support.mac import convert_mac_base64
-
-# for renaming the output files
-import datetime
-import os
-import shutil
 
 # Stash key for the MAC address
 MAC_STASH_KEY = StashKey[str]()
@@ -88,17 +87,21 @@ def json_metadata(request):
     """
     # Use the plugin's internal metadata storage if available
     if hasattr(request.node, "_json_report_extra"):
+        # pylint: disable=protected-access
         metadata_dict = request.node._json_report_extra.setdefault(
             "metadata", {}
         )
+        # pylint: enable=protected-access
     else:
         # Fallback if the plugin is not active
         metadata_dict = {}
 
-    # Standardized measurement recording function
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
+
     def record_measurement(
         name, value, unit=None, lower=None, upper=None, description=None
     ):
+        """Standardized measurement recording function"""
         measurement = {"value": value}
         if unit:
             measurement["unit"] = unit
@@ -110,9 +113,12 @@ def json_metadata(request):
             measurement["description"] = description
         metadata_dict[name] = measurement
 
-    # Create a proxy object that provides the 'record' helper but doesn't
-    # store it in the actual metadata dictionary that gets serialized
+    # pylint: enable=too-many-arguments, too-many-positional-arguments
+
     class MetadataProxy(dict):
+        """Create a proxy object that provides the 'record' helper but doesn't
+        store it in the actual metadata dictionary that gets serialized"""
+
         def __getitem__(self, key):
             if key == "record":
                 return record_measurement
@@ -133,7 +139,9 @@ def json_metadata(request):
     return MetadataProxy(metadata_dict)
 
 
-def pytest_sessionfinish(session, exitstatus):
+def pytest_sessionfinish(
+    session, exitstatus  # pylint: disable=unused-argument
+):
     """Rename the JSON report using the MAC address if available"""
     config = session.config
     report_file = config.getoption("--json-report-file")
@@ -158,6 +166,7 @@ def pytest_sessionfinish(session, exitstatus):
 
 
 def pytest_configure(config):
+    """Perform initial configuration"""
 
     # Register custom markers
     config.addinivalue_line(

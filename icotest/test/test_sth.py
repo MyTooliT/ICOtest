@@ -248,6 +248,9 @@ async def test_acceleration_noise(sth: STH, json_metadata: dict):
     )
 
 
+# pylint: disable=too-many-locals
+
+
 @mark.order(33)
 @mark.sensor
 async def test_acceleration_3a_alt(sth: STH):
@@ -377,6 +380,9 @@ async def test_acceleration_3a_alt(sth: STH):
     )
 
 
+# pylint: disable=too-many-statements
+
+
 @mark.order(34)
 @mark.sensor
 async def test_acceleration_3a_optimized(sth: STH, json_metadata: dict):
@@ -385,7 +391,9 @@ async def test_acceleration_3a_optimized(sth: STH, json_metadata: dict):
     logger = getLogger(__name__)
     logger.info("Starting triple axis acceleration test (optimized method)")
 
+    # pylint: disable=fixme
     # TODO: configure all of these using the config file
+    # pylint: enable=fixme
     # We use the vector representation of the acceleration therefore
     # placement of the board should make no difference.
     test_acc_tollerance_g = 2.5
@@ -651,7 +659,12 @@ async def test_acceleration_3a_optimized(sth: STH, json_metadata: dict):
     )
 
 
+# pylint: enable=too-many-locals, too-many-statements
+
 # Order 40-49: BackPack Tests
+
+
+# pylint: disable=invalid-name, too-many-locals, too-many-statements
 
 
 @mark.order(40)
@@ -872,6 +885,8 @@ async def test_BaP_torr_accelleration(sth: STH, json_metadata: dict):
         f" {acceleration_noise_torr:.3f} dB"
     )
 
+
+# pylint: enable=invalid-name, too-many-locals, too-many-statements
 
 # Order 10-19: Basic Tests
 
