@@ -131,6 +131,9 @@ def run_pytest(
 # -- Main ---------------------------------------------------------------------
 
 
+# pylint: disable=too-many-locals, too-many-branches, too-many-statements
+
+
 def main() -> None:
     """ICOtest command line tool"""
 
@@ -232,6 +235,8 @@ def main() -> None:
                 log_file=test_log_file,
             )
 
+
+# pylint: enable=too-many-locals, too-many-branches, too-many-statements
 
 if __name__ == "__main__":
     main()
