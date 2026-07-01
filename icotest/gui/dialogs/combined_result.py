@@ -24,6 +24,8 @@ from PySide6.QtGui import QFont
 
 # pylint: enable=no-name-in-module
 
+# pylint: disable=too-few-public-methods
+
 
 class CombinedResultDialog(QDialog):
     """Shows new Base64 MAC and test results in one view"""
@@ -250,3 +252,6 @@ class CombinedResultDialog(QDialog):
             subprocess.call(["open", path])
         else:
             subprocess.call(["xdg-open", path])
+
+
+# pylint: enable=too-few-public-methods
