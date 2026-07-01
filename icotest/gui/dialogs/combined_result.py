@@ -71,8 +71,10 @@ class CombinedResultDialog(QDialog):
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(subtitle)
 
+        # pylint: disable=attribute-defined-outside-init
         # Huge MAC label
         self.mac_label = QLabel(self.device_name)
+        # pylint: enable=attribute-defined-outside-init
         self.mac_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.mac_label.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextSelectableByMouse
@@ -105,9 +107,11 @@ class CombinedResultDialog(QDialog):
         copy_btn.setMinimumHeight(40)
         controls_layout.addWidget(copy_btn)
 
+        # pylint: disable=attribute-defined-outside-init
         self.confirm_checkbox = QCheckBox(
             f"I have written {self.device_name} on the PCB"
         )
+        # pylint: enable=attribute-defined-outside-init
         self.confirm_checkbox.setStyleSheet(
             "font-size: 14pt; font-weight: bold;"
         )
@@ -115,6 +119,8 @@ class CombinedResultDialog(QDialog):
         controls_layout.addWidget(self.confirm_checkbox)
 
         layout.addLayout(controls_layout)
+
+    # pylint: disable=too-many-locals
 
     def _setup_results_section(self, layout):
         """Build the test results breakdown"""
@@ -184,6 +190,8 @@ class CombinedResultDialog(QDialog):
         scroll.setWidget(content)
         layout.addWidget(scroll)
 
+    # pylint: enable=too-many-locals
+
     def _setup_action_buttons(self, layout):
         """Build bottom action buttons"""
         layout.addSpacing(10)
@@ -205,7 +213,9 @@ class CombinedResultDialog(QDialog):
         # Main actions
         btn_layout = QHBoxLayout()
 
+        # pylint: disable=attribute-defined-outside-init
         self.test_another_btn = QPushButton("Test Another Device")
+        # pylint: enable=attribute-defined-outside-init
         self.test_another_btn.setMinimumHeight(50)
         self.test_another_btn.setFont(QFont("Arial", 12, QFont.Weight.Bold))
         self.test_another_btn.clicked.connect(self.accept)
