@@ -59,7 +59,8 @@ async def test_set_base64name(
     # Rename node using set_name (Bluetooth command)
     await sth.set_name(name)
 
-    # High-visibility output for the operator (logged at WARNING level to ensure visibility)
+    # High-visibility output for the operator
+    # (logged at WARNING level to ensure visibility)
     logger.warning("\n" + "*" * 60)
     logger.warning("DEVICE RENAMED SUCCESSFULLY")
     logger.warning("NEW NAME (BASE64 MAC): %s", name)

@@ -26,9 +26,8 @@ class DeviceDatabase:
                     report_path TEXT
                 )
             """)
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_programmed_at ON devices(programmed_at DESC)
-            """)
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_programmed_at "
+                         "ON devices(programmed_at DESC)")
             conn.commit()
 
     def insert_device(
@@ -41,7 +40,7 @@ class DeviceDatabase:
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
                 """
-                INSERT OR REPLACE INTO devices 
+                INSERT OR REPLACE INTO devices
                 (device_name, programmed_at, backpack_model, test_status)
                 VALUES (?, ?, ?, 'pending')
             """,

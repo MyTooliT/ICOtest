@@ -127,12 +127,14 @@ class TestRunner(QThread):
         with open(latest_report, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        # Extract device name from filename (e.g. ICOtronic_BYUgAHwA_2026-03-17.json)
+        # Extract device name from filename
+        # (e.g. ICOtronic_BYUgAHwA_2026-03-17.json)
         device_name = self.device_name
         filename = latest_report.stem
         match = re.search(r"_([A-Za-z0-9]{8})_", filename)
         if match and self.test_group == "initial":
-            # In initial run, we started with Minion04 but the report has the new Base64 MAC
+            # In initial run, we started with Minion04 but the report has the
+            # new Base64 MAC
             device_name = match.group(1)
 
         # Parse test results

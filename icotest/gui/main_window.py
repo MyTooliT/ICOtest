@@ -306,7 +306,8 @@ class MainWindow(QMainWindow):
 
     def _on_retest_clicked(self):
         """Start the 'Retest Existing' workflow"""
-        # Use currentData if available (from scan), otherwise currentText (manual entry)
+        # Use currentData if available (from scan),
+        # otherwise currentText (manual entry)
         device_name = (
             self.device_combo.currentData()
             or self.device_combo.currentText().strip()

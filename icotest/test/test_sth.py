@@ -310,7 +310,8 @@ async def test_acceleration_3a_alt(sth: STH):
             sth, config, length=number_streaming_messages
         )
 
-        # This block strips the metadata since we seem to always be getting a 3xN array
+        # This block strips the metadata since we seem to always be getting a
+        # 3xN array
         all_values = (
             measurement_data.first().data
             + measurement_data.second().data
@@ -387,7 +388,8 @@ async def test_acceleration_3a_optimized(sth: STH, json_metadata: dict):
     logger.info("Starting triple axis acceleration test (optimized method)")
 
     # TODO: configure all of these using the config file
-    # We use the vector representation of the acceleration therefore placement of the board should make no difference.
+    # We use the vector representation of the acceleration therefore
+    # placement of the board should make no difference.
     test_acc_tollerance_g = 2.5
     test_acc_noise = np.array([50.0, 50.0, 50.0])
 
@@ -705,7 +707,8 @@ async def test_BaP_torr_accelleration(sth: STH, json_metadata: dict):
         [datapoint.value for datapoint in measurement_data.third()]
     )
 
-    # This block strips the metadata since we seem to always be getting a 3xN array
+    # This block strips the metadata since we seem to always be getting a
+    # 3xN array
     acceleration_x = (acceleration_x_raw / 65535 - 0.5) * 200
     # The combination sensors add up which results in an inherent gain of two
     acceleration_y = (acceleration_y_raw / 65535 - 0.5) * 100
@@ -822,7 +825,8 @@ async def test_BaP_torr_accelleration(sth: STH, json_metadata: dict):
         [datapoint.value for datapoint in measurement_data.third()]
     )
 
-    # This block strips the metadata since we seem to always be getting a 3xN array
+    # This block strips the metadata since we seem to always be getting a
+    # 3xN array
     acceleration_x = (acceleration_x_raw / 65535 - 0.5) * 200
     # The combination sensors add up which results in an inherent gain of two
     acceleration_y = (acceleration_y_raw / 65535 - 0.5) * 100
