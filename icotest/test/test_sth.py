@@ -9,11 +9,14 @@ Use this test code in addition to the one for the sensor node:
 # -- Imports ------------------------------------------------------------------
 
 from logging import getLogger
-from math import ceil
+from math import ceil, exp2
+from statistics import mean
+
+import numpy as np
 
 from pytest import mark
 
-from icotronic.can import STH, StreamingConfiguration
+from icotronic.can import SensorConfiguration, STH, StreamingConfiguration
 from icotronic.measurement.constants import ADC_MAX_VALUE
 from icotronic.measurement import convert_raw_to_g, ratio_noise_max
 
@@ -21,11 +24,6 @@ from icotest.config import settings
 from icotest.test.support.node import check_write_read_eeprom_close
 from icotest.test.support.sensor_node import read_streaming_data
 from icotest.test.support.sth import read_self_test_voltages
-from icotronic.can import SensorConfiguration
-
-from statistics import mean
-from math import exp2
-import numpy as np
 
 # -- Functions ----------------------------------------------------------------
 
