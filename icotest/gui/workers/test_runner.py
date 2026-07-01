@@ -22,6 +22,8 @@ class TestRunner(QThread):
     test_completed = Signal(dict)
     error_occurred = Signal(str)
 
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
+
     def __init__(
         self,
         device_name,
@@ -35,6 +37,8 @@ class TestRunner(QThread):
         self.test_group = test_group
         self.log_level = log_level
         self.backpack_model = backpack_model
+
+    # pylint: enable=too-many-arguments, too-many-positional-arguments
 
     def run(self):
         """Run the test subprocess"""
@@ -67,7 +71,7 @@ class TestRunner(QThread):
                     f"Tests failed with exit code {process.returncode}"
                 )
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.error_occurred.emit(f"Test execution error: {str(e)}")
 
     def _build_command(self):
@@ -110,7 +114,7 @@ class TestRunner(QThread):
                 "report_path": report_data.get("report_path"),
                 "results": report_data.get("results", {}),
             })
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.error_occurred.emit(f"Failed to parse test report: {str(e)}")
 
     def _parse_latest_report(self):
