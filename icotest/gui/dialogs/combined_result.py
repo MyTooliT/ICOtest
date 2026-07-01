@@ -3,6 +3,9 @@
 import sys
 import os
 import subprocess
+
+# pylint: disable=no-name-in-module
+
 from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -18,6 +21,8 @@ from PySide6.QtWidgets import (
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
+
+# pylint: enable=no-name-in-module
 
 
 class CombinedResultDialog(QDialog):

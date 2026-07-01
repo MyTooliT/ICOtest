@@ -6,7 +6,12 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+
+# pylint: disable=no-name-in-module
+
 from PySide6.QtCore import QThread, Signal
+
+# pylint: enable=no-name-in-module
 
 
 class TestRunner(QThread):
