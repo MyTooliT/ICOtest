@@ -31,6 +31,8 @@ from icotest.gui.dialogs.terminal_output import TerminalWindow
 from icotest.gui.workers.test_runner import TestRunner
 from icotest.gui.database.device_db import DeviceDatabase
 
+# pylint: disable=too-few-public-methods
+
 
 class DeviceScanner(QThread):
     """Background worker to scan for Bluetooth sensor nodes"""
@@ -60,6 +62,11 @@ class DeviceScanner(QThread):
             self.scan_failed.emit(str(e))
 
 
+# pylint: enable=too-few-public-methods
+
+# pylint: disable=too-many-instance-attributes
+
+
 class MainWindow(QMainWindow):
     """Main window for ICOtest Production Assistant"""
 
@@ -79,6 +86,8 @@ class MainWindow(QMainWindow):
 
         self._setup_ui()
         self._validate_ui_state()
+
+    # pylint: disable=too-many-statements
 
     def _setup_ui(self):
         """Create and layout all widgets"""
@@ -177,6 +186,8 @@ class MainWindow(QMainWindow):
         footer_layout.addWidget(term_btn)
 
         main_layout.addLayout(footer_layout)
+
+    # pylint: enable=too-many-statements
 
     def _validate_ui_state(self):
         """Enable/disable buttons based on input"""
@@ -398,3 +409,6 @@ class MainWindow(QMainWindow):
             f"An error occurred during execution:\n\n{error_msg}\n\nCheck"
             " terminal output for details.",
         )
+
+
+# pylint: enable=too-many-instance-attributes
