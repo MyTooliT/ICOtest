@@ -1,6 +1,8 @@
 """Main Application Window for ICOtest GUI"""
 
+import asyncio
 import json
+
 from pathlib import Path
 
 # pylint: disable=no-name-in-module
@@ -22,6 +24,8 @@ from PySide6.QtCore import QThread, Signal
 
 # pylint: enable=no-name-in-module
 
+from icotronic.can.connection import Connection
+
 from icotest.gui.dialogs.combined_result import CombinedResultDialog
 from icotest.gui.dialogs.terminal_output import TerminalWindow
 from icotest.gui.workers.test_runner import TestRunner
@@ -36,8 +40,6 @@ class DeviceScanner(QThread):
 
     def run(self):
         """Scan for available sensor nodes"""
-        from icotronic.can.connection import Connection
-        import asyncio
 
         try:
             loop = asyncio.new_event_loop()
