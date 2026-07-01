@@ -13,6 +13,8 @@ from PySide6.QtCore import QThread, Signal
 
 # pylint: enable=no-name-in-module
 
+# pylint: disable=too-few-public-methods
+
 
 class TestRunner(QThread):
     """Executes icotest CLI as a subprocess and parses results"""
@@ -45,6 +47,7 @@ class TestRunner(QThread):
         try:
             cmd = self._build_command()
 
+            # pylint: disable=consider-using-with
             # Start process
             process = subprocess.Popen(
                 cmd,
@@ -55,6 +58,7 @@ class TestRunner(QThread):
                 encoding="utf-8",
                 errors="replace",
             )
+            # pylint: enable=consider-using-with
 
             # Read output in real-time
             if process.stdout:
@@ -117,6 +121,8 @@ class TestRunner(QThread):
         except Exception as e:  # pylint: disable=broad-exception-caught
             self.error_occurred.emit(f"Failed to parse test report: {str(e)}")
 
+    # pylint: disable=too-many-locals
+
     def _parse_latest_report(self):
         """Find and parse the most recent JSON report in reports/"""
         reports_dir = Path("reports")
@@ -176,3 +182,8 @@ class TestRunner(QThread):
             "report_path": str(latest_report),
             "results": results,
         }
+
+    # pylint: enable=too-many-locals
+
+
+# pylint: enable=too-few-public-methods
