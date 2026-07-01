@@ -56,7 +56,7 @@ class DeviceScanner(QThread):
             loop.close()
             self.devices_found.emit(devices)
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.scan_failed.emit(str(e))
 
 
@@ -208,7 +208,7 @@ class MainWindow(QMainWindow):
             try:
                 with open(self.config_file, "r") as f:
                     self.config = json.load(f)
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 pass
 
     def _save_config(self):
@@ -216,7 +216,7 @@ class MainWindow(QMainWindow):
         try:
             with open(self.config_file, "w") as f:
                 json.dump(self.config, f)
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             pass
 
     def _on_flash_clicked(self):
