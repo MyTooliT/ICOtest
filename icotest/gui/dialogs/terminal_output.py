@@ -83,11 +83,13 @@ class TerminalWindow(QDialog):
             return
 
         try:
+            # pylint: disable=consider-using-with
             self.log_file = open(file_path, "r", encoding="utf-8")
+            # pylint: enable=consider-using-with
             # Seek to end so we only get new lines
             self.log_file.seek(0, 2)
             self.timer.start(500)  # Polling interval: 500ms
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.text_edit.append(f"Error opening log file: {e}")
 
     def _check_new_lines(self):
@@ -124,7 +126,7 @@ class TerminalWindow(QDialog):
             scrollbar = self.text_edit.verticalScrollBar()
             scrollbar.setValue(scrollbar.maximum())
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):  # pylint: disable=invalid-name
         """Handle window close"""
         # We just hide it instead of closing so it can be re-opened
         self.hide()
