@@ -63,7 +63,9 @@ async def stu() -> AsyncGenerator[STU, None]:
 
 
 @fixture
-async def sensor_node(stu, sensor_node_name) -> AsyncGenerator[SensorNode, None]:
+async def sensor_node(
+    stu, sensor_node_name
+) -> AsyncGenerator[SensorNode, None]:
     """Connect to and disconnect from sensor node"""
 
     async with stu.connect_sensor_node(sensor_node_name) as sensor_node:
@@ -86,7 +88,9 @@ def json_metadata(request):
     """
     # Use the plugin's internal metadata storage if available
     if hasattr(request.node, "_json_report_extra"):
-        metadata_dict = request.node._json_report_extra.setdefault("metadata", {})
+        metadata_dict = request.node._json_report_extra.setdefault(
+            "metadata", {}
+        )
     else:
         # Fallback if the plugin is not active
         metadata_dict = {}
@@ -144,7 +148,9 @@ def pytest_sessionfinish(session, exitstatus):
             node_type = settings.get("sensor_node.type", "ICOtronic")
 
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-            new_report_name = f"reports/{node_type}_{mac_clean}_{timestamp}.json"
+            new_report_name = (
+                f"reports/{node_type}_{mac_clean}_{timestamp}.json"
+            )
 
             # Use shutil.move for safer cross-filesystem moves
             shutil.move(report_file, new_report_name)
@@ -155,12 +161,17 @@ def pytest_configure(config):
 
     # Register custom markers
     config.addinivalue_line(
-        "markers", "initial_setup: Tests for initial setup (firmware upload, renaming)"
+        "markers",
+        "initial_setup: Tests for initial setup (firmware upload, renaming)",
     )
-    config.addinivalue_line("markers", "basic: Basic tests (connection, EEPROM, etc.)")
+    config.addinivalue_line(
+        "markers", "basic: Basic tests (connection, EEPROM, etc.)"
+    )
     config.addinivalue_line("markers", "power: Power consumption tests")
     config.addinivalue_line("markers", "sensor: Sensor tests (standard)")
-    config.addinivalue_line("markers", "backpack: Tests for boards with BackPack")
+    config.addinivalue_line(
+        "markers", "backpack: Tests for boards with BackPack"
+    )
     config.addinivalue_line("markers", "stu: STU-specific tests")
 
     if config.getoption("--json-report", default=False):

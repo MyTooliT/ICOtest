@@ -37,7 +37,9 @@ async def test_firmware_upload():
 
 @mark.order(2)
 @mark.initial_setup
-async def test_set_base64name(sth: STH, sensor_node_mac_address, json_metadata):
+async def test_set_base64name(
+    sth: STH, sensor_node_mac_address, json_metadata
+):
     """Set Sensor Node Name to Base64-encoded MAC address
 
     This test:

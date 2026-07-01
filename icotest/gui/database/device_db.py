@@ -31,7 +31,9 @@ class DeviceDatabase:
             """)
             conn.commit()
 
-    def insert_device(self, device_name: str, backpack_model: str | None = None):
+    def insert_device(
+        self, device_name: str, backpack_model: str | None = None
+    ):
         """Insert a newly programmed device"""
 
         timestamp = datetime.now().isoformat()

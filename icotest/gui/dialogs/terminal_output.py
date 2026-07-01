@@ -103,7 +103,10 @@ class TerminalWindow(QDialog):
     def _save_to_file(self):
         """Save terminal content to a user-chosen file"""
         path, _ = QFileDialog.getSaveFileName(
-            self, "Save Log Output", "", "Text Files (*.txt);;Log Files (*.log)"
+            self,
+            "Save Log Output",
+            "",
+            "Text Files (*.txt);;Log Files (*.log)",
         )
         if path:
             with open(path, "w", encoding="utf-8") as f:

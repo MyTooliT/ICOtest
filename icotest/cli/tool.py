@@ -158,7 +158,9 @@ def main() -> None:
         makedirs("reports")
 
     # File handler for production audit trail
-    log_file_path = f"reports/icotest_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log"
+    log_file_path = (
+        f"reports/icotest_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log"
+    )
     file_handler = FileHandler(log_file_path, encoding="utf-8")
     file_handler.setFormatter(log_format)
     logger_root.addHandler(file_handler)
@@ -179,7 +181,9 @@ def main() -> None:
 
             if arguments.name is not None:
                 logger.info("Using sensor node name: %s", arguments.name)
-                environment_pytest["DYNACONF_SENSOR_NODE__NAME"] = arguments.name
+                environment_pytest["DYNACONF_SENSOR_NODE__NAME"] = (
+                    arguments.name
+                )
 
             # Process test groups
             if hasattr(arguments, "test_group") and arguments.test_group:
@@ -215,7 +219,9 @@ def main() -> None:
             if skip_backpack and "backpack" in pytest_markers[-1]:
                 logger.info("Skipping BackPack tests")
                 # Remove "or backpack" from production group marker
-                pytest_markers[-1] = pytest_markers[-1].replace(" or backpack", "")
+                pytest_markers[-1] = pytest_markers[-1].replace(
+                    " or backpack", ""
+                )
 
             # Determine log file for this run
             test_log_file = log_file_path.replace(".log", "_pytest.log")

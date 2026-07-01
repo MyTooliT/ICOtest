@@ -18,7 +18,12 @@ class TestRunner(QThread):
     error_occurred = Signal(str)
 
     def __init__(
-        self, device_name, test_group, log_level, backpack_model="None", parent=None
+        self,
+        device_name,
+        test_group,
+        log_level,
+        backpack_model="None",
+        parent=None,
     ):
         super().__init__(parent)
         self.device_name = device_name
@@ -92,14 +97,14 @@ class TestRunner(QThread):
         """Parse JSON report and emit results"""
         try:
             report_data = self._parse_latest_report()
-            self.test_completed.emit(
-                {
-                    "returncode": 0,
-                    "device_name": report_data.get("device_name", self.device_name),
-                    "report_path": report_data.get("report_path"),
-                    "results": report_data.get("results", {}),
-                }
-            )
+            self.test_completed.emit({
+                "returncode": 0,
+                "device_name": report_data.get(
+                    "device_name", self.device_name
+                ),
+                "report_path": report_data.get("report_path"),
+                "results": report_data.get("results", {}),
+            })
         except Exception as e:
             self.error_occurred.emit(f"Failed to parse test report: {str(e)}")
 

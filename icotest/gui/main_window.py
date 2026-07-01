@@ -43,7 +43,9 @@ class DeviceScanner(QThread):
             async def scan():
                 async with Connection() as stu:
                     nodes = await stu.collect_sensor_nodes(timeout=5)
-                    return [(node.name, str(node.mac_address)) for node in nodes]
+                    return [
+                        (node.name, str(node.mac_address)) for node in nodes
+                    ]
 
             devices = loop.run_until_complete(scan())
             loop.close()
@@ -92,7 +94,9 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(QLabel("Logger Level:"))
         self.logger_combo = QComboBox()
         self.logger_combo.addItems(["DEBUG", "INFO", "WARNING", "ERROR"])
-        self.logger_combo.setCurrentText(self.config.get("logger_level", "WARNING"))
+        self.logger_combo.setCurrentText(
+            self.config.get("logger_level", "WARNING")
+        )
         self.logger_combo.currentTextChanged.connect(self._save_config)
         header_layout.addWidget(self.logger_combo)
 
@@ -275,12 +279,16 @@ class MainWindow(QMainWindow):
 
         if not devices:
             self.terminal.append_text("No sensor nodes found.\n")
-            QMessageBox.information(self, "Scan Complete", "No sensor nodes found.")
+            QMessageBox.information(
+                self, "Scan Complete", "No sensor nodes found."
+            )
             return
 
         # Add devices to combo - show only name, store name as data
         for name, mac in devices:
-            self.device_combo.addItem(name, name)  # Display name, store name as data
+            self.device_combo.addItem(
+                name, name
+            )  # Display name, store name as data
 
         self.terminal.append_text(f"Found {len(devices)} device(s):\n")
         for name, mac in devices:
@@ -300,7 +308,8 @@ class MainWindow(QMainWindow):
         """Start the 'Retest Existing' workflow"""
         # Use currentData if available (from scan), otherwise currentText (manual entry)
         device_name = (
-            self.device_combo.currentData() or self.device_combo.currentText().strip()
+            self.device_combo.currentData()
+            or self.device_combo.currentText().strip()
         )
         self._set_ui_running(True)
         self.status_label.setText(f"Status: Running tests on {device_name}...")
@@ -311,7 +320,9 @@ class MainWindow(QMainWindow):
 
         # If this is a manual retest of a board not in DB, insert it
         if not self.db.device_exists(device_name):
-            self.db.insert_device(device_name, self.backpack_combo.currentText())
+            self.db.insert_device(
+                device_name, self.backpack_combo.currentText()
+            )
 
         self._run_production_tests(device_name, is_new_device=False)
 
@@ -354,7 +365,9 @@ class MainWindow(QMainWindow):
         self.db.update_test_status(device_name, status, report_path)
 
         # Show combined dialog
-        dialog = CombinedResultDialog(device_name, is_new_device, result_dict, self)
+        dialog = CombinedResultDialog(
+            device_name, is_new_device, result_dict, self
+        )
 
         if dialog.exec():
             # User clicked "Test Another Device"
@@ -376,5 +389,6 @@ class MainWindow(QMainWindow):
         QMessageBox.critical(
             self,
             "Execution Error",
-            f"An error occurred during execution:\n\n{error_msg}\n\nCheck terminal output for details.",
+            f"An error occurred during execution:\n\n{error_msg}\n\nCheck"
+            " terminal output for details.",
         )

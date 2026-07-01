@@ -103,7 +103,9 @@ class CombinedResultDialog(QDialog):
         self.confirm_checkbox = QCheckBox(
             f"I have written {self.device_name} on the PCB"
         )
-        self.confirm_checkbox.setStyleSheet("font-size: 14pt; font-weight: bold;")
+        self.confirm_checkbox.setStyleSheet(
+            "font-size: 14pt; font-weight: bold;"
+        )
         self.confirm_checkbox.toggled.connect(self._update_button_state)
         controls_layout.addWidget(self.confirm_checkbox)
 
@@ -159,7 +161,8 @@ class CombinedResultDialog(QDialog):
             color = "green" if test["outcome"] == "passed" else "red"
 
             name_label = QLabel(
-                f"<span style='color: {color}; font-weight: bold;'>{icon}</span> {test['name']}"
+                f"<span style='color: {color}; font-weight:"
+                f" bold;'>{icon}</span> {test['name']}"
             )
             name_label.setWordWrap(True)
             test_layout.addWidget(name_label)
@@ -183,7 +186,9 @@ class CombinedResultDialog(QDialog):
         # Report link
         report_path = self.test_results.get("report_path", "")
         report_layout = QHBoxLayout()
-        report_layout.addWidget(QLabel(f"Report: {os.path.basename(report_path)}"))
+        report_layout.addWidget(
+            QLabel(f"Report: {os.path.basename(report_path)}")
+        )
 
         open_report_btn = QPushButton("Open Report")
         open_report_btn.clicked.connect(lambda: self._open_file(report_path))

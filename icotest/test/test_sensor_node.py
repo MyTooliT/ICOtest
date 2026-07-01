@@ -142,7 +142,9 @@ async def test_power_usage_connected(
 
 @mark.order(22)
 @mark.power
-async def test_power_usage_streaming(sensor_node: SensorNode, json_metadata: dict):
+async def test_power_usage_streaming(
+    sensor_node: SensorNode, json_metadata: dict
+):
     """Test power usage of sensor node while streaming"""
 
     async def stream_data(started_streaming: Event) -> None:
@@ -159,11 +161,15 @@ async def test_power_usage_streaming(sensor_node: SensorNode, json_metadata: dic
     started_streaming = Event()
 
     async with TaskGroup() as task_group:
-        stream_data_task = task_group.create_task(stream_data(started_streaming))
+        stream_data_task = task_group.create_task(
+            stream_data(started_streaming)
+        )
         await started_streaming.wait()
         read_power_task = task_group.create_task(to_thread(read_power_usage))
         power_usage_mw = await read_power_task
-        getLogger(__name__).info("Streaming power usage: %s mW", power_usage_mw)
+        getLogger(__name__).info(
+            "Streaming power usage: %s mW", power_usage_mw
+        )
         stream_data_task.cancel()
 
     limit = settings.sensor_node.power.streaming
@@ -177,7 +183,8 @@ async def test_power_usage_streaming(sensor_node: SensorNode, json_metadata: dic
         description="Power usage during active data transmission",
     )
     json_metadata["failure_analysis"] = (
-        "High streaming power may indicate RF hardware issues or over-active sensors."
+        "High streaming power may indicate RF hardware issues or over-active"
+        " sensors."
     )
 
     await check_power_usage(power_usage_mw, limit)
