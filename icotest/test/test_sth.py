@@ -18,9 +18,10 @@ from pytest import mark
 
 from icotronic.can import SensorConfiguration, STH, StreamingConfiguration
 from icotronic.measurement.constants import ADC_MAX_VALUE
-from icotronic.measurement import convert_raw_to_g, ratio_noise_max
+from icotronic.measurement import ratio_noise_max
 
 from icotest.config import settings
+from icotest.test.support.conversion import convert_raw_to_g
 from icotest.test.support.node import check_write_read_eeprom_close
 from icotest.test.support.sensor_node import read_streaming_data
 from icotest.test.support.sth import read_self_test_voltages
