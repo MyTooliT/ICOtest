@@ -5,7 +5,10 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 
-authors = [{ name = "René Schwaiger", email = "rene.schwaiger@ift.at" }]
+authors = [
+  { name = "Norbert Leder", email = "norbert.leder@mytoolit.com" },
+  { name = "René Schwaiger", email = "rene.schwaiger@ift.at" },
+]
 
 classifiers = [
   "Development Status :: 3 - Alpha",
