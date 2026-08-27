@@ -150,7 +150,7 @@ class TestRunner(QThread):
                     "results": report_data.get("results", {}),
                 }
             )
-        except Exception as e:	# pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.error_occurred.emit(f"Failed to parse test report: {str(e)}")
 
     # pylint: disable=too-many-locals
@@ -221,9 +221,6 @@ class TestRunner(QThread):
 
     # pylint: enable=too-many-locals
 
-
-# pylint: enable=too-few-public-methods
-
     @staticmethod
     def _extract_device_name_from_report(data):
         """Read the real device name from report test metadata when present."""
@@ -274,3 +271,6 @@ class TestRunner(QThread):
             self.output_line.emit(f"Copied report to: {destination}\n")
         except Exception as exc:
             self.output_line.emit(f"Failed to copy report to export folder: {exc}\n")
+
+
+# pylint: enable=too-few-public-methods
