@@ -5,15 +5,15 @@
 from asyncio import Event, TaskGroup, to_thread
 from logging import getLogger
 
+from pytest import mark
+
 from icotronic.can import SensorNode, StreamingConfiguration, STU
 
 from icotest.cli.commander import Commander
 from icotest.config import settings
 from icotest.test.support.common import check_power_usage
-from icotest.test.support.mac import convert_mac_base64
 from icotest.test.support.node import (
     check_connection,
-    check_firmware_upload,
     check_eeprom_product_data,
     check_eeprom_statistics,
     check_eeprom_status,
@@ -26,19 +26,20 @@ from icotest.test.support.sensor_node import (
 # -- Functions ----------------------------------------------------------------
 
 
-async def test_firmware_upload():
-    """Upload firmware"""
-
-    await check_firmware_upload(settings.sensor_node)
+# Order 10-19: Basic Tests
 
 
+@mark.order(10)
+@mark.basic
 async def test_connection(sensor_node: SensorNode):
     """Test if connection to sensor node is possible"""
 
     await check_connection(sensor_node)
 
 
-async def test_supply_voltage(sensor_node: SensorNode):
+@mark.order(11)
+@mark.basic
+async def test_supply_voltage(sensor_node: SensorNode, json_metadata: dict):
     """Test if battery voltage is within expected bounds"""
 
     supply_voltage = await sensor_node.get_supply_voltage()
@@ -47,6 +48,16 @@ async def test_supply_voltage(sensor_node: SensorNode):
 
     expected_minimum_voltage = expected_voltage - tolerance_voltage
     expected_maximum_voltage = expected_voltage + tolerance_voltage
+
+    # Store in JSON report
+    json_metadata["record"](
+        "supply_voltage",
+        supply_voltage,
+        unit="V",
+        lower=expected_minimum_voltage,
+        upper=expected_maximum_voltage,
+        description="Battery/supply voltage of the sensor node",
+    )
 
     assert supply_voltage >= expected_minimum_voltage, (
         f"Supply voltage of {supply_voltage:.3f} V is lower "
@@ -60,8 +71,14 @@ async def test_supply_voltage(sensor_node: SensorNode):
     )
 
 
+# Order 20-29: Power Tests
+
+
+@mark.order(20)
+@mark.power
 async def test_power_usage_disconnected(
     stu: STU,  # pylint: disable=unused-argument
+    json_metadata: dict,
 ) -> None:
     """Check power usage in disconnected state"""
 
@@ -70,13 +87,29 @@ async def test_power_usage_disconnected(
     power_usage_mw = commander.read_power_usage()
     getLogger(__name__).info("Disconnected power usage: %s mW", power_usage_mw)
 
-    await check_power_usage(
-        power_usage_mw, settings.sensor_node.power.disconnected
+    limit = settings.sensor_node.power.disconnected
+
+    # Store in JSON report
+    json_metadata["record"](
+        "power_usage_disconnected",
+        power_usage_mw,
+        unit="mW",
+        upper=limit,
+        description="Power usage when not connected to STU",
+    )
+    json_metadata["failure_analysis"] = (
+        "High power draw may indicate a short circuit, "
+        "a faulty LDO, or poor soldering quality."
     )
 
+    await check_power_usage(power_usage_mw, limit)
 
+
+@mark.order(21)
+@mark.power
 async def test_power_usage_connected(
     sensor_node: SensorNode,  # pylint: disable=unused-argument
+    json_metadata: dict,
 ) -> None:
     """Check power usage in connected state"""
 
@@ -85,12 +118,29 @@ async def test_power_usage_connected(
     power_usage_mw = commander.read_power_usage()
     getLogger(__name__).info("Connected power usage: %s mW", power_usage_mw)
 
-    await check_power_usage(
-        power_usage_mw, settings.sensor_node.power.connected
+    limit = settings.sensor_node.power.connected
+
+    # Store in JSON report
+    json_metadata["record"](
+        "power_usage_connected",
+        power_usage_mw,
+        unit="mW",
+        upper=limit,
+        description="Power usage when connected to STU",
+    )
+    json_metadata["failure_analysis"] = (
+        "High power draw often suggests internal component issues "
+        "or active sub-modules drawing unexpected current."
     )
 
+    await check_power_usage(power_usage_mw, limit)
 
-async def test_power_usage_streaming(sensor_node: SensorNode):
+
+@mark.order(22)
+@mark.power
+async def test_power_usage_streaming(
+    sensor_node: SensorNode, json_metadata: dict
+):
     """Test power usage of sensor node while streaming"""
 
     async def stream_data(started_streaming: Event) -> None:
@@ -118,11 +168,26 @@ async def test_power_usage_streaming(sensor_node: SensorNode):
         )
         stream_data_task.cancel()
 
-    await check_power_usage(
-        power_usage_mw, settings.sensor_node.power.streaming
+    limit = settings.sensor_node.power.streaming
+
+    # Store in JSON report
+    json_metadata["record"](
+        "power_usage_streaming",
+        power_usage_mw,
+        unit="mW",
+        upper=limit,
+        description="Power usage during active data transmission",
+    )
+    json_metadata["failure_analysis"] = (
+        "High streaming power may indicate RF hardware issues or over-active"
+        " sensors."
     )
 
+    await check_power_usage(power_usage_mw, limit)
 
+
+@mark.order(12)
+@mark.basic
 async def test_eeprom(sensor_node: SensorNode):
     "Test if reading and writing of EEPROM values works"
 
@@ -133,14 +198,4 @@ async def test_eeprom(sensor_node: SensorNode):
     await check_eeprom_bluetooth_times(sensor_node, settings.sensor_node)
 
 
-async def test_set_base64name(sensor_node: SensorNode, capsys, json_metadata):
-    """Set name to Base64 encoded MAC address of sensor node"""
-
-    mac_address = await sensor_node.get_mac_address()
-    getLogger().info("MAC address: %s", mac_address)
-    name = convert_mac_base64(mac_address)
-    with capsys.disabled():
-        print(f"Base64 encoded MAC address (Bluetooth name): {name}")
-    json_metadata["Sensor Node Name"] = name
-
-    await sensor_node.set_name(name)
+# moved test_set_base64name to test_sth_modify.py
